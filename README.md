@@ -1,2 +1,1 @@
-# barely-react
-TODO
+# slightly-react

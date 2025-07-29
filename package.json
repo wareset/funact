@@ -1,0 +1,45 @@
+{
+  "name": "barely-react",
+  "version": "0.0.1",
+  "description": "TODO",
+  "keywords": [
+    "TODO"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/wareset/barely-react#readme",
+  "bugs": {
+    "url": "https://github.com/wareset/barely-react/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wareset/barely-react.git"
+  },
+  "author": "rease <cftcview@gmail.com>",
+  "main": "dist/index",
+  "module": "dist/index.mjs",
+  "types": "types/index.d.ts",
+  "files": [
+    "README.md",
+    "dist/**/*",
+    "index.d.ts",
+    "types/**/*"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./types/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "dester -m --out dist",
+    "dev": "dester -mw --out dist"
+  },
+  "devDependencies": {
+    "dester": "1.0.x"
+  },
+  "peerDependencies": {
+    "typescript": "5.x"
+  }
+}
