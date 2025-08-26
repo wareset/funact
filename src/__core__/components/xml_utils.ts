@@ -26,11 +26,9 @@ export function createElementNS(
 //   pNode.insertBefore(node, bNode || null)
 // }
 
-export function isValidTextData(v: any) {
-  return (
-    v !== '' &&
-    ((v = typeof v) === 'string' || v === 'number' || v === 'bigint')
-  )
+export function validateTextData(v: any) {
+  const t = typeof v
+  return t === 'string' || t === 'number' || t === 'bigint' ? '' + v : ''
 }
 
 // export function

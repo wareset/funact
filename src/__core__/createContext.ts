@@ -11,7 +11,7 @@ export function createContext<T>(defaultValue: T): Context<T> {
 
     if (!Object.is(vNode.contextValue, value)) {
       vNode.contextValue = value
-      for (let i = 0, l = users.length; i < l; i++) users[i](value)
+      for (let i = 0, l = users.length; i < l; ++i) users[i](value)
     }
 
     return props.children

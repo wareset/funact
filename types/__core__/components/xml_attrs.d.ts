@@ -1,5 +1,7 @@
-export declare function style2string(v: any): string;
-export declare function class2string(v: any): string;
+declare function style2string(v: any): string;
+export { style2string as stylesheet };
+declare function class2string(v: any): string;
+export { class2string as classnames };
 export declare function setAttributes(node: HTMLElement | SVGElement, newAttrs: {
     [key: string]: any;
 }, oldAttrs: {

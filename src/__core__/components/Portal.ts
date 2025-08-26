@@ -18,7 +18,7 @@ export function Portal(props: {
         throw new Error('Portal: incorrect namespaceURI')
     }
     vNode.contextValue.node = domNode
-    for (let a = vNode.contextValue.childNodes, i = 0; i < a.length; i++) {
+    for (let a = vNode.contextValue.childNodes, i = 0; i < a.length; ++i) {
       domNode.appendChild(a[i])
     }
   }

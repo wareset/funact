@@ -20,7 +20,7 @@ function useLayoutEffect(
       vNode,
       effect: effect,
       deps: [],
-      return: null,
+      cleanup: null,
     }))
   checkHook(data, useLayoutEffect, idx)
 

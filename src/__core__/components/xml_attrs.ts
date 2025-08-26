@@ -16,7 +16,7 @@ function initCSSProperties(): void {
   }
 }
 
-const REG_DASH = /([A-Z])/g
+const RX_DASH = /([A-Z])/g
 const C2D: { [key: string]: string } = {}
 let camel2dash = function (v: string): string {
   return (
@@ -27,7 +27,7 @@ let camel2dash = function (v: string): string {
         : CSS_PROPERTIES.hasOwnProperty(
               (v = C2D.hasOwnProperty(v)
                 ? C2D[v]
-                : (C2D[v] = v.replace(REG_DASH, '-$1').toLowerCase()))
+                : (C2D[v] = v.replace(RX_DASH, '-$1').toLowerCase()))
             )
           ? CSS_PROPERTIES[v]
           : v
@@ -35,37 +35,44 @@ let camel2dash = function (v: string): string {
   )
 }
 
-export function style2string(v: any): string {
+function style2string(v: any): string {
   switch (typeof v) {
     case 'string':
-      return v
+      return v[v.length - 1] === ';' ? v.slice(0, -1) : v
     case 'object': {
       const a: string[] = []
       if (Array.isArray(v)) {
-        for (let c: string, i = 0; i < v.length; i++) {
-          if ((c = style2string(v[i])))
-            a.push(c[c.length - 1] === ';' ? c.slice(0, -1) : c)
+        for (let c: any, i = 0, l = v.length; i < l; ++i) {
+          if ((c = style2string(v[i]))) a.push(c)
         }
       } else if (v) {
         for (const k in v) {
-          if (v[k] != null) a.push(camel2dash(k) + ':' + v[k])
+          if (isValid(v[k])) a.push(camel2dash(k) + ':' + v[k])
         }
       }
       return a.join(';')
     }
-    default:
-      return ''
   }
+  return ''
 }
+export { style2string as stylesheet }
+// export function stylesheet(...styles: any[]) {
+//   const res: any[] = []
+//   for (let c: any, i = 0, l = styles.length; i < l; ++i)
+//     if ((c = style2string(styles[i]))) res.push(c)
+//   return res.join(';')
+// }
 
-export function class2string(v: any): string {
+function class2string(v: any): string {
   switch (typeof v) {
     case 'string':
       return v
+    case 'number':
+      return '' + v
     case 'object': {
-      const a: string[] = []
+      const a: (string | number)[] = []
       if (Array.isArray(v)) {
-        for (let c: string, i = 0; i < v.length; i++) {
+        for (let c: any, i = 0, l = v.length; i < l; ++i) {
           if ((c = class2string(v[i]))) a.push(c)
         }
       } else if (v) {
@@ -73,10 +80,16 @@ export function class2string(v: any): string {
       }
       return a.join(' ')
     }
-    default:
-      return ''
   }
+  return ''
 }
+export { class2string as classnames }
+// export function classnames(...classes: any[]) {
+//   const res: any[] = []
+//   for (let c: any, i = 0, l = classes.length; i < l; ++i)
+//     if ((c = class2string(classes[i]))) res.push(c)
+//   return res.join(' ')
+// }
 
 function isValid(v: any) {
   // return (
@@ -132,7 +145,7 @@ function setOrRemoveOtherProperties(
     : setOrRemoveAttribute(node, k, v)
 }
 
-const REG_CAPTURE = /Capture$/
+const RX_CAPTURE = /Capture$/
 function setEventListener(
   node: HTMLElement | SVGElement,
   k: string,
@@ -140,7 +153,7 @@ function setEventListener(
   oldFn: any
 ) {
   if (newFn !== oldFn) {
-    if (REG_CAPTURE.test(k)) {
+    if (RX_CAPTURE.test(k)) {
       k = k.slice(2, -7).toLocaleLowerCase()
       if (oldFn) node.removeEventListener(k, oldFn, true)
       if (newFn) node.addEventListener(k, newFn, true)
@@ -152,8 +165,8 @@ function setEventListener(
   }
 }
 
-const REG_EVENTS = /^on[A-Z][a-z]/
-const REG_XLINKS = /^xlink[A-Z][a-z]/
+const RX_EVENTS = /^on[A-Z][a-z]/
+const RX_XLINKS = /^xlink[A-Z][a-z]/
 export function setAttributes(
   node: HTMLElement | SVGElement,
   newAttrs: { [key: string]: any },
@@ -176,9 +189,9 @@ export function setAttributes(
         if (oldAttrs[key] !== val) {
           setOrRemoveAttribute(node, key, val)
         }
-      } else if (REG_EVENTS.test(key)) {
+      } else if (RX_EVENTS.test(key)) {
         setEventListener(node, key, val, oldAttrs[key])
-      } else if (REG_XLINKS.test(key)) {
+      } else if (RX_XLINKS.test(key)) {
         if (oldAttrs[key] !== val) {
           setOrRemoveAttributeNS(node, key, val)
         }
@@ -192,9 +205,9 @@ export function setAttributes(
     }
   }
   for (let key in oldAttrs) {
-    if (REG_EVENTS.test(key)) {
+    if (RX_EVENTS.test(key)) {
       setEventListener(node, key, null, oldAttrs[key])
-    } else if (REG_XLINKS.test(key)) {
+    } else if (RX_XLINKS.test(key)) {
       setOrRemoveAttributeNS(node, key, null)
     } else {
       setOrRemoveOtherProperties(node, key, null)
@@ -209,7 +222,7 @@ export function removeEventListeners(
 ) {
   if (oldAttrs)
     for (let key in oldAttrs) {
-      if (REG_EVENTS.test(key)) {
+      if (RX_EVENTS.test(key)) {
         setEventListener(node, key, null, oldAttrs[key])
         delete oldAttrs[key]
       }

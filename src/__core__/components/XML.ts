@@ -13,7 +13,7 @@ type XMLContext = {
   parentContext?: XMLContext
 }
 
-function getParentCtx(vNode: VNode): XMLContext | undefined {
+function getParentCtx(vNode: VNode): XMLContext | void {
   for (; (vNode = vNode.parent!); )
     if (vNode.fc === XMLElement || vNode.fc === Portal)
       return vNode.contextValue
@@ -89,7 +89,6 @@ export function XMLElement(
 ) {
   const vNode = getVNodeOnly()!
   let node = vNode.domNode
-  let children: any
   // console.log('XMLElement ' + vNode.jsx.type)
 
   if (needDestroy && node) {
@@ -98,7 +97,7 @@ export function XMLElement(
     // vNode.domNodeAttrs = setAttributes(node, {}, vNode.domNodeAttrs || {})
     removeEventListeners(node, vNode.domNodeAttrs)
     vNode.domNode = node = null
-  } else {
+  } else if (!vNode.contextValue) {
     const tagName = vNode.jsx.type
     switch (tagName) {
       case 'html':
@@ -107,28 +106,24 @@ export function XMLElement(
       case 'meta':
       case 'script':
       case 'style':
-        // TODO
-        break
       case 'title':
-        document.title = '' + props.children
-        break
-      default:
-        children = props.children
-        if (!vNode.contextValue) {
-          const parentContext = getParentCtx(vNode)
-          if (parentContext && parentContext.node) {
-            node = createElementNS(tagName, parentContext.node)
-            insertAndAddNodeInParentContext(node, parentContext, vNode.deep)
-            vNode.domNode = node
-          }
-
-          vNode.contextValue = {
-            node,
-            childNodes: [],
-            childDeeps: [],
-            parentContext,
-          }
+        throw 'Tag "' + tagName + '" is not supported yet'
+      // document.title = '' + props.children
+      default: {
+        const parentContext = getParentCtx(vNode)
+        if (parentContext && parentContext.node) {
+          node = createElementNS(tagName, parentContext.node)
+          insertAndAddNodeInParentContext(node, parentContext, vNode.deep)
+          vNode.domNode = node
         }
+
+        vNode.contextValue = {
+          node,
+          childNodes: [],
+          childDeeps: [],
+          parentContext,
+        }
+      }
     }
   }
 
@@ -137,7 +132,7 @@ export function XMLElement(
   }
 
   useLayoutEffect(
-    function () {
+    function (): any {
       if (node) {
         const ref = props.ref
         if (ref) {
@@ -159,5 +154,5 @@ export function XMLElement(
   )
 
   // if (props.ref) props.ref.current = node
-  return children
+  return props.children
 }

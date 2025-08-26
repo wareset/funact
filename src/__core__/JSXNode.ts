@@ -1,4 +1,4 @@
-import { style2string } from './components/xml_attrs'
+// import { stylesheet } from './components/xml_attrs'
 
 export class JSXNode {
   type: ((props: any) => any) | (() => any) | string
@@ -6,6 +6,8 @@ export class JSXNode {
   props: { [key: string]: any }
   _pList: any[]
   _cList: any[]
+  _pListChanged: null | boolean
+  _cListChanged: null | boolean
 
   constructor(
     type: JSXNode['type'],
@@ -17,7 +19,7 @@ export class JSXNode {
     const propsList: any[] = []
 
     if (properties) {
-      for (let a = Object.keys(properties), i = 0, l = a.length; i < l; i++) {
+      for (let a = Object.keys(properties), i = 0, l = a.length; i < l; ++i) {
         const k = a[i]
         let v = properties[k]
 
@@ -28,8 +30,8 @@ export class JSXNode {
           case 'children':
             children.length || (children = Array.isArray(v) ? v : [v])
             break
-          case 'style':
-            if (typeof type === 'string') v = style2string(v)
+          // case 'style':
+          //   if (typeof type === 'string') v = stylesheet(v)
           default:
             props[k] = v
             propsList.push(k, v)
@@ -46,5 +48,7 @@ export class JSXNode {
     this.props = props
     this._pList = propsList
     this._cList = children
+    this._pListChanged = null
+    this._cListChanged = null
   }
 }

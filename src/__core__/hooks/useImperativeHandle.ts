@@ -3,10 +3,8 @@ import { checkHook } from '../utils'
 
 import type { RefObject } from '../types'
 
-type Ref<T> = RefObject<T | null> | null
-
 function useImperativeHandle<T, R extends T>(
-  ref: Ref<T> | undefined,
+  ref: RefObject<T | null> | null | undefined,
   init: () => R,
   deps?: readonly unknown[]
 ): void {

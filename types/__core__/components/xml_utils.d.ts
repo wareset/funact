@@ -4,4 +4,4 @@ export declare const NAMESPACES_URI: {
     readonly xlink: string;
 };
 export declare function createElementNS(tagName: string, parentNode: HTMLElement | SVGElement): HTMLElement | SVGElement;
-export declare function isValidTextData(v: any): boolean;
+export declare function validateTextData(v: any): string;

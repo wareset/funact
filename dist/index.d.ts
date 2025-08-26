@@ -7,6 +7,7 @@ export { createContext } from "../types";
 export { createElement } from "../types";
 export { render } from "../types";
 export { startTransition } from "../types";
+export { stylesheet } from "../types";
 export { use } from "../types";
 export { useActionState } from "../types";
 export { useCallback } from "../types";

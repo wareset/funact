@@ -11,7 +11,6 @@ export const schedule =
       : setTimeout
 
 let V_NODES: VNode[] = []
-
 let INSERTION_EFFECTS: any[] = []
 let LAYOUT_EFFECTS: any[] = []
 let EFFECTS: any[] = []
@@ -19,72 +18,44 @@ let EFFECTS: any[] = []
 let updating = false
 function update() {
   const PREV_V_NODES = V_NODES
-  V_NODES = []
-  for (let i = 0; i < PREV_V_NODES.length; i++) updateVNode(PREV_V_NODES[i])
-
   const PREV_INSERTION_EFFECTS = INSERTION_EFFECTS
-  INSERTION_EFFECTS = []
-  update_any_effects(PREV_INSERTION_EFFECTS)
-
   const PREV_LAYOUT_EFFECTS = LAYOUT_EFFECTS
-  LAYOUT_EFFECTS = []
-  update_any_effects(PREV_LAYOUT_EFFECTS)
-
-  document.body.clientWidth
-
-  // if (EFFECTS.length) {
-  //   schedule(updateEffects)
-  // } else if (V_NODES.length || LAYOUT_EFFECTS.length) {
-  //   update()
-  // } else {
-  //   updating = false
-  // }
-}
-
-function updateEffects() {
   const PREV_EFFECTS = EFFECTS
+
+  updating = false
+
+  V_NODES = []
+  INSERTION_EFFECTS = []
+  LAYOUT_EFFECTS = []
   EFFECTS = []
+
+  for (let i = 0; i < PREV_V_NODES.length; ++i) updateVNode(PREV_V_NODES[i])
+
+  update_any_effects(PREV_INSERTION_EFFECTS)
+  update_any_effects(PREV_LAYOUT_EFFECTS)
+  document.body.clientWidth
   update_any_effects(PREV_EFFECTS)
-
-  // if (V_NODES.length || LAYOUT_EFFECTS.length) {
-  //   update()
-  // } else if (EFFECTS.length) {
-  //   schedule(updateEffects)
-  // } else {
-  //   updating = false
-  // }
-
-  if (
-    V_NODES.length ||
-    EFFECTS.length ||
-    LAYOUT_EFFECTS.length ||
-    INSERTION_EFFECTS.length
-  ) {
-    schedule(update), schedule(updateEffects)
-  } else {
-    updating = false
-  }
 }
 
 function update_any_effects(effects: any[]) {
   const prevVNode = getVNodeOnly()
 
-  for (let i = 0, a: any[]; i < effects.length; i++) {
+  for (let i = 0, a: any[]; i < effects.length; ++i) {
     if ((a = effects[i]).length) {
       setVNodeOnly(a[0].vNode)
-      for (let v: any, j = 0; j < a.length; j++) {
+      for (let v: any, j = 0; j < a.length; ++j) {
         v = a[j]
-        v.return && (v.return(), (v.return = null))
+        v.cleanup && (v.cleanup(), (v.cleanup = null))
       }
     }
   }
 
-  for (let i = 0, a: any[]; i < effects.length; i++) {
+  for (let i = 0, a: any[]; i < effects.length; ++i) {
     if ((a = effects[i]).length) {
       setVNodeOnly(a[0].vNode)
-      for (let v: any, j = 0; j < a.length; j++) {
+      for (let v: any, j = 0; j < a.length; ++j) {
         v = a[j]
-        v.vNode.alive && (v.return = v.effect())
+        v.vNode.alive && (v.cleanup = v.effect())
       }
     }
   }
@@ -101,22 +72,19 @@ export function addVNodeInQueue(vNode: VNode) {
     for (; i-- > 0; ) if (sortDeeps(V_NODES[i].deep, deep) < 0) break
 
     V_NODES.splice(++i, 0, vNode)
-    updating || ((updating = true), schedule(update), schedule(updateEffects))
+    updating || ((updating = true), schedule(update))
   }
 }
 
 export function addInsertionEffectInQueue(data: any) {
   add_task_for_any_effect(data, INSERTION_EFFECTS)
 }
-
 export function addLayoutEffectInQueue(data: any) {
   add_task_for_any_effect(data, LAYOUT_EFFECTS)
 }
-
 export function addEffectInQueue(data: any) {
   add_task_for_any_effect(data, EFFECTS)
 }
-
 function add_task_for_any_effect(data: any, effects: any[]) {
   const vNode = data.vNode
   if (vNode.alive) {
@@ -129,6 +97,6 @@ function add_task_for_any_effect(data: any, effects: any[]) {
     }
 
     data && effects.splice(++i, 0, [data])
-    updating || ((updating = true), schedule(update), schedule(updateEffects))
+    updating || ((updating = true), schedule(update))
   }
 }

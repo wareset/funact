@@ -20,7 +20,7 @@ function useInsertionEffect(
       vNode,
       effect: effect,
       deps: [],
-      return: null,
+      cleanup: null,
     }))
   checkHook(data, useInsertionEffect, idx)
 

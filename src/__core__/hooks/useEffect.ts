@@ -20,7 +20,7 @@ function useEffect(
       vNode,
       effect: effect,
       deps: [],
-      return: null,
+      cleanup: null,
     }))
   checkHook(data, useEffect, idx)
 

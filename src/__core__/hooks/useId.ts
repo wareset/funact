@@ -1,6 +1,14 @@
 import { getVNodeForHook } from '../VNode'
 import { checkHook } from '../utils'
 
+function simpleHash(str: string) {
+  let hash = 0
+  for (let i = 0; i < str.length; ++i) {
+    hash = (hash << 5) - hash + str.charCodeAt(i)
+  }
+  return hash >>> 0 //.toString(36)
+}
+
 function useId(): string {
   const vNode = getVNodeForHook()
   const idx = vNode.hookIdx
@@ -10,7 +18,7 @@ function useId(): string {
     (hooks[idx] = {
       idx,
       hook: useId,
-      value: 'id-' + vNode.deep.join('-') + '--' + idx,
+      value: 'id' + simpleHash(vNode.deep.join('_') + '__' + idx),
     })
   checkHook(data, useId, idx)
 

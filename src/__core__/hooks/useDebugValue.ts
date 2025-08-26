@@ -17,7 +17,7 @@ function useDebugValue<T>(value: T, format?: (value: T) => any): void {
 
   if (!Object.is(data.value, value)) {
     data.value = value
-    console.log('USE_DEBUG:', format ? format(value) : value)
+    console.log('USE_DEBUG:', format ? format(value) : value, vNode)
   }
 }
 export { useDebugValue }

@@ -3,7 +3,7 @@ export * from './types'
 export { Fragment } from './components/Fragment'
 export { Portal } from './components/Portal'
 
-export { class2string as classnames } from './components/xml_attrs'
+export { classnames, stylesheet } from './components/xml_attrs'
 
 export { useActionState } from './hooks/useActionState'
 export { useCallback } from './hooks/useCallback'

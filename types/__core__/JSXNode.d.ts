@@ -6,5 +6,7 @@ export declare class JSXNode {
     };
     _pList: any[];
     _cList: any[];
+    _pListChanged: null | boolean;
+    _cListChanged: null | boolean;
     constructor(type: JSXNode['type'], properties: JSXNode['props'] | null | undefined, children: JSXNode['_cList']);
 }

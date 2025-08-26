@@ -4,24 +4,20 @@ import { addVNodeInQueue } from '../scheduler'
 
 // import { useState } from './useState'
 
-type AnyActionArg = [] | [any]
-type ActionDispatch<ActionArg extends AnyActionArg> = (
-  ...args: ActionArg
-) => void
-function useReducer<S, A extends AnyActionArg>(
+function useReducer<S, A extends [] | [any]>(
   reducer: (prevState: S, ...args: A) => S,
   initialState: S
-): [S, ActionDispatch<A>]
-function useReducer<S, I, A extends AnyActionArg>(
+): [S, (...args: A) => void]
+function useReducer<S, I, A extends [] | [any]>(
   reducer: (prevState: S, ...args: A) => S,
   initialArg: I,
   init: (i: I) => S
-): [S, ActionDispatch<A>]
-function useReducer<S, I, A extends AnyActionArg>(
+): [S, (...args: A) => void]
+function useReducer<S, I, A extends [] | [any]>(
   reducer: (prevState: S, ...args: A) => S,
   initialState: I,
   init?: (i: I) => S
-): [S, ActionDispatch<A>] {
+): [S, (...args: A) => void] {
   const vNode = getVNodeForHook()
   const idx = vNode.hookIdx
   const hooks = vNode.hooks
@@ -44,7 +40,7 @@ function useReducer<S, I, A extends AnyActionArg>(
   checkHook(data, useReducer, idx)
 
   data.reducer = reducer
-  
+
   return [data.value, data.dispatch]
 }
 export { useReducer }

@@ -5,19 +5,19 @@ import { useEffect } from './hooks/useEffect'
 import { useLayoutEffect } from './hooks/useLayoutEffect'
 import { useInsertionEffect } from './hooks/useInsertionEffect'
 
-import { isValidTextData } from './components/xml_utils'
+import { validateTextData } from './components/xml_utils'
 import { Fragment } from './components/Fragment'
 import { XMLElement, XMLText } from './components/XML'
 
 // let STATE_FOR_HOOKS: [number, VNode] = [0, null as unknown as VNode]
 // export function getHookIndexAndVNode() {
-//   STATE_FOR_HOOKS[0]++
+//   ++STATE_FOR_HOOKS[0]
 //   return STATE_FOR_HOOKS
 // }
 
 let CURRENT_V_NODE: VNode //= { hookIdx: -1 } as VNode
 export function getVNodeForHook(): VNode {
-  CURRENT_V_NODE.hookIdx++
+  ++CURRENT_V_NODE.hookIdx
   return CURRENT_V_NODE
 }
 
@@ -93,7 +93,7 @@ export class VNode {
       createChildren(this, this.fc(jsx.props))
     } else {
       this.fc = XMLText
-      if ((this.jsx = isValidTextData(jsx) ? '' + jsx : '')) XMLText(this.jsx)
+      if ((this.jsx = validateTextData(jsx))) XMLText(this.jsx)
     }
     this._name = this.fc.name
     // STATE_FOR_HOOKS = prevStateForHooks
@@ -107,7 +107,7 @@ function createChildren(iam: VNode, jsx: any, isDeep?: boolean) {
       if (isDeep) {
         new VNode(iam, new JSXNode(Fragment, null, [jsx]))
       } else {
-        for (let i = 0; i < jsx.length && iam.alive; i++) {
+        for (let i = 0; i < jsx.length && iam.alive; ++i) {
           createChildren(iam, jsx[i], true)
         }
       }
@@ -131,7 +131,7 @@ export function updateVNode(iam: VNode) {
   }
 }
 
-function isEqualPropsOrChildren(a: any[], b: any[]) {
+function isEqualProps(a: any[], b: any[]) {
   let res = a.length === b.length
   if (res) {
     const is = Object.is
@@ -142,8 +142,15 @@ function isEqualPropsOrChildren(a: any[], b: any[]) {
         if (
           !(bi instanceof JSXNode) ||
           ai.type !== bi.type ||
-          !isEqualPropsOrChildren(ai._pList, bi._pList) ||
-          !isEqualPropsOrChildren(ai._cList, bi._cList)
+          ai.key !== bi.key ||
+          bi._pListChanged ||
+          bi._cListChanged ||
+          (bi._pListChanged === null
+            ? (bi._pListChanged = !isEqualProps(ai._pList, bi._pList))
+            : false) ||
+          (bi._cListChanged === null
+            ? (bi._cListChanged = !isEqualProps(ai._cList, bi._cList))
+            : false)
         ) {
           res = false
           break
@@ -162,7 +169,7 @@ function compareProps(iam: VNode, jsxList: any[]) {
   const isArray = Array.isArray
 
   let i = 0
-  for (let l = jsxList.length; i < l; i++) {
+  for (let l = jsxList.length; i < l; ++i) {
     const jsx = jsxList[i]
     const cNode: VNode | undefined = children[i]
     if (isArray(jsx)) {
@@ -179,18 +186,29 @@ function compareProps(iam: VNode, jsxList: any[]) {
         cNode.jsx.type === jsx.type &&
         cNode.jsx.key === jsx.key
       ) {
-        if (!isEqualPropsOrChildren(cNode.jsx._pList, jsx._pList)) {
+        if (
+          cNode.fc === XMLElement ||
+          jsx._pListChanged ||
+          (jsx._pListChanged === null
+            ? (jsx._pListChanged = !isEqualProps(cNode.jsx._pList, jsx._pList))
+            : false)
+        ) {
           cNode.jsx = jsx
           cNode.dirty = true
           updateVNode(cNode)
-        } else if (!isEqualPropsOrChildren(cNode.jsx._cList, jsx._cList)) {
+        } else if (
+          jsx._cListChanged ||
+          (jsx._cListChanged === null
+            ? (jsx._cListChanged = !isEqualProps(cNode.jsx._cList, jsx._cList))
+            : false)
+        ) {
           cNode.jsx = jsx
-          if (cNode.fc !== XMLElement) {
-            cNode.dirty = true
-            updateVNode(cNode)
-          } else {
-            compareProps(cNode, jsx._cList)
-          }
+          // if (cNode.fc !== XMLElement) {
+          cNode.dirty = true
+          updateVNode(cNode)
+          // } else {
+          //   compareProps(cNode, jsx._cList)
+          // }
         }
       } else {
         cNode && destroyVNode(cNode)
@@ -198,7 +216,7 @@ function compareProps(iam: VNode, jsxList: any[]) {
       }
     } else {
       if (cNode && cNode.fc === XMLText) {
-        if (cNode.jsx !== (cNode.jsx = isValidTextData(jsx) ? '' + jsx : '')) {
+        if (cNode.jsx !== (cNode.jsx = validateTextData(jsx))) {
           const prevVNode = CURRENT_V_NODE
           CURRENT_V_NODE = cNode
           cNode.hookIdx = -1
@@ -238,7 +256,7 @@ export function destroyVNode(iam: VNode) {
       case XMLElement:
         XMLElement({}, true)
       default:
-        for (let v: any, a = iam.hooks, i = 0; i < a.length; i++) {
+        for (let v: any, a = iam.hooks, i = 0; i < a.length; ++i) {
           v = a[i]
           switch (v.hook) {
             // case useContext:
@@ -247,7 +265,7 @@ export function destroyVNode(iam: VNode) {
             case useEffect:
             case useLayoutEffect:
             case useInsertionEffect:
-              v.return && v.return(), (v.return = null)
+              v.cleanup && v.cleanup(), (v.cleanup = null)
               break
           }
         }
