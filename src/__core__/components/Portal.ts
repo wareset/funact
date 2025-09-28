@@ -1,10 +1,10 @@
-import { getVNodeOnly } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
 
 export function Portal(props: {
   domNode: HTMLElement | SVGElement
   children?: any
 }) {
-  const vNode = getVNodeOnly()!
+  const vNode = getCurrentVNode()
   const domNode = props.domNode
 
   if (!vNode.contextValue) {
@@ -15,7 +15,7 @@ export function Portal(props: {
     }
   } else if (vNode.contextValue.node !== domNode) {
     if (vNode.contextValue.node.namespaceURI !== domNode.namespaceURI) {
-        throw new Error('Portal: incorrect namespaceURI')
+      throw new Error('Portal: incorrect namespaceURI')
     }
     vNode.contextValue.node = domNode
     for (let a = vNode.contextValue.childNodes, i = 0; i < a.length; ++i) {

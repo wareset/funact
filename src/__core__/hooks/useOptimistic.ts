@@ -1,6 +1,14 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
+import { IHook } from '../types'
 import { checkHook } from '../utils'
 import { addVNodeInQueue } from '../scheduler'
+
+interface IHookDataForUseOptimistic extends IHook {
+  valueTemp: any
+  isTemp: boolean
+  reducer?: (...a: any[]) => any
+  dispatch: (action: any) => void
+}
 
 function useOptimistic<State>(
   passthrough: State
@@ -19,46 +27,47 @@ function useOptimistic<State, Action>(
     | ((action: State | ((pendingState: State) => State)) => void)
   ),
 ] {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
-  const hooks = vNode.hooks
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
+  const hooks = vNode.hooks as IHookDataForUseOptimistic[]
+  
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useOptimistic,
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useOptimistic,
       vNode,
-      state: passthrough,
-      stateTemp: passthrough,
+      value: passthrough,
+      valueTemp: passthrough,
       isTemp: false,
       reducer,
       dispatch(action: any) {
-        data.stateTemp = data.reducer
-          ? data.reducer(data.state, action)
+        data.valueTemp = data.reducer
+          ? data.reducer(data.value, action)
           : typeof action === 'function'
-            ? action(data.state)
+            ? action(data.value)
             : action
-        if (!Object.is(data.state, data.stateTemp)) {
+        if (!Object.is(data.value, data.valueTemp)) {
           data.isTemp = true
-          data.state = data.stateTemp
+          data.value = data.valueTemp
           addVNodeInQueue(data.vNode)
         }
       },
     })
-  checkHook(data, useOptimistic, idx)
+  checkHook(data, useOptimistic, hookIdx)
 
-  // const state = data.state
-  // data.state = passthrough
+  // const state = data.value
+  // data.value = passthrough
 
   data.reducer = reducer
 
   if (data.isTemp) {
     data.isTemp = false
-    data.state = data.stateTemp
+    data.value = data.valueTemp
   } else {
-    data.state = passthrough
+    data.value = passthrough
   }
 
-  return [data.state, data.dispatch]
+  return [data.value, data.dispatch]
 }
 export { useOptimistic }

@@ -1,29 +1,35 @@
-import { getVNodeForHook } from '../VNode'
-import { checkHook } from '../utils'
+import { getCurrentVNode } from '../VNode_utils'
+import { checkHook, isEqualDeps } from '../utils'
 
-import type { RefObject } from '../types'
+import { IRefObject } from '../types'
 
 function useImperativeHandle<T, R extends T>(
-  ref: RefObject<T | null> | null | undefined,
+  ref: IRefObject<T | null> | null | undefined,
   init: () => R,
   deps?: readonly unknown[]
 ): void {
   let needUpdate = false
 
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
+  
   const data =
-    hooks[idx] ||
+    hooks[hookIdx] ||
     ((needUpdate = true),
-    (hooks[idx] = { idx, hook: useImperativeHandle, ref, deps: [] }))
-  checkHook(data, useImperativeHandle, idx)
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useImperativeHandle,
+      vNode,
+      value: ref,
+      deps: null,
+    }))
+  checkHook(data, useImperativeHandle, hookIdx)
 
-  if (deps)
-    for (let is = Object.is, dDeps = data.deps, i = deps.length; i-- > 0; ) {
-      is(dDeps[i], deps[i]) || ((dDeps[i] = deps[i]), (needUpdate = true))
-    }
+  isEqualDeps(data.deps, (data.deps = deps)) || (needUpdate = true)
 
-  if ((needUpdate || data.ref !== ref) && ref) (data.ref = ref).current = init()
+  if ((needUpdate || data.value !== ref) && ref) {
+    ;(data.value = ref).current = init()
+  }
 }
 export { useImperativeHandle }

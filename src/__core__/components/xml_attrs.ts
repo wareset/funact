@@ -1,6 +1,6 @@
 import { NAMESPACES_URI } from './xml_utils'
 
-const CSS_PROPERTIES: { [k: string]: string } = {}
+const CSS_PROPERTIES: { [k: string]: string } = { __proto__: null as any }
 
 let needInitCSSProperties = true
 function initCSSProperties(): void {
@@ -17,18 +17,18 @@ function initCSSProperties(): void {
 }
 
 const RX_DASH = /([A-Z])/g
-const C2D: { [key: string]: string } = {}
+const C2D: { [key: string]: string } = { __proto__: null as any }
 let camel2dash = function (v: string): string {
   return (
     initCSSProperties(),
     (camel2dash = function (v: string): string {
       return v[0] === '-'
         ? v
-        : CSS_PROPERTIES.hasOwnProperty(
-              (v = C2D.hasOwnProperty(v)
+        : (v =
+              v in C2D
                 ? C2D[v]
-                : (C2D[v] = v.replace(RX_DASH, '-$1').toLowerCase()))
-            )
+                : (C2D[v] = v.replace(RX_DASH, '-$1').toLowerCase())) in
+            CSS_PROPERTIES
           ? CSS_PROPERTIES[v]
           : v
     })(v)
@@ -220,12 +220,13 @@ export function removeEventListeners(
   node: HTMLElement | SVGElement,
   oldAttrs: { [key: string]: any } | null | undefined
 ) {
-  if (oldAttrs)
+  if (oldAttrs) {
     for (let key in oldAttrs) {
       if (RX_EVENTS.test(key)) {
         setEventListener(node, key, null, oldAttrs[key])
         delete oldAttrs[key]
       }
     }
+  }
   return oldAttrs
 }

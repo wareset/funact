@@ -1,7 +1,27 @@
-export interface RefObject<T> {
+import { type VNode } from './VNode';
+export type Props = {
+    [key: string]: any;
+};
+export type Comparator = (prevProps: Props, nextProps: Props) => boolean;
+export type FC = {
+    (props: Props): any;
+    compare?: Comparator;
+} | {
+    (): any;
+    compare?: Comparator;
+};
+export interface IHook {
+    hookIdx: number;
+    hookType: (...a: any[]) => any;
+    vNode: VNode;
+    value: any;
+    deps?: null | readonly unknown[];
+    cleanup?: null | (() => void);
+}
+export interface IRefObject<T> {
     current: T;
 }
-export interface Context<T> {
+export interface IContext<T> {
     (props: {
         value: T;
         children?: any;

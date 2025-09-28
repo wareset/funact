@@ -1,5 +1,5 @@
-import { Context } from './types'
-import { getVNodeOnly } from './VNode'
+import { IContext } from './types'
+import { getCurrentVNode } from './VNode_utils'
 
 // type Usable<T> = PromiseLike<T> | Context<T>
 // export function use<T>(usable: Usable<T>): T {
@@ -15,9 +15,9 @@ import { getVNodeOnly } from './VNode'
 // }
 
 /*@__NO_SIDE_EFFECTS__*/
-export function getContext<T>(context: Context<T>): T {
-  let vNode = getVNodeOnly()
+export function getContext<T>(context: IContext<T>): T {
+  let vNode = getCurrentVNode()
   for (; (vNode = vNode!.parent!); )
-    if (vNode.fc === context) return vNode.contextValue
+    if (vNode.fc === context as any) return vNode.contextValue
   return context.defaultValue
 }

@@ -1,15 +1,20 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
 import { checkHook } from '../utils'
 // import { useRef } from './useRef'
 
 function devUseDeep(): number[] {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
   const data =
-    hooks[idx] ||
-    (hooks[idx] = { idx, hook: devUseDeep, value: vNode.deep.slice() })
-  checkHook(data, devUseDeep, idx)
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx: hookIdx,
+      hookType: devUseDeep,
+      vNode,
+      value: vNode.deep.slice(),
+    })
+  checkHook(data, devUseDeep, hookIdx)
   return data.value
 
   // const ref = useRef<number[]>(null)

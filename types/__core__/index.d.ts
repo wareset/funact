@@ -1,4 +1,4 @@
-export * from './types';
+export { type IRefObject } from './types';
 export { Fragment } from './components/Fragment';
 export { Portal } from './components/Portal';
 export { classnames, stylesheet } from './components/xml_attrs';
@@ -21,8 +21,9 @@ export { useSyncExternalStore } from './hooks/useSyncExternalStore';
 export { useTransition } from './hooks/useTransition';
 export { cache } from './cache';
 export { createContext } from './createContext';
-export { createElement } from './createElement';
-export { startTransition } from './startTransition';
+export { memo } from './memo';
 export { getContext as use } from './use';
 import { VNode } from './VNode';
+import { JSXNode } from './JSXNode';
+export declare function createElement(type: JSXNode['type'], props?: JSXNode['props'] | null | undefined, ...children: any[]): JSXNode;
 export declare function render(domNode: HTMLElement | SVGElement, children: any): VNode;

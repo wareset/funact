@@ -1,22 +1,31 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
+import { IHook } from '../types'
 import { checkHook } from '../utils'
 
 import { useEffect } from './useEffect'
 import { addVNodeInQueue } from '../scheduler'
+
+interface IHookDataForUseSyncExternalStore extends IHook {
+  subscribe: (onStoreChange: () => void) => () => void
+  getSnapshot: () => any
+  check: () => void
+  effect: () => void
+}
 
 function useSyncExternalStore<Snapshot>(
   subscribe: (onStoreChange: () => void) => () => void,
   getSnapshot: () => Snapshot,
   _getServerSnapshot?: () => Snapshot
 ): Snapshot {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
-  const hooks = vNode.hooks
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
+  const hooks = vNode.hooks as IHookDataForUseSyncExternalStore[]
+  
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useSyncExternalStore,
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useSyncExternalStore,
       vNode,
       value: getSnapshot(),
       subscribe,
@@ -30,7 +39,7 @@ function useSyncExternalStore<Snapshot>(
         return data.subscribe(data.check)
       },
     })
-  checkHook(data, useSyncExternalStore, idx)
+  checkHook(data, useSyncExternalStore, hookIdx)
 
   data.subscribe = subscribe
   data.getSnapshot = getSnapshot

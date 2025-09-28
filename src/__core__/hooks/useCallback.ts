@@ -1,18 +1,24 @@
-import { getVNodeForHook } from '../VNode'
-import { checkHook } from '../utils'
+import { getCurrentVNode } from '../VNode_utils'
+import { checkHook, isEqualDeps } from '../utils'
 
 function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
+
   const data =
-    hooks[idx] || (hooks[idx] = { idx, hook: useCallback, cb, deps: [] })
-  checkHook(data, useCallback, idx)
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useCallback,
+      vNode,
+      value: cb,
+      deps: null,
+    })
+  checkHook(data, useCallback, hookIdx)
+  
+  isEqualDeps(data.deps, (data.deps = deps)) || (data.value = cb)
 
-  for (let is = Object.is, dDeps = data.deps, i = deps.length; i-- > 0; ) {
-    is(dDeps[i], deps[i]) || ((dDeps[i] = deps[i]), (data.cb = cb))
-  }
-
-  return data.cb
+  return data.value
 }
 export { useCallback }

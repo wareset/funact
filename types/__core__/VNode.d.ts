@@ -1,23 +1,16 @@
-export declare function getVNodeForHook(): VNode;
-export declare function getVNodeOnly(): VNode | undefined;
-export declare function setVNodeOnly(vNode: VNode | undefined): void;
+import { IHook, FC } from './types';
 export declare class VNode {
-    _name: string;
-    fc: ((props: any) => any) | (() => any);
-    jsx: any;
+    _: string;
     alive: boolean;
     dirty: boolean;
-    readonly children: VNode[];
-    readonly parent: VNode | null;
+    fc: FC;
+    jsx: any;
     readonly deep: number[];
-    hookIdx: number;
-    readonly hooks: any[];
-    domNode?: HTMLElement | SVGElement | null;
-    domNodeAttrs?: any;
+    readonly parent: VNode | null;
+    readonly children: VNode[];
     contextValue?: any;
-    contextUsers?: ((v: any) => any)[];
+    contextUsers?: any[];
+    hookIdx: number;
+    readonly hooks: IHook[];
     constructor(parent: VNode | null, jsx: any, index?: number);
 }
-export declare function updateVNode(iam: VNode): void;
-export declare function destroyVNodeChildren(iam: VNode): void;
-export declare function destroyVNode(iam: VNode): void;

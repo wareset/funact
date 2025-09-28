@@ -1,12 +1,15 @@
 import { TransitionFunction } from './types'
 // import { schedule } from './scheduler'
 
-import { getVNodeOnly } from './VNode'
+import { getCurrentVNode } from './VNode_utils'
 import { addVNodeInQueue } from './scheduler'
 
+/*
+Данная функция еще не закончена
+*/
 export async function startTransition(callback: TransitionFunction) {
   // schedule(callback)
-  const vNode = getVNodeOnly()
+  const vNode = getCurrentVNode()
   await callback()
   // if (vNode) schedule(() => addVNodeInQueue(vNode))
   if (vNode) addVNodeInQueue(vNode)

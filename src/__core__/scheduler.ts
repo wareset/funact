@@ -1,5 +1,8 @@
-import { type VNode, updateVNode, getVNodeOnly, setVNodeOnly } from './VNode'
+import { IHook } from './types'
+import { type VNode } from './VNode'
+
 import { sortDeeps } from './utils'
+import { getCurrentVNode, setCurrentVNode, updateVNode } from './VNode_utils'
 
 export const schedule =
   typeof queueMicrotask === 'function'
@@ -11,9 +14,9 @@ export const schedule =
       : setTimeout
 
 let V_NODES: VNode[] = []
-let INSERTION_EFFECTS: any[] = []
-let LAYOUT_EFFECTS: any[] = []
-let EFFECTS: any[] = []
+let INSERTION_EFFECTS: IHook[][] = []
+let LAYOUT_EFFECTS: IHook[][] = []
+let EFFECTS: IHook[][] = []
 
 let updating = false
 function update() {
@@ -37,30 +40,30 @@ function update() {
   update_any_effects(PREV_EFFECTS)
 }
 
-function update_any_effects(effects: any[]) {
-  const prevVNode = getVNodeOnly()
+function update_any_effects(effects: IHook[][]) {
+  const prevVNode = getCurrentVNode()
 
-  for (let i = 0, a: any[]; i < effects.length; ++i) {
+  for (let i = 0, a: IHook[]; i < effects.length; ++i) {
     if ((a = effects[i]).length) {
-      setVNodeOnly(a[0].vNode)
-      for (let v: any, j = 0; j < a.length; ++j) {
+      setCurrentVNode(a[0].vNode)
+      for (let v: IHook, j = 0; j < a.length; ++j) {
         v = a[j]
         v.cleanup && (v.cleanup(), (v.cleanup = null))
       }
     }
   }
 
-  for (let i = 0, a: any[]; i < effects.length; ++i) {
+  for (let i = 0, a: IHook[]; i < effects.length; ++i) {
     if ((a = effects[i]).length) {
-      setVNodeOnly(a[0].vNode)
-      for (let v: any, j = 0; j < a.length; ++j) {
+      setCurrentVNode(a[0].vNode)
+      for (let v: IHook, j = 0; j < a.length; ++j) {
         v = a[j]
-        v.vNode.alive && (v.cleanup = v.effect())
+        v.vNode!.alive && (v.cleanup = v.value())
       }
     }
   }
 
-  setVNodeOnly(prevVNode)
+  setCurrentVNode(prevVNode)
 }
 
 export function addVNodeInQueue(vNode: VNode) {
@@ -71,32 +74,32 @@ export function addVNodeInQueue(vNode: VNode) {
 
     for (; i-- > 0; ) if (sortDeeps(V_NODES[i].deep, deep) < 0) break
 
-    V_NODES.splice(++i, 0, vNode)
+    V_NODES.splice(i + 1, 0, vNode)
     updating || ((updating = true), schedule(update))
   }
 }
 
-export function addInsertionEffectInQueue(data: any) {
-  add_task_for_any_effect(data, INSERTION_EFFECTS)
+export function addInsertionEffectInQueue(hook: IHook) {
+  add_task_for_any_effect(hook, INSERTION_EFFECTS)
 }
-export function addLayoutEffectInQueue(data: any) {
-  add_task_for_any_effect(data, LAYOUT_EFFECTS)
+export function addLayoutEffectInQueue(hook: IHook) {
+  add_task_for_any_effect(hook, LAYOUT_EFFECTS)
 }
-export function addEffectInQueue(data: any) {
-  add_task_for_any_effect(data, EFFECTS)
+export function addEffectInQueue(hook: IHook) {
+  add_task_for_any_effect(hook, EFFECTS)
 }
-function add_task_for_any_effect(data: any, effects: any[]) {
-  const vNode = data.vNode
+function add_task_for_any_effect(hook: IHook, effects: IHook[][]) {
+  const vNode = hook.vNode
   if (vNode.alive) {
     const deep = vNode.deep
     let i = effects.length
 
     for (let n: number; i-- > 0; ) {
       if ((n = sortDeeps(effects[i][0].vNode.deep, deep)) < 0) break
-      else if (n === 0) effects[i].push(data), (data = null)
+      else if (n === 0) return void effects[i].push(hook)
     }
 
-    data && effects.splice(++i, 0, [data])
+    effects.splice(i + 1, 0, [hook])
     updating || ((updating = true), schedule(update))
   }
 }

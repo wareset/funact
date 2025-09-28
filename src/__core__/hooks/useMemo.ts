@@ -1,21 +1,26 @@
-import { getVNodeForHook } from '../VNode'
-import { checkHook } from '../utils'
+import { getCurrentVNode } from '../VNode_utils'
+import { checkHook, isEqualDeps } from '../utils'
 
 function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
   let needUpdate = false
 
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
+  
   const data =
-    hooks[idx] ||
+    hooks[hookIdx] ||
     ((needUpdate = true),
-    (hooks[idx] = { idx, hook: useMemo, value: null, deps: [] }))
-  checkHook(data, useMemo, idx)
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useMemo,
+      vNode,
+      value: null,
+      deps: null,
+    }))
+  checkHook(data, useMemo, hookIdx)
 
-  for (let is = Object.is, dDeps = data.deps, i = deps.length; i-- > 0; ) {
-    is(dDeps[i], deps[i]) || ((dDeps[i] = deps[i]), (needUpdate = true))
-  }
+  isEqualDeps(data.deps, (data.deps = deps)) || (needUpdate = true)
 
   return needUpdate ? (data.value = factory()) : data.value
 }

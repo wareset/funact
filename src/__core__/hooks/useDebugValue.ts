@@ -1,19 +1,20 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
 import { checkHook } from '../utils'
 
 function useDebugValue<T>(value: T, format?: (value: T) => any): void {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
+  
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useDebugValue,
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useDebugValue,
+      vNode,
       value: hooks,
-      format,
     })
-  checkHook(data, useDebugValue, idx)
+  checkHook(data, useDebugValue, hookIdx)
 
   if (!Object.is(data.value, value)) {
     data.value = value

@@ -1,6 +1,12 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
+import { IHook } from '../types'
 import { checkHook } from '../utils'
 import { addVNodeInQueue } from '../scheduler'
+
+interface IHookDataForUseOptimistic extends IHook {
+  reducer: (...a: any[]) => any
+  dispatch: (...a: any[]) => void
+}
 
 // import { useState } from './useState'
 
@@ -18,14 +24,15 @@ function useReducer<S, I, A extends [] | [any]>(
   initialState: I,
   init?: (i: I) => S
 ): [S, (...args: A) => void] {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
-  const hooks = vNode.hooks
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
+  const hooks = vNode.hooks as IHookDataForUseOptimistic[]
+  
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useReducer,
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useReducer,
       vNode,
       value: (init ? init(initialState) : initialState) as S,
       reducer,
@@ -37,7 +44,7 @@ function useReducer<S, I, A extends [] | [any]>(
         }
       },
     })
-  checkHook(data, useReducer, idx)
+  checkHook(data, useReducer, hookIdx)
 
   data.reducer = reducer
 

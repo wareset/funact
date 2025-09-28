@@ -1,4 +1,4 @@
-export * from './types'
+export { type IRefObject } from './types'
 
 export { Fragment } from './components/Fragment'
 export { Portal } from './components/Portal'
@@ -26,10 +26,13 @@ export { useTransition } from './hooks/useTransition'
 export { cache } from './cache'
 
 export { createContext } from './createContext'
-export { createElement } from './createElement'
 
-export { startTransition } from './startTransition'
+export { memo } from './memo'
 
+// TODO
+// export { startTransition } from './startTransition'
+
+// Пока поддержка только контекстов
 export { getContext as use } from './use'
 
 import { VNode } from './VNode'
@@ -37,15 +40,24 @@ import { JSXNode } from './JSXNode'
 import { useState } from './hooks/useState'
 import { Portal } from './components/Portal'
 
-function Root(props: any) {
-  const [res, setRes] = useState<JSXNode>()
-  res || setRes(new JSXNode(Portal, props, []))
-  return res
+/*@__NO_SIDE_EFFECTS__*/
+export function createElement(
+  type: JSXNode['type'],
+  props?: JSXNode['props'] | null | undefined,
+  ...children: any[]
+) {
+  return new JSXNode(type, props, children)
 }
 
-export function render(
-  domNode: HTMLElement | SVGElement,
-  children: any
-) {
+function Root(props: any) {
+  const [res, setRes] = useState<JSXNode>()
+  res || setRes(new JSXNode(Portal as any, props, []))
+  return res
+}
+export function render(domNode: HTMLElement | SVGElement, children: any) {
   return new VNode(null, new JSXNode(Root, { domNode, children }, []))
 }
+
+// export function render(domNode: HTMLElement | SVGElement, children: any) {
+//   return new VNode(null, new JSXNode(Portal as any, { domNode, children }, []))
+// }

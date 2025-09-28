@@ -1,57 +1,48 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
+import { IHook, IContext } from '../types'
 import { checkHook } from '../utils'
-import { addVNodeInQueue } from '../scheduler'
 
-import { useEffect } from './useEffect'
+interface IHookDataForUseContext extends IHook {
+  context: any
+  users: any
+}
 
-import type { Context } from '../types'
+function useContext<T>(context: IContext<T>): T {
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
+  const hooks = vNode.hooks as IHookDataForUseContext[]
 
-function useContext<T>(context: Context<T>): T {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
-  const hooks = vNode.hooks
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useContext,
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useContext,
       vNode,
-      context: null,
       value: null,
+      context: null,
       users: null,
-      sub(value: any) {
-        if (!Object.is(data.value, value)) {
-          data.value = value
-          addVNodeInQueue(data.vNode)
-        }
-      },
-      unsub() {
+      cleanup() {
         if (data.users) {
-          const idx = data.users.lastIndexOf(data.sub)
+          const idx = data.users.lastIndexOf(data)
           idx === -1 || data.users.splice(idx, 1)
           data.users = null
         }
       },
-      deps: [],
-      effect() {
-        return data.unsub()
-      },
     })
-  checkHook(data, useContext, idx)
+  checkHook(data, useContext, hookIdx)
 
-  if (data.context !== context) {
-    data.unsub()
+  if (data.context !== context && data.cleanup) {
+    data.cleanup()
     data.value = (data.context = context).defaultValue
+
     for (let ctxVNode = vNode; (ctxVNode = ctxVNode.parent!); ) {
-      if (ctxVNode.fc === context) {
+      if (ctxVNode.fc === (context as any)) {
         data.value = ctxVNode.contextValue
-        ;(data.users = ctxVNode.contextUsers!).push(data.sub)
+        ;(data.users = ctxVNode.contextUsers!).push(data)
         break
       }
     }
   }
-
-  useEffect(data.effect, data.deps)
 
   return data.value
 }

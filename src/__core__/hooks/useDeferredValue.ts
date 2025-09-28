@@ -1,20 +1,21 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
 import { checkHook } from '../utils'
 import { addVNodeInQueue } from '../scheduler'
 
 function useDeferredValue<T>(value: T, initialValue?: T): T {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
+  
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useDeferredValue,
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useDeferredValue,
       vNode,
       value: initialValue !== void 0 ? initialValue : value,
     })
-  checkHook(data, useDeferredValue, idx)
+  checkHook(data, useDeferredValue, hookIdx)
 
   const curValue = data.value
   if (!Object.is(curValue, value)) {

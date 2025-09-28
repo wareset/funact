@@ -1,4 +1,4 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
 import { checkHook } from '../utils'
 
 function simpleHash(str: string) {
@@ -10,17 +10,19 @@ function simpleHash(str: string) {
 }
 
 function useId(): string {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
+  
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useId,
-      value: 'id' + simpleHash(vNode.deep.join('_') + '__' + idx),
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useId,
+      vNode,
+      value: 'id' + simpleHash(vNode.deep.join('_') + '__' + hookIdx),
     })
-  checkHook(data, useId, idx)
+  checkHook(data, useId, hookIdx)
 
   return data.value
 }

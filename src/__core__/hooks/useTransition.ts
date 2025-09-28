@@ -1,40 +1,49 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
+import { IHook } from '../types'
 import { checkHook } from '../utils'
 import { addVNodeInQueue, schedule } from '../scheduler'
 
 import { TransitionFunction } from '../types'
 
+interface IHookDataForUseTransition extends IHook {
+  callbacks: any[]
+  run: () => void
+  then: () => void
+  dispatch: (callback: any) => void
+}
+
 function useTransition(): [boolean, (callback: TransitionFunction) => void] {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
-  const hooks = vNode.hooks
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
+  const hooks = vNode.hooks as IHookDataForUseTransition[]
+  
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useTransition,
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useTransition,
       vNode,
-      pending: false,
+      value: false,
       callbacks: [],
       run() {
         const res = data.callbacks.shift()()
-        if (res == null || typeof res.then !== 'function') data.then(res)
+        if (res == null || typeof res.then !== 'function') data.then()
         else res.then(data.then)
       },
       then() {
         if (data.callbacks.length) schedule(data.run)
-        else (data.pending = false), addVNodeInQueue(data.vNode)
+        else (data.value = false), addVNodeInQueue(data.vNode)
       },
       dispatch(callback: TransitionFunction) {
         data.callbacks.push(callback)
-        if (!data.pending) {
-          data.pending = true
+        if (!data.value) {
+          data.value = true
           addVNodeInQueue(data.vNode), schedule(data.run)
         }
       },
     })
-  checkHook(data, useTransition, idx)
+  checkHook(data, useTransition, hookIdx)
 
-  return [data.pending, data.dispatch]
+  return [data.value, data.dispatch]
 }
 export { useTransition }

@@ -1,6 +1,11 @@
-import { getVNodeForHook } from '../VNode'
+import { getCurrentVNode } from '../VNode_utils'
+import { IHook } from '../types'
 import { checkHook } from '../utils'
 import { addVNodeInQueue } from '../scheduler'
+
+interface IHookDataForUseState extends IHook {
+  update: (state: any) => void
+}
 
 function useState<S>(
   initialState: S | (() => S)
@@ -12,14 +17,15 @@ function useState<S = undefined>(): [
 function useState<S>(
   initialState?: S | (() => S)
 ): [S | undefined, (value: S | ((prevState: S | undefined) => S)) => void] {
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
-  const hooks = vNode.hooks
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
+  const hooks = vNode.hooks as IHookDataForUseState[]
+  
   const data =
-    hooks[idx] ||
-    (hooks[idx] = {
-      idx,
-      hook: useState,
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useState,
       vNode,
       value:
         typeof initialState === 'function'
@@ -33,7 +39,7 @@ function useState<S>(
         }
       },
     })
-  checkHook(data, useState, idx)
+  checkHook(data, useState, hookIdx)
 
   return [data.value, data.update]
 }

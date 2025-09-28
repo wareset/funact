@@ -1,5 +1,5 @@
-import { getVNodeForHook } from '../VNode'
-import { checkHook } from '../utils'
+import { getCurrentVNode } from '../VNode_utils'
+import { checkHook, isEqualDeps } from '../utils'
 import { addEffectInQueue } from '../scheduler'
 
 function useEffect(
@@ -8,30 +8,26 @@ function useEffect(
 ): void {
   let needUpdate = false
 
-  const vNode = getVNodeForHook()
-  const idx = vNode.hookIdx
+  const vNode = getCurrentVNode()
+  const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
+  
   const data =
-    hooks[idx] ||
+    hooks[hookIdx] ||
     ((needUpdate = true),
-    (hooks[idx] = {
-      idx,
-      hook: useEffect,
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useEffect,
       vNode,
-      effect: effect,
-      deps: [],
-      cleanup: null,
+      value: effect,
+      deps: null,
     }))
-  checkHook(data, useEffect, idx)
+  checkHook(data, useEffect, hookIdx)
 
-  if (deps)
-    for (let is = Object.is, dDeps = data.deps, i = deps.length; i-- > 0; ) {
-      is(dDeps[i], deps[i]) || ((dDeps[i] = deps[i]), (needUpdate = true))
-    }
-  else needUpdate = true
+  isEqualDeps(data.deps, (data.deps = deps)) || !deps || (needUpdate = true)
 
   if (needUpdate) {
-    data.effect = effect
+    data.value = effect
     addEffectInQueue(data)
   }
 }

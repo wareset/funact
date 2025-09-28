@@ -1,3 +1,3 @@
-import type { Context } from '../types';
-declare function useContext<T>(context: Context<T>): T;
+import { IContext } from '../types';
+declare function useContext<T>(context: IContext<T>): T;
 export { useContext };
