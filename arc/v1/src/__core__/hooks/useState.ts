@@ -1,0 +1,44 @@
+import { getVNodeForHook, HookData } from '../VNode'
+import { checkHook } from '../utils'
+import { addVNodeInQueue } from '../scheduler'
+
+interface HookDataForUseState extends HookData {
+  update: (state: any) => void
+}
+
+function useState<S>(
+  initialState: S | (() => S)
+): [S, (value: S | ((prevState: S) => S)) => void]
+function useState<S = undefined>(): [
+  S | undefined,
+  (value: S | ((prevState: S | undefined) => S)) => void,
+]
+function useState<S>(
+  initialState?: S | (() => S)
+): [S | undefined, (value: S | ((prevState: S | undefined) => S)) => void] {
+  const vNode = getVNodeForHook()
+  const hookIdx = vNode.hookIdx
+  const hooks = vNode.hooks as HookDataForUseState[]
+  const data =
+    hooks[hookIdx] ||
+    (hooks[hookIdx] = {
+      hookIdx,
+      hookType: useState,
+      vNode,
+      value:
+        typeof initialState === 'function'
+          ? (initialState as any)()
+          : initialState,
+      update(state: any) {
+        if (typeof state === 'function') state = state(data.value)
+        if (!Object.is(data.value, state)) {
+          data.value = state
+          addVNodeInQueue(data.vNode)
+        }
+      },
+    })
+  checkHook(data, useState, hookIdx, vNode)
+
+  return [data.value, data.update]
+}
+export { useState }
