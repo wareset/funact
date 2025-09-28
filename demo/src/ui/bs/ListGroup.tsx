@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 import { Breakpoint, Variant } from './types'
 import { isString } from './utils'
 
@@ -22,7 +20,7 @@ export function ListGroup({
   return (
     <TagName
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'list-group',
         attrs.className,
         flush && 'list-group-flush',
@@ -59,7 +57,7 @@ export function ListGroupItem({
       aria-current={active ? true : void 0}
       aria-disabled={disabled ? true : void 0}
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'list-group-item',
         attrs.className,
         active && 'active',

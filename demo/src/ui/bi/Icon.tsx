@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 import { IconName } from './types'
 
 export interface IconProps extends React.HTMLAttributes<HTMLElement> {
@@ -16,7 +14,7 @@ export function Icon({
   return (
     <TagName
       {...attrs}
-      className={classnames(['bi bi-' + name, attrs.className])}
+      className={R.classnames(['bi bi-' + name, attrs.className])}
     />
   )
 }

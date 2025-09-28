@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 export interface NavProps extends React.HTMLAttributes<HTMLElement> {
   children?: any
   as?: 'ul' | 'nav'
@@ -20,13 +18,13 @@ export function Nav({
   return (
     <TagName
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'nav',
         attrs.className,
         pills && 'nav-pills',
         fill && 'nav-fill',
         justified && 'nav-justified',
-        tabs && 'nav-tabs'
+        tabs && 'nav-tabs',
       ])}
     >
       {children}
@@ -50,11 +48,11 @@ export function NavItem({
   return (
     <TagName
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'nav-item',
         attrs.className,
         dropdown && 'dropdown',
-        show && 'show'
+        show && 'show',
       ])}
     >
       {children}
@@ -83,12 +81,12 @@ export function NavLink({
       aria-current={active ? true : void 0}
       aria-disabled={disabled ? true : void 0}
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'nav-link',
         attrs.className,
         dropdown && 'dropdown-toggle',
         active && 'active',
-        disabled && 'disabled'
+        disabled && 'disabled',
       ])}
     >
       {children}

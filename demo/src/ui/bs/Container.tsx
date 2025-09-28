@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 import { Breakpoint } from './types'
 import { isString } from './utils'
 
@@ -17,7 +15,7 @@ export function Container({
   return (
     <TagName
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'container' + (fluid ? (isString(fluid) ? '-' + fluid : '-fluid') : ''),
         attrs.className
       ])}

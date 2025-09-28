@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 import { Breakpoint, Theme, BackgroundColor } from './types'
 
 import { Collapse, CollapseTrigger, CollapseContent } from './Collapse'
@@ -23,7 +21,7 @@ export function Navbar({
     <TagName
       {...attrs}
       data-bs-theme={theme}
-      className={classnames([
+      className={R.classnames([
         'navbar',
         attrs.className,
         expand && 'navbar-expand-' + expand,
@@ -50,7 +48,7 @@ export function NavbarBrand({
   return (
     <TagName
       {...attrs}
-      className={classnames(['navbar-brand', attrs.className])}
+      className={R.classnames(['navbar-brand', attrs.className])}
     >
       {children}
     </TagName>
@@ -65,7 +63,7 @@ export function NavbarToggler(attrs: NavbarTogglerProps) {
   return (
     <CollapseTrigger
       {...attrs}
-      className={classnames(['navbar-toggler', attrs.className])}
+      className={R.classnames(['navbar-toggler', attrs.className])}
     >
       <span className='navbar-toggler-icon'></span>
     </CollapseTrigger>
@@ -80,7 +78,7 @@ export function NavbarCollapse({ children, ...attrs }: NavbarCollapseProps) {
   return (
     <CollapseContent
       {...attrs}
-      className={classnames(['navbar-collapse', attrs.className])}
+      className={R.classnames(['navbar-collapse', attrs.className])}
     >
       {children}
     </CollapseContent>
@@ -99,7 +97,7 @@ export function NavbarText({
   return (
     <TagName
       {...attrs}
-      className={classnames(['navbar-text', attrs.className])}
+      className={R.classnames(['navbar-text', attrs.className])}
     >
       {children}
     </TagName>
@@ -120,7 +118,7 @@ export function NavbarNav({
   return (
     <TagName
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'navbar-nav',
         attrs.className,
         scroll && 'navbar-nav-scroll',

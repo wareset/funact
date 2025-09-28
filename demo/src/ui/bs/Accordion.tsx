@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 import {
   CollapseGroup,
   Collapse,
@@ -21,10 +19,10 @@ export function Accordion({
   return (
     <div
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'accordion',
         attrs.className,
-        flush && 'accordion-flush'
+        flush && 'accordion-flush',
       ])}
     >
       <CollapseGroup alwaysOpen={alwaysOpen}>{children}</CollapseGroup>
@@ -43,7 +41,10 @@ export function AccordionItem({
   ...attrs
 }: AccordionItemProps) {
   return (
-    <div {...attrs} className={classnames(['accordion-item', attrs.className])}>
+    <div
+      {...attrs}
+      className={R.classnames(['accordion-item', attrs.className])}
+    >
       <Collapse group expanded={expanded}>
         {children}
       </Collapse>
@@ -65,7 +66,7 @@ export function AccordionHeader({
     <TagName className='accordion-header'>
       <CollapseTrigger
         {...attrs}
-        className={classnames(['accordion-button', attrs.className])}
+        className={R.classnames(['accordion-button', attrs.className])}
       >
         {children}
       </CollapseTrigger>
@@ -82,7 +83,7 @@ export function AccordionBody({ children, ...attrs }: AccordionBodyProps) {
     <CollapseContent className='accordion-collapse'>
       <div
         {...attrs}
-        className={classnames(['accordion-body', attrs.className])}
+        className={R.classnames(['accordion-body', attrs.className])}
       >
         {children}
       </div>

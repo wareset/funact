@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 import { Variant } from './types'
 
 export interface ButtonProps extends React.AnchorHTMLAttributes<HTMLElement> {
@@ -29,7 +27,7 @@ export function Button({
       aria-pressed={active ? true : void 0}
       aria-disabled={disabled ? true : void 0}
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'btn',
         attrs.className,
         variant &&

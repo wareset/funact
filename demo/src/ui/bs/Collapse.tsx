@@ -1,18 +1,8 @@
-import {
-  createContext,
-  useRef,
-  type RefObject,
-  useEffect,
-  useId,
-  useState,
-  useContext,
-} from 'barely-react'
-
 type TCollapseGroupContext = {
   alwaysOpen: boolean
   collapses: TCollapseContext[]
 }
-const CollapseGroupContext = createContext<TCollapseGroupContext | null>(null)
+const CollapseGroupContext = R.createContext<TCollapseGroupContext | null>(null)
 export interface CollapseGroupProps {
   children?: any
   alwaysOpen?: boolean
@@ -21,7 +11,7 @@ export function CollapseGroup({
   children,
   alwaysOpen = false,
 }: CollapseGroupProps) {
-  const context = useRef<TCollapseGroupContext>(null)
+  const context = R.useRef<TCollapseGroupContext>(null)
   if (!context.current) {
     context.current = { alwaysOpen, collapses: [] }
   } else if (context.current.alwaysOpen !== alwaysOpen) {
@@ -47,27 +37,28 @@ export function CollapseGroup({
 type TCollapseContext = {
   id: string
   show: boolean
+  isDelay?: boolean
   setShow: (v: boolean) => void
   timeoutId: null | ReturnType<typeof setTimeout>
-  nodeTriggerRef?: RefObject<HTMLButtonElement | null>
-  nodeContentRef?: RefObject<HTMLDivElement | null>
+  nodeTriggerRef?: R.IRefObject<HTMLButtonElement | null>
+  nodeContentRef?: R.IRefObject<HTMLDivElement | null>
 }
-const CollapseContext = createContext<TCollapseContext>(null as any)
+const CollapseContext = R.createContext<TCollapseContext>(null as any)
 export interface CollapseProps {
   children?: any
   group?: boolean
   expanded?: boolean
 }
 export function Collapse({ children, group, expanded = false }: CollapseProps) {
-  const id = useId()
-  const [show, setShow] = useState(expanded)
-  const context = useRef<TCollapseContext>(null)
+  const id = R.useId()
+  const [show, setShow] = R.useState(expanded)
+  const context = R.useRef<TCollapseContext>(null)
   if (!context.current) {
     context.current = { id, show, setShow, timeoutId: null }
   }
 
-  const collapseGroup = useContext(CollapseGroupContext)
-  useEffect(() => {
+  const collapseGroup = R.useContext(CollapseGroupContext)
+  R.useEffect(() => {
     if (group && collapseGroup) {
       const item = context.current!
       const collapses = collapseGroup.collapses
@@ -83,7 +74,7 @@ export function Collapse({ children, group, expanded = false }: CollapseProps) {
     }
   }, [collapseGroup])
 
-  useEffect(() => {
+  R.useEffect(() => {
     const item = context.current!
     item.show = show
 
@@ -118,8 +109,9 @@ export function Collapse({ children, group, expanded = false }: CollapseProps) {
           }
           style.height = ''
         } else {
-          classList.remove('collapse'), classList.add('collapsing')
           style.height = '0'
+          node.clientHeight // reflow
+          classList.remove('collapse'), classList.add('collapsing')
           complete = (): void => {
             item.timeoutId = null
             if (item.show) {
@@ -137,8 +129,12 @@ export function Collapse({ children, group, expanded = false }: CollapseProps) {
             }
           }
         }
-
-        item.timeoutId = setTimeout(complete, 500) as any
+        if (item.isDelay) {
+          item.timeoutId = setTimeout(complete, 500) as any
+        } else {
+          item.isDelay = true
+          complete()
+        }
       }
     }
   }, [show])
@@ -150,15 +146,13 @@ export interface CollapseTriggerProps
   extends React.HTMLAttributes<HTMLElement> {
   children?: any
 }
-export function CollapseTrigger({
-  children,
-  ...attrs
-}: CollapseTriggerProps) {
-  const item = useContext(CollapseContext)
-  const nodeTriggerRef = (item.nodeTriggerRef = useRef<HTMLButtonElement>(null))
+export function CollapseTrigger({ children, ...attrs }: CollapseTriggerProps) {
+  const item = R.useContext(CollapseContext)
+  const nodeTriggerRef = (item.nodeTriggerRef =
+    R.useRef<HTMLButtonElement>(null))
   const itemId = item.id
 
-  const clickRef = useRef<() => any>(null)
+  const clickRef = R.useRef<() => any>(null)
   if (!clickRef.current) {
     clickRef.current = () => {
       item.setShow(!item.show)
@@ -184,12 +178,9 @@ export interface CollapseContentProps
   extends React.HTMLAttributes<HTMLDivElement> {
   children?: any
 }
-export function CollapseContent({
-  children,
-  ...attrs
-}: CollapseContentProps) {
-  const item = useContext(CollapseContext)
-  const nodeContentRef = useRef<HTMLDivElement>(null)
+export function CollapseContent({ children, ...attrs }: CollapseContentProps) {
+  const item = R.useContext(CollapseContext)
+  const nodeContentRef = R.useRef<HTMLDivElement>(null)
   const itemId = item.id
 
   item.nodeContentRef = nodeContentRef

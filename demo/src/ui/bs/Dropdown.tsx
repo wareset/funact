@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 import { Breakpoint } from './types'
 import { isString } from './utils'
 
@@ -10,7 +8,7 @@ export interface DropdownProps extends React.HTMLAttributes<HTMLElement> {
 export function Dropdown({ children, as: TagName, ...attrs }: DropdownProps) {
   if (TagName) {
     return (
-      <TagName {...attrs} className={classnames(['dropdown', attrs.className])}>
+      <TagName {...attrs} className={R.classnames(['dropdown', attrs.className])}>
         {children}
       </TagName>
     )
@@ -37,7 +35,7 @@ export function DropdownMenu({
   return (
     <ul
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'dropdown-menu',
         attrs.className,
         dark && 'dropdown-menu-dark',
@@ -71,7 +69,7 @@ export function DropdownItem({
     <li>
       <TagName
         {...attrs}
-        className={classnames([
+        className={R.classnames([
           text ? 'dropdown-item-text' : 'dropdown-item',
           attrs.className,
           active && 'active',
@@ -97,7 +95,7 @@ export function DropdownHeader({
     <li>
       <TagName
         {...attrs}
-        className={classnames(['dropdown-header', attrs.className])}
+        className={R.classnames(['dropdown-header', attrs.className])}
       >
         {children}
       </TagName>
@@ -114,7 +112,7 @@ export function DropdownDivider(attrs: DropdownDividerProps) {
     <li>
       <hr
         {...attrs}
-        className={classnames(['dropdown-divider', attrs.className])}
+        className={R.classnames(['dropdown-divider', attrs.className])}
       />
     </li>
   )

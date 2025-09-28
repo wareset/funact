@@ -17,7 +17,6 @@ const require = createRequire(import.meta.url)
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 ;(() => {
-
   const opts = { recursive: true }
   function from(packageJsonDir = '', dir = '') {
     return path.join(
@@ -103,6 +102,8 @@ const config = {
         // 'jsxRuntime.jsxs': [barelyReact, 'createElement'],
         // 'jsxRuntime.jsx': [barelyReact, 'createElement'],
         'React.Fragment': [barelyReact, 'Fragment'],
+        
+        R: [barelyReact, '*'],
       })
     })(),
 

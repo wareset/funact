@@ -1,5 +1,3 @@
-import { classnames } from 'barely-react'
-
 type RowColsTypes = 'auto' | 1 | 2 | 3 | 4 | 5 | 6
 
 export interface RowProps extends React.HTMLAttributes<HTMLElement> {
@@ -31,7 +29,7 @@ export function Row({
   return (
     <TagName
       {...attrs}
-      className={classnames([
+      className={R.classnames([
         'row',
         attrs.className,
 
