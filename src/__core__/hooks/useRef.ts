@@ -1,11 +1,11 @@
 import { getCurrentVNode } from '../VNode_utils'
 import { checkHook } from '../utils'
 
-import type { IRefObject } from '../types'
-function useRef<T>(initialValue: T): IRefObject<T>
-function useRef<T>(initialValue: T | null): IRefObject<T | null>
-function useRef<T>(initialValue: T | undefined): IRefObject<T | undefined>
-function useRef<T>(initialValue: T): IRefObject<T> {
+import type { RefObject } from '../types'
+function useRef<T>(initialValue: T): RefObject<T>
+function useRef<T>(initialValue: T | null): RefObject<T | null>
+function useRef<T>(initialValue: T | undefined): RefObject<T | undefined>
+function useRef<T>(initialValue: T): RefObject<T> {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks

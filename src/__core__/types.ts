@@ -29,7 +29,7 @@ export interface IHook {
   cleanup?: null | (() => void)
 }
 
-export interface IRefObject<T> {
+export type RefObject<T> = {
   current: T
 }
 

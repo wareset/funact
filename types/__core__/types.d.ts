@@ -18,9 +18,9 @@ export interface IHook {
     deps?: null | readonly unknown[];
     cleanup?: null | (() => void);
 }
-export interface IRefObject<T> {
+export type RefObject<T> = {
     current: T;
-}
+};
 export interface IContext<T> {
     (props: {
         value: T;

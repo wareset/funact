@@ -1,4 +1,4 @@
-export { type IRefObject } from './types'
+export { type RefObject } from './types'
 
 export { Fragment } from './components/Fragment'
 export { Portal } from './components/Portal'

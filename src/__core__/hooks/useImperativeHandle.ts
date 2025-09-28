@@ -1,10 +1,10 @@
 import { getCurrentVNode } from '../VNode_utils'
 import { checkHook, isEqualDeps } from '../utils'
 
-import { IRefObject } from '../types'
+import { RefObject } from '../types'
 
 function useImperativeHandle<T, R extends T>(
-  ref: IRefObject<T | null> | null | undefined,
+  ref: RefObject<T | null> | null | undefined,
   init: () => R,
   deps?: readonly unknown[]
 ): void {
