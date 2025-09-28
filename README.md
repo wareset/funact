@@ -27,7 +27,7 @@
   - useReducer
   - useRef
   - useState
-  - useSyncExternalStore
+  - useSyncExternalStore (без параметра `getServerSnapshot`)
   - useTransition
 - APIs
   - createElement
@@ -549,7 +549,7 @@ render(document.body, <App />)
 
 ### useSyncExternalStore
 
-Работает как в реакте
+Параметр `getServerSnapshot` не поддерживается.
 
 ```ts
 function useSyncExternalStore<Snapshot>(
