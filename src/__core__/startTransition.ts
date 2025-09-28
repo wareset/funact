@@ -4,9 +4,9 @@ import { TransitionFunction } from './types'
 import { getCurrentVNode } from './VNode_utils'
 import { addVNodeInQueue } from './scheduler'
 
-/*
-Данная функция еще не закончена
-*/
+// Данная функция еще не закончена
+// Нужно больше экспериментов с ней
+
 export async function startTransition(callback: TransitionFunction) {
   // schedule(callback)
   const vNode = getCurrentVNode()

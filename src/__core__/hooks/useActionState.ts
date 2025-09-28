@@ -38,7 +38,7 @@ function useActionState<State, Payload>(
 ] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseActionState[]
+  const hooks = vNode.hooks as IHookDataForUseActionState[] // борьба с ts
 
   const data =
     hooks[hookIdx] ||

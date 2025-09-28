@@ -4,6 +4,7 @@ import { type VNode } from './VNode'
 import { sortDeeps } from './utils'
 import { getCurrentVNode, setCurrentVNode, updateVNode } from './VNode_utils'
 
+// Взято из react 18
 export const schedule =
   typeof queueMicrotask === 'function'
     ? queueMicrotask
@@ -18,6 +19,10 @@ let INSERTION_EFFECTS: IHook[][] = []
 let LAYOUT_EFFECTS: IHook[][] = []
 let EFFECTS: IHook[][] = []
 
+/*
+Вероятно исполнение effect должно происходить в следующем микротаске,
+но пока реализовано так, чтобы посмотреть как будет.
+*/
 let updating = false
 function update() {
   const PREV_V_NODES = V_NODES
@@ -41,6 +46,7 @@ function update() {
 }
 
 function update_any_effects(effects: IHook[][]) {
+  // Здесь же это не обязательно?
   const prevVNode = getCurrentVNode()
 
   for (let i = 0, a: IHook[]; i < effects.length; ++i) {

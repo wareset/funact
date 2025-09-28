@@ -14,6 +14,9 @@ import { getCurrentVNode } from './VNode_utils'
 //   }
 // }
 
+// Функция должна называться use, и поддерживать промисы,
+// для передачи в Suspense, когда до него дойдут руки
+
 /*@__NO_SIDE_EFFECTS__*/
 export function getContext<T>(context: IContext<T>): T {
   let vNode = getCurrentVNode()

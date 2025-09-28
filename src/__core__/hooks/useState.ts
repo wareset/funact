@@ -19,7 +19,7 @@ function useState<S>(
 ): [S | undefined, (value: S | ((prevState: S | undefined) => S)) => void] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseState[]
+  const hooks = vNode.hooks as IHookDataForUseState[] // борьба с ts
   
   const data =
     hooks[hookIdx] ||

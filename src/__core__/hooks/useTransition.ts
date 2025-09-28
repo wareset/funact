@@ -15,7 +15,7 @@ interface IHookDataForUseTransition extends IHook {
 function useTransition(): [boolean, (callback: TransitionFunction) => void] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseTransition[]
+  const hooks = vNode.hooks as IHookDataForUseTransition[] // борьба с ts
   
   const data =
     hooks[hookIdx] ||

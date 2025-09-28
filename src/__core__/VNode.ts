@@ -60,7 +60,6 @@ export class VNode {
     this.hooks = []
 
     if (jsx instanceof JSXNode) {
-      this.jsx = jsx
       if (typeof jsx.type !== 'string') {
         this.fc = jsx.type
         this._ = 'comp: ' + this.fc.name
@@ -68,12 +67,14 @@ export class VNode {
         this.fc = XMLElement
         this._ = 'node: ' + jsx.type
       }
+      this.jsx = jsx
       createChildren(this, this.fc(jsx.props))
     } else {
-      this.jsx = validateTextData(jsx)
-      this.fc = XMLText
+      this.fc = XMLText as any
       this._ = 'text: ' + jsx
-      XMLText(jsx)
+      if ((this.jsx = validateTextData(jsx))) {
+        XMLText(jsx)
+      }
     }
 
     setCurrentVNode(prevVNode)

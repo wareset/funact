@@ -2,6 +2,8 @@ import { IContext } from './types'
 import { addVNodeInQueue } from './scheduler'
 import { getCurrentVNode } from './VNode_utils'
 
+// TODO: Нужно добавить Consumer
+
 /*@__NO_SIDE_EFFECTS__*/
 export function createContext<T>(defaultValue: T): IContext<T> {
   const ContextProvider = function (props: { value: T; children?: any }) {

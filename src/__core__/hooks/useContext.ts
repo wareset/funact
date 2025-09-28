@@ -10,7 +10,7 @@ interface IHookDataForUseContext extends IHook {
 function useContext<T>(context: IContext<T>): T {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseContext[]
+  const hooks = vNode.hooks as IHookDataForUseContext[] // борьба с ts
 
   const data =
     hooks[hookIdx] ||

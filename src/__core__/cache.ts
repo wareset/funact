@@ -1,3 +1,4 @@
+// В реакте, вроде, работает только на сервере
 /*@__NO_SIDE_EFFECTS__*/
 export function cache<CachedFunction extends Function>(
   fn: CachedFunction

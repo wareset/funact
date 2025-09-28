@@ -26,7 +26,7 @@ function useReducer<S, I, A extends [] | [any]>(
 ): [S, (...args: A) => void] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseOptimistic[]
+  const hooks = vNode.hooks as IHookDataForUseOptimistic[] // борьба с ts
   
   const data =
     hooks[hookIdx] ||

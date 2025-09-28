@@ -1,7 +1,6 @@
 import { getCurrentVNode } from '../VNode_utils'
 import {
   createElementNS,
-  validateTextData,
   getParentXMLContext,
   insertAndAddNodeInParentContext,
   removeAndDelNodeInParentContext,
@@ -17,7 +16,7 @@ import { useLayoutEffect } from '../hooks/useLayoutEffect'
 И для того, чтобы изменения текста на странице отслеживались,
 используется такой хак
 */
-export function XMLText(value: any, needDestroy?: boolean) {
+export function XMLText(value: string, needDestroy?: boolean) {
   const vNode = getCurrentVNode()
   let node = null
 
@@ -32,7 +31,7 @@ export function XMLText(value: any, needDestroy?: boolean) {
     if (parentContext && parentContext.node) {
       node = createElementNS('font', parentContext.node)
       node.style.verticalAlign = 'inherit'
-      node.textContent = validateTextData(value)
+      node.textContent = value
       insertAndAddNodeInParentContext(node, parentContext, vNode.deep)
     }
 
@@ -42,7 +41,6 @@ export function XMLText(value: any, needDestroy?: boolean) {
     }
   } else if ((node = vNode.contextValue.node)) {
     const text = node.childNodes.length === 1 && node.childNodes[0]
-    value = validateTextData(value)
     text && text.nodeType === 3
       ? ((text as Text).data = value)
       : (node.textContent = value)

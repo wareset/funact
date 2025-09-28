@@ -19,7 +19,7 @@ function useSyncExternalStore<Snapshot>(
 ): Snapshot {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseSyncExternalStore[]
+  const hooks = vNode.hooks as IHookDataForUseSyncExternalStore[] // борьба с ts
   
   const data =
     hooks[hookIdx] ||
