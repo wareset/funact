@@ -30,6 +30,11 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "types": "./types/index.d.ts"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/jsx-runtime/index.mjs",
+      "require": "./dist/jsx-runtime/index.js",
+      "types": "./types/jsx-runtime.d.ts"
     }
   },
   "scripts": {
