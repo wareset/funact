@@ -4,6 +4,8 @@ import { Accordion } from '@/ui/bs/Accordion'
 
 import { AccordionItemWrapper } from './_include/AccordionItemWrapper'
 
+import Description from './_include/Description'
+
 import HookUseState from './_include/HookUseState'
 import HookUseReducer from './_include/HookUseReducer'
 
@@ -13,6 +15,8 @@ export default function () {
       <Header />
 
       <Container>
+        <Description />
+
         <Accordion alwaysOpen>
           <AccordionItemWrapper title={'useState'} expanded>
             <HookUseState />

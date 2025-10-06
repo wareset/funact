@@ -468,6 +468,79 @@ function AccordionBody({ children, ...attrs }) {
       , xe(AccordionBody, null, children)
     )
   )
+}const list = `
+- Components:
+  - Fragment
+  - Portal (используется вместо \`createPortal\` из \`react-dom\`)
+- Hooks:
+  - useActionState
+  - useCallback
+  - useContext
+  - useDebugValue (просто выводит что-то в консоль)
+  - useDeferredValue
+  - useEffect
+  - useId
+  - useImperativeHandle
+  - useInsertionEffect
+  - useLayoutEffect
+  - useMemo
+  - useOptimistic
+  - useReducer
+  - useRef
+  - useState
+  - useSyncExternalStore (без параметра \`getServerSnapshot\`)
+  - useTransition
+- APIs:
+  - createElement
+  - render (используется вместо \`createRoot\` из \`react-dom\`)
+  - cache
+  - createContext (пока без \`Consumer\`)
+  - memo
+  - use (пока поддерживает только \`contexts\`)
+- А так же:
+  - classnames (приводит классы к строке)
+  - stylesheet (приводит стили к строке)
+`;
+
+function Description() {
+  return (
+    xe('div', null
+      , xe('h1', null, "Barely-react")
+      , xe('p', null, "В данный момент демо, как и сама библиотека, еще не готовы. Но ниже есть примеры работы хуков для демонстрации того, что библиотека действительно работает."
+
+
+
+      )
+      , xe('h5', null, "Список того что уже готово:"    )
+      , xe('pre', null, list)
+      , xe('p', null, "Ссылка на github:"
+
+        , xe('br', null )
+        , xe('a', { href: "https://github.com/wareset/barely-react", target: "_blank",}, "https://github.com/wareset/barely-react"
+
+        )
+      )
+      , xe('p', null, "Ссылки на исходники текущей страницы:"
+
+        , xe('br', null )
+        , xe('a', {
+          href: "https://github.com/wareset/barely-react/blob/main/demo/src/routes/test/page.tsx",
+          target: "_blank",}
+, "https://github.com/wareset/barely-react/blob/main/demo/src/routes/test/page.tsx"
+
+        )
+        , xe('br', null ), "и"
+
+        , xe('br', null )
+        , xe('a', {
+          href: "https://github.com/wareset/barely-react/blob/main/demo/src/app/index.tsx",
+          target: "_blank",}
+, "https://github.com/wareset/barely-react/blob/main/demo/src/app/index.tsx"
+
+        )
+      )
+    )
+  )
 }function Button({
   children,
   as: TagName = 'button',
@@ -722,6 +795,8 @@ function HookUseReducer() {
       , xe(Header, null )
 
       , xe(Container, null
+        , xe(Description, null )
+
         , xe(Accordion, { alwaysOpen: true,}
           , xe(AccordionItemWrapper, { title: 'useState', expanded: true,}
             , xe(HookUseState, null )
