@@ -19,7 +19,6 @@ export function Header(): any {
           <NavbarNav as='nav'>
             <NavLink>TODO</NavLink>
             <NavLink>TODO</NavLink>
-            <NavLink>TODO</NavLink>
           </NavbarNav>
           <hr className='text-white d-sm-none' />
           <NavbarNav as='nav' className='ms-sm-auto'>
