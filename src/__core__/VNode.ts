@@ -2,7 +2,7 @@ import { IHook, FC } from './types'
 import { JSXNode } from './JSXNode'
 import { XMLElement, XMLText } from './components/xml'
 import { validateTextData } from './components/xml_utils'
-import { createChildren, getCurrentVNode, setCurrentVNode } from './VNode_utils'
+import { createChildren, getCurrentVNode, setCurrentVNode } from './VNode.utils'
 
 export class VNode {
   // Это я сделал для себя, для удобного просмотра компонентов в консоли

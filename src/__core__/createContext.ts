@@ -1,6 +1,6 @@
 import { IContext } from './types'
 import { addVNodeInQueue } from './scheduler'
-import { getCurrentVNode } from './VNode_utils'
+import { getCurrentVNode } from './VNode.utils'
 
 // TODO: Нужно добавить Consumer
 

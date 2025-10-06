@@ -1,4 +1,4 @@
-import { getCurrentVNode } from '../VNode_utils'
+import { getCurrentVNode } from '../VNode.utils'
 import {
   createElementNS,
   getParentXMLContext,

@@ -1,5 +1,5 @@
 import { IContext } from './types'
-import { getCurrentVNode } from './VNode_utils'
+import { getCurrentVNode } from './VNode.utils'
 
 // type Usable<T> = PromiseLike<T> | Context<T>
 // export function use<T>(usable: Usable<T>): T {

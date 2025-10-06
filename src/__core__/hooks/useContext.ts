@@ -1,4 +1,4 @@
-import { getCurrentVNode } from '../VNode_utils'
+import { getCurrentVNode } from '../VNode.utils'
 import { IHook, IContext } from '../types'
 import { checkHook } from '../utils'
 

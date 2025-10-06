@@ -1,4 +1,4 @@
-import { getCurrentVNode } from '../VNode_utils'
+import { getCurrentVNode } from '../VNode.utils'
 import { checkHook } from '../utils'
 
 function useDebugValue<T>(value: T, format?: (value: T) => any): void {

@@ -1,4 +1,4 @@
-import { getCurrentVNode } from '../VNode_utils'
+import { getCurrentVNode } from '../VNode.utils'
 import { checkHook, isEqualDeps } from '../utils'
 
 function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {

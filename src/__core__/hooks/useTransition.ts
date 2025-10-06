@@ -1,4 +1,4 @@
-import { getCurrentVNode } from '../VNode_utils'
+import { getCurrentVNode } from '../VNode.utils'
 import { IHook } from '../types'
 import { checkHook } from '../utils'
 import { addVNodeInQueue, schedule } from '../scheduler'

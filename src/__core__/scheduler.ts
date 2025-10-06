@@ -2,7 +2,7 @@ import { IHook } from './types'
 import { type VNode } from './VNode'
 
 import { sortDeeps } from './utils'
-import { getCurrentVNode, setCurrentVNode, updateVNode } from './VNode_utils'
+import { getCurrentVNode, setCurrentVNode, updateVNode } from './VNode.utils'
 
 // Взято из react 18
 export const schedule =

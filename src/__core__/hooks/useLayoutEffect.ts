@@ -1,4 +1,4 @@
-import { getCurrentVNode } from '../VNode_utils'
+import { getCurrentVNode } from '../VNode.utils'
 import { checkHook, isEqualDeps } from '../utils'
 import { addLayoutEffectInQueue } from '../scheduler'
 

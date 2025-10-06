@@ -1,7 +1,7 @@
 import { TransitionFunction } from './types'
 // import { schedule } from './scheduler'
 
-import { getCurrentVNode } from './VNode_utils'
+import { getCurrentVNode } from './VNode.utils'
 import { addVNodeInQueue } from './scheduler'
 
 // Данная функция еще не закончена

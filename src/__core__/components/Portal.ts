@@ -1,4 +1,4 @@
-import { getCurrentVNode } from '../VNode_utils'
+import { getCurrentVNode } from '../VNode.utils'
 
 export function Portal(props: {
   domNode: HTMLElement | SVGElement
