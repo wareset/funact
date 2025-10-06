@@ -19,8 +19,8 @@ function useState<S>(
 ): [S | undefined, (value: S | ((prevState: S | undefined) => S)) => void] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseState[] // борьба с ts
-  
+  const hooks = vNode.hooks
+
   const data =
     hooks[hookIdx] ||
     (hooks[hookIdx] = {
@@ -38,7 +38,7 @@ function useState<S>(
           addVNodeInQueue(data.vNode)
         }
       },
-    })
+    } satisfies IHookDataForUseState)
   checkHook(data, useState, hookIdx)
 
   return [data.value, data.update]

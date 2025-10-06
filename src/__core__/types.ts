@@ -27,6 +27,8 @@ export interface IHook {
   deps?: null | readonly unknown[]
   // Очистка, если есть
   cleanup?: null | (() => void)
+
+  [key: string]: any
 }
 
 export type RefObject<T> = {

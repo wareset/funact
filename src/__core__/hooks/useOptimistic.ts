@@ -29,7 +29,7 @@ function useOptimistic<State, Action>(
 ] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseOptimistic[] // борьба с ts
+  const hooks = vNode.hooks
   
   const data =
     hooks[hookIdx] ||
@@ -53,7 +53,7 @@ function useOptimistic<State, Action>(
           addVNodeInQueue(data.vNode)
         }
       },
-    })
+    } satisfies IHookDataForUseOptimistic)
   checkHook(data, useOptimistic, hookIdx)
 
   // const state = data.value

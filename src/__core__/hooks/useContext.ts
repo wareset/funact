@@ -10,7 +10,7 @@ interface IHookDataForUseContext extends IHook {
 function useContext<T>(context: IContext<T>): T {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseContext[] // борьба с ts
+  const hooks = vNode.hooks
 
   const data =
     hooks[hookIdx] ||
@@ -28,7 +28,7 @@ function useContext<T>(context: IContext<T>): T {
           data.users = null
         }
       },
-    })
+    } satisfies IHookDataForUseContext)
   checkHook(data, useContext, hookIdx)
 
   if (data.context !== context && data.cleanup) {

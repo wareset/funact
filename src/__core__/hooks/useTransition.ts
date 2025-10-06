@@ -15,8 +15,8 @@ interface IHookDataForUseTransition extends IHook {
 function useTransition(): [boolean, (callback: TransitionFunction) => void] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseTransition[] // борьба с ts
-  
+  const hooks = vNode.hooks
+
   const data =
     hooks[hookIdx] ||
     (hooks[hookIdx] = {
@@ -41,7 +41,7 @@ function useTransition(): [boolean, (callback: TransitionFunction) => void] {
           addVNodeInQueue(data.vNode), schedule(data.run)
         }
       },
-    })
+    } satisfies IHookDataForUseTransition)
   checkHook(data, useTransition, hookIdx)
 
   return [data.value, data.dispatch]

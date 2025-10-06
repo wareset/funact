@@ -19,8 +19,8 @@ function useSyncExternalStore<Snapshot>(
 ): Snapshot {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks as IHookDataForUseSyncExternalStore[] // борьба с ts
-  
+  const hooks = vNode.hooks
+
   const data =
     hooks[hookIdx] ||
     (hooks[hookIdx] = {
@@ -38,7 +38,7 @@ function useSyncExternalStore<Snapshot>(
       effect() {
         return data.subscribe(data.check)
       },
-    })
+    } satisfies IHookDataForUseSyncExternalStore)
   checkHook(data, useSyncExternalStore, hookIdx)
 
   data.subscribe = subscribe

@@ -17,6 +17,7 @@ export interface IHook {
     value: any;
     deps?: null | readonly unknown[];
     cleanup?: null | (() => void);
+    [key: string]: any;
 }
 export type RefObject<T> = {
     current: T;
