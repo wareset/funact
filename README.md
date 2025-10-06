@@ -2,16 +2,20 @@
 
 Библиотека с хуками как в `react 19`.
 
-В данный момент `README.md` находится в процессе написания, а `demo` - в процессе создания. Сам проект еще не закончен. Прошу отнестись с пониманием.
+В данный момент `README.md` находится в процессе написания, а `demo` - в процессе создания. Сам проект еще не закончен. И я не часто к нему возвращаюсь, так как на данный момент в нём нет практической пользы. Прошу отнестись с пониманием.
+
+Ссылка на демо:
+<br/>
+[https://wareset.github.io/barely-react/demo/app/index.html](https://wareset.github.io/barely-react/demo/app/index.html)
 
 Пока что это не более чем эксперимент. В библиотеке реализована работа всех хуков как в `react 19` (за исключением хука `useFormStatus` из `react-dom`) и некоторых функций.
 
-#### Что есть сейчас:
+#### Что уже работает сейчас:
 
-- Components
+- Components:
   - Fragment
   - Portal (используется вместо `createPortal` из `react-dom`)
-- Hooks
+- Hooks:
   - useActionState
   - useCallback
   - useContext
@@ -29,18 +33,18 @@
   - useState
   - useSyncExternalStore (без параметра `getServerSnapshot`)
   - useTransition
-- APIs
+- APIs:
   - createElement
   - render (используется вместо `createRoot` из `react-dom`)
   - cache
-  - createContext (без `Consumer`)
+  - createContext (пока без `Consumer`)
   - memo
-  - use (поддерживает только `contexts`)
-- Additional
+  - use (пока поддерживает только `contexts`)
+- А так же:
   - classnames (приводит классы к строке)
   - stylesheet (приводит стили к строке)
 
-Классовые компоненты, а так же всё что относится к `legacy` (`forwardRef`, `cloneElement` и т.д), отсутствуют.
+Классовых компонентов, а так же всё что относится к `legacy` (`forwardRef`, `cloneElement` и т.д), нет и не будет.
 
 Так же нет (возможно пока) `lazy`, `Suspense` и другого функционала, предназначенного для работы с серверным взаимодействием.
 
