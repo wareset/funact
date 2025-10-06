@@ -1,3 +1,3 @@
-import { Fragment, createElement } from './index'
+import { createElement } from './index'
 export * from './index'
-export { Fragment, createElement as jsxs, createElement as jsx }
+export { createElement as jsxs, createElement as jsx }

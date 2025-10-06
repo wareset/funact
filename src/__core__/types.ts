@@ -16,6 +16,7 @@ export type FC =
       compare?: Comparator
     }
 
+// Возможно хуки станут классами?
 export interface IHook {
   // Порядковый номер хука
   hookIdx: number
