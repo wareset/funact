@@ -111,8 +111,7 @@ const config = {
       browser: true,
       preferBuiltins: false,
       // dedupe: ['svelte'],
-      exportConditions: ['svelte'],
-      extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', '.json', '.svelte'],
+      extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', '.json'],
     }),
     commonjs(),
 
