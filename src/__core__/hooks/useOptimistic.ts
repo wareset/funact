@@ -12,25 +12,27 @@ interface IHookDataForUseOptimistic extends IHook {
 
 function useOptimistic<State>(
   passthrough: State
-): [State, (action: State | ((pendingState: State) => State)) => void]
+): [
+  optimisticState: State,
+  addOptimistic: (action: State | ((pendingState: State) => State)) => void,
+]
 function useOptimistic<State, Action>(
   passthrough: State,
   reducer: (state: State, action: Action) => State
-): [State, (action: Action) => void]
+): [optimisticState: State, addOptimistic: (action: Action) => void]
 function useOptimistic<State, Action>(
   passthrough: State,
   reducer?: (state: State, action: Action) => State
 ): [
-  State,
-  (
+  optimisticState: State,
+  addOptimistic:
     | ((action: Action) => void)
-    | ((action: State | ((pendingState: State) => State)) => void)
-  ),
+    | ((action: State | ((pendingState: State) => State)) => void),
 ] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
-  
+
   const data =
     hooks[hookIdx] ||
     (hooks[hookIdx] = {

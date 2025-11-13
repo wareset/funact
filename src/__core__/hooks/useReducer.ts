@@ -13,17 +13,17 @@ interface IHookDataForUseOptimistic extends IHook {
 function useReducer<S, A extends [] | [any]>(
   reducer: (prevState: S, ...args: A) => S,
   initialState: S
-): [S, (...args: A) => void]
+): [state: S, dispatch: (...args: A) => void]
 function useReducer<S, I, A extends [] | [any]>(
   reducer: (prevState: S, ...args: A) => S,
   initialArg: I,
   init: (i: I) => S
-): [S, (...args: A) => void]
+): [state: S, dispatch: (...args: A) => void]
 function useReducer<S, I, A extends [] | [any]>(
   reducer: (prevState: S, ...args: A) => S,
   initialState: I,
   init?: (i: I) => S
-): [S, (...args: A) => void] {
+): [state: S, dispatch: (...args: A) => void] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks

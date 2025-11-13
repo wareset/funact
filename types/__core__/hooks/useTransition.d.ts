@@ -1,3 +1,6 @@
 import { TransitionFunction } from '../types';
-declare function useTransition(): [boolean, (callback: TransitionFunction) => void];
+declare function useTransition(): [
+    isPending: boolean,
+    startTransition: (callback: TransitionFunction) => void
+];
 export { useTransition };

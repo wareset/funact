@@ -12,7 +12,10 @@ interface IHookDataForUseTransition extends IHook {
   dispatch: (callback: any) => void
 }
 
-function useTransition(): [boolean, (callback: TransitionFunction) => void] {
+function useTransition(): [
+  isPending: boolean,
+  startTransition: (callback: TransitionFunction) => void,
+] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks

@@ -9,7 +9,7 @@ interface IHookDataForUseState extends IHook {
 
 function useState<S>(
   initialState: S | (() => S)
-): [S, (value: S | ((prevState: S) => S)) => void]
+): [state: S, setState: (value: S | ((prevState: S) => S)) => void]
 function useState<S = undefined>(): [
   S | undefined,
   (value: S | ((prevState: S | undefined) => S)) => void,
