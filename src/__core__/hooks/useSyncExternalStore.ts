@@ -21,15 +21,21 @@ function useSyncExternalStore<Snapshot>(
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
 
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+  let data = hooks[hookIdx] as IHookDataForUseSyncExternalStore
+  if (data) {
+    checkHook(data, useSyncExternalStore, hookIdx)
+
+    data.subscribe = subscribe
+    data.getSnapshot = getSnapshot
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useSyncExternalStore,
       vNode,
       value: getSnapshot(),
-      subscribe,
-      getSnapshot,
+
+      subscribe: subscribe,
+      getSnapshot: getSnapshot,
       check() {
         if (!Object.is(data.value, (data.value = data.getSnapshot()))) {
           addVNodeInQueue(data.vNode)
@@ -38,11 +44,9 @@ function useSyncExternalStore<Snapshot>(
       effect() {
         return data.subscribe(data.check)
       },
-    } satisfies IHookDataForUseSyncExternalStore)
-  checkHook(data, useSyncExternalStore, hookIdx)
+    } satisfies IHookDataForUseSyncExternalStore
+  }
 
-  data.subscribe = subscribe
-  data.getSnapshot = getSnapshot
   useEffect(data.effect, [subscribe])
   useEffect(data.check)
 

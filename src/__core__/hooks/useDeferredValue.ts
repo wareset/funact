@@ -6,23 +6,25 @@ function useDeferredValue<T>(value: T, initialValue?: T): T {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
-  
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+
+  let data = hooks[hookIdx]
+  if (data) {
+    checkHook(data, useDeferredValue, hookIdx)
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useDeferredValue,
       vNode,
       value: initialValue !== void 0 ? initialValue : value,
-    })
-  checkHook(data, useDeferredValue, hookIdx)
+    }
+  }
 
-  const curValue = data.value
-  if (!Object.is(curValue, value)) {
+  const prevValue = data.value
+  if (!Object.is(prevValue, value)) {
     data.value = value
     addVNodeInQueue(data.vNode)
   }
 
-  return curValue
+  return prevValue
 }
 export { useDeferredValue }

@@ -13,16 +13,18 @@ function useId(): string {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
-  
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+
+  let data = hooks[hookIdx]
+  if (data) {
+    checkHook(data, useId, hookIdx)
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useId,
       vNode,
       value: 'id' + simpleHash(vNode.deep.join('_') + '__' + hookIdx),
-    })
-  checkHook(data, useId, hookIdx)
+    }
+  }
 
   return data.value
 }

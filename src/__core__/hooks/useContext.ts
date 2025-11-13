@@ -4,7 +4,7 @@ import { checkHook } from '../utils'
 
 interface IHookDataForUseContext extends IHook {
   context: any
-  users: any
+  users: null | any[]
 }
 
 function useContext<T>(context: IContext<T>): T {
@@ -12,15 +12,19 @@ function useContext<T>(context: IContext<T>): T {
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
 
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+  let data = hooks[hookIdx] as IHookDataForUseContext
+  if (data) {
+    checkHook(data, useContext, hookIdx)
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useContext,
       vNode,
       value: null,
+
       context: null,
       users: null,
+
       cleanup() {
         if (data.users) {
           const idx = data.users.lastIndexOf(data)
@@ -28,8 +32,8 @@ function useContext<T>(context: IContext<T>): T {
           data.users = null
         }
       },
-    } satisfies IHookDataForUseContext)
-  checkHook(data, useContext, hookIdx)
+    } satisfies IHookDataForUseContext
+  }
 
   if (data.context !== context && data.cleanup) {
     data.cleanup()

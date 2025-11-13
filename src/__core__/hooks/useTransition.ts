@@ -20,13 +20,16 @@ function useTransition(): [
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
 
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+  let data = hooks[hookIdx] as IHookDataForUseTransition
+  if (data) {
+    checkHook(data, useTransition, hookIdx)
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useTransition,
       vNode,
       value: false,
+
       callbacks: [],
       run() {
         const res = data.callbacks.shift()()
@@ -44,8 +47,8 @@ function useTransition(): [
           addVNodeInQueue(data.vNode), schedule(data.run)
         }
       },
-    } satisfies IHookDataForUseTransition)
-  checkHook(data, useTransition, hookIdx)
+    } satisfies IHookDataForUseTransition
+  }
 
   return [data.value, data.dispatch]
 }

@@ -8,25 +8,28 @@ function useImperativeHandle<T, R extends T>(
   init: () => R,
   deps?: readonly unknown[]
 ): void {
-  let needUpdate = false
-
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
-  
-  const data =
-    hooks[hookIdx] ||
-    ((needUpdate = true),
-    (hooks[hookIdx] = {
+
+  let needUpdate = false
+  let data = hooks[hookIdx]
+  if (data) {
+    checkHook(data, useImperativeHandle, hookIdx)
+
+    isEqualDeps(data.deps, (data.deps = deps)) || (needUpdate = true)
+  } else {
+    needUpdate = true
+
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useImperativeHandle,
       vNode,
       value: ref,
-      deps: null,
-    }))
-  checkHook(data, useImperativeHandle, hookIdx)
 
-  isEqualDeps(data.deps, (data.deps = deps)) || (needUpdate = true)
+      deps: deps,
+    }
+  }
 
   if ((needUpdate || data.value !== ref) && ref) {
     ;(data.value = ref).current = init()

@@ -20,6 +20,7 @@ function useOptimistic<State, Action>(
   passthrough: State,
   reducer: (state: State, action: Action) => State
 ): [optimisticState: State, addOptimistic: (action: Action) => void]
+
 function useOptimistic<State, Action>(
   passthrough: State,
   reducer?: (state: State, action: Action) => State
@@ -33,16 +34,29 @@ function useOptimistic<State, Action>(
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
 
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+  let data = hooks[hookIdx] as IHookDataForUseOptimistic
+  if (data) {
+    checkHook(data, useOptimistic, hookIdx)
+
+    data.reducer = reducer
+
+    if (data.isTemp) {
+      data.isTemp = false
+      data.value = data.valueTemp
+    } else {
+      data.value = passthrough
+    }
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useOptimistic,
       vNode,
       value: passthrough,
+
       valueTemp: passthrough,
       isTemp: false,
-      reducer,
+
+      reducer: reducer,
       dispatch(action: any) {
         data.valueTemp = data.reducer
           ? data.reducer(data.value, action)
@@ -55,19 +69,7 @@ function useOptimistic<State, Action>(
           addVNodeInQueue(data.vNode)
         }
       },
-    } satisfies IHookDataForUseOptimistic)
-  checkHook(data, useOptimistic, hookIdx)
-
-  // const state = data.value
-  // data.value = passthrough
-
-  data.reducer = reducer
-
-  if (data.isTemp) {
-    data.isTemp = false
-    data.value = data.valueTemp
-  } else {
-    data.value = passthrough
+    } satisfies IHookDataForUseOptimistic
   }
 
   return [data.value, data.dispatch]

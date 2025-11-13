@@ -5,16 +5,18 @@ function useDebugValue<T>(value: T, format?: (value: T) => any): void {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
-  
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+
+  let data = hooks[hookIdx]
+  if (data) {
+    checkHook(data, useDebugValue, hookIdx)
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useDebugValue,
       vNode,
       value: hooks,
-    })
-  checkHook(data, useDebugValue, hookIdx)
+    }
+  }
 
   if (!Object.is(data.value, value)) {
     data.value = value

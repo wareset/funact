@@ -50,7 +50,7 @@ export function createElement(
 }
 
 function Root(props: any) {
-  const [res, setRes] = useState<JSXNode>()
+  const { 0: res, 1: setRes } = useState<JSXNode>()
   res || setRes(new JSXNode(Portal as any, props, []))
   return res
 }

@@ -19,6 +19,7 @@ function useReducer<S, I, A extends [] | [any]>(
   initialArg: I,
   init: (i: I) => S
 ): [state: S, dispatch: (...args: A) => void]
+
 function useReducer<S, I, A extends [] | [any]>(
   reducer: (prevState: S, ...args: A) => S,
   initialState: I,
@@ -28,9 +29,13 @@ function useReducer<S, I, A extends [] | [any]>(
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
 
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+  let data = hooks[hookIdx] as IHookDataForUseOptimistic
+  if (data) {
+    checkHook(data, useReducer, hookIdx)
+
+    data.reducer = reducer
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useReducer,
       vNode,
@@ -43,10 +48,8 @@ function useReducer<S, I, A extends [] | [any]>(
           addVNodeInQueue(data.vNode)
         }
       },
-    } satisfies IHookDataForUseOptimistic)
-  checkHook(data, useReducer, hookIdx)
-
-  data.reducer = reducer
+    } satisfies IHookDataForUseOptimistic
+  }
 
   return [data.value, data.dispatch]
 }

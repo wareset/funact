@@ -6,18 +6,21 @@ function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
 
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+  let data = hooks[hookIdx]
+  if (data) {
+    checkHook(data, useCallback, hookIdx)
+
+    isEqualDeps(data.deps, (data.deps = deps)) || (data.value = cb)
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useCallback,
       vNode,
       value: cb,
-      deps: null,
-    })
-  checkHook(data, useCallback, hookIdx)
-  
-  isEqualDeps(data.deps, (data.deps = deps)) || (data.value = cb)
+
+      deps: deps,
+    }
+  }
 
   return data.value
 }

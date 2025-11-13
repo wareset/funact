@@ -17,36 +17,42 @@ function useActionState<State>(
   action: (state: Awaited<State>) => State | Promise<State>,
   initialState: Awaited<State>
   //   permalink?: string
-): [state: Awaited<State>, dispatch: () => void, isPending: boolean]
+): [state: Awaited<State>, formAction: () => void, isPending: boolean]
 function useActionState<State, Payload>(
   action: (state: Awaited<State>, payload: Payload) => State | Promise<State>,
   initialState: Awaited<State>
   //   permalink?: string
 ): [
   state: Awaited<State>,
-  dispatch: (payload: Payload) => void,
+  formAction: (payload: Payload) => void,
   isPending: boolean,
 ]
+
 function useActionState<State, Payload>(
   action: (state: Awaited<State>, payload?: Payload) => State | Promise<State>,
   initialState: Awaited<State>
   //   permalink?: string
 ): [
   state: Awaited<State>,
-  dispatch: (payload?: Payload) => void,
+  formAction: (payload?: Payload) => void,
   isPending: boolean,
 ] {
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
 
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
+  let data = hooks[hookIdx] as IHookDataForUseActionState
+  if (data) {
+    checkHook(data, useActionState, hookIdx)
+
+    data.action = action
+  } else {
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useActionState,
       vNode,
       value: initialState,
+
       valueTemp: initialState,
       action,
       pending: false,
@@ -72,10 +78,8 @@ function useActionState<State, Payload>(
           addVNodeInQueue(data.vNode), schedule(data.run)
         }
       },
-    } satisfies IHookDataForUseActionState)
-  checkHook(data, useActionState, hookIdx)
-
-  data.action = action
+    } satisfies IHookDataForUseActionState
+  }
 
   return [data.value, data.dispatch, data.pending]
 }

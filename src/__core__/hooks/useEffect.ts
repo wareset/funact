@@ -6,25 +6,28 @@ function useEffect(
   effect: (() => void) | (() => () => void),
   deps?: readonly unknown[]
 ): void {
-  let needUpdate = false
-
   const vNode = getCurrentVNode()
   const hookIdx = ++vNode.hookIdx
   const hooks = vNode.hooks
-  
-  const data =
-    hooks[hookIdx] ||
-    ((needUpdate = true),
-    (hooks[hookIdx] = {
+
+  let needUpdate = false
+  let data = hooks[hookIdx]
+  if (data) {
+    checkHook(data, useEffect, hookIdx)
+
+    isEqualDeps(data.deps, (data.deps = deps)) || !deps || (needUpdate = true)
+  } else {
+    needUpdate = true
+
+    data = hooks[hookIdx] = {
       hookIdx,
       hookType: useEffect,
       vNode,
       value: effect,
-      deps: null,
-    }))
-  checkHook(data, useEffect, hookIdx)
 
-  isEqualDeps(data.deps, (data.deps = deps)) || !deps || (needUpdate = true)
+      deps: deps,
+    }
+  }
 
   if (needUpdate) {
     data.value = effect
