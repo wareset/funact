@@ -17,15 +17,14 @@ function useTransition(): [
   startTransition: (callback: TransitionFunction) => void,
 ] {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx] as IHookDataForUseTransition
+  let data = prevHook.nextHook as IHookDataForUseTransition
   if (data) {
-    checkHook(data, useTransition, hookIdx)
+    checkHook(data, useTransition)
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useTransition,
       vNode,
       value: false,
@@ -49,6 +48,7 @@ function useTransition(): [
       },
     } satisfies IHookDataForUseTransition
   }
+  vNode.prevHook = data
 
   return [data.value, data.dispatch]
 }

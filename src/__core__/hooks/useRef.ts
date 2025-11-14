@@ -9,20 +9,20 @@ function useRef<T>(initialValue: T | undefined): RefObject<T | undefined>
 
 function useRef<T>(initialValue: T): RefObject<T> {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx]
+  let data = prevHook.nextHook
   if (data) {
-    checkHook(data, useRef, hookIdx)
+    checkHook(data, useRef)
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useRef,
       vNode,
       value: { current: initialValue },
     }
   }
+  vNode.prevHook = data
 
   return data.value
 }

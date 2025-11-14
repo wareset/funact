@@ -1,30 +1,31 @@
 import { getCurrentVNode } from '../VNode.utils'
 import { checkHook } from '../utils'
 
-function simpleHash(str: string) {
-  let hash = 0
-  for (let i = 0; i < str.length; ++i) {
-    hash = (hash << 5) - hash + str.charCodeAt(i)
-  }
-  return hash >>> 0 //.toString(36)
-}
+// function simpleHash(str: string) {
+//   let hash = 0
+//   for (let i = 0; i < str.length; ++i) {
+//     hash = (hash << 5) - hash + str.charCodeAt(i)
+//   }
+//   return hash >>> 0 //.toString(36)
+// }
 
 function useId(): string {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx]
+  let data = prevHook.nextHook
   if (data) {
-    checkHook(data, useId, hookIdx)
+    checkHook(data, useId)
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useId,
       vNode,
-      value: 'id' + simpleHash(vNode.deep.join('_') + '__' + hookIdx),
+      // value: 'id' + simpleHash(vNode.deep.join('_') + '__' + hookIdx),
+      value: (Math.random() * 6e16 + 4e16).toString(36),
     }
   }
+  vNode.prevHook = data
 
   return data.value
 }

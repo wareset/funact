@@ -18,10 +18,12 @@ export type FC =
 
 // Возможно хуки станут классами?
 export interface IHook {
-  // Порядковый номер хука
-  hookIdx: number
+  // Следующий хук
+  nextHook: IHook | null
   // Тип хука (в роли него выступает сама функция хука)
   hookType: (...a: any[]) => any
+  // hookIdx: number
+
   vNode: VNode
   value: any
   // Зависимости, если есть

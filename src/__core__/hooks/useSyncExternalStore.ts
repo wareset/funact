@@ -18,18 +18,17 @@ function useSyncExternalStore<Snapshot>(
   _getServerSnapshot?: () => Snapshot
 ): Snapshot {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx] as IHookDataForUseSyncExternalStore
+  let data = prevHook.nextHook as IHookDataForUseSyncExternalStore
   if (data) {
-    checkHook(data, useSyncExternalStore, hookIdx)
+    checkHook(data, useSyncExternalStore)
 
     data.subscribe = subscribe
     data.getSnapshot = getSnapshot
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useSyncExternalStore,
       vNode,
       value: getSnapshot(),
@@ -46,6 +45,7 @@ function useSyncExternalStore<Snapshot>(
       },
     } satisfies IHookDataForUseSyncExternalStore
   }
+  vNode.prevHook = data
 
   useEffect(data.effect, [subscribe])
   useEffect(data.check)

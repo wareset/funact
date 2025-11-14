@@ -14,12 +14,8 @@ export function sortDeeps(a: number[], b: number[]): -1 | 0 | 1 {
 }
 
 // Проверка, что все хуки всегда вызываются в правильном порядке
-export function checkHook(
-  hook: IHook,
-  hookType: (...a: any[]) => any,
-  hookIdx: number
-) {
-  if (hook.hookType !== hookType || hook.hookIdx !== hookIdx) {
+export function checkHook(hook: IHook, hookType: (...a: any[]) => any) {
+  if (hook.hookType !== hookType) {
     throw new Error('Incorrect hook: ' + hookType.name)
   }
 }

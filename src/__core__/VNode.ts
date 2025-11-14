@@ -28,8 +28,8 @@ export class VNode {
   contextUsers?: any[]
 
   // Для работы с хуками
-  hookIdx: number
-  readonly hooks: IHook[]
+  readonly headHook: IHook
+  prevHook: IHook
 
   constructor(parent: VNode | null, jsx: any, index?: number) {
     this._ = ''
@@ -56,8 +56,7 @@ export class VNode {
 
     const prevVNode = getCurrentVNode()
     setCurrentVNode(this)
-    this.hookIdx = -1
-    this.hooks = []
+    this.prevHook = this.headHook = { nextHook: null } as IHook
 
     if (jsx instanceof JSXNode) {
       if (typeof jsx.type !== 'string') {

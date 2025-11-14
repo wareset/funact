@@ -7,20 +7,19 @@ function useInsertionEffect(
   deps?: readonly unknown[]
 ): void {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
   let needUpdate = false
-  let data = hooks[hookIdx]
+  let data = prevHook.nextHook
   if (data) {
-    checkHook(data, useInsertionEffect, hookIdx)
+    checkHook(data, useInsertionEffect)
 
     isEqualDeps(data.deps, (data.deps = deps)) || !deps || (needUpdate = true)
   } else {
     needUpdate = true
 
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useInsertionEffect,
       vNode,
       value: effect,
@@ -28,6 +27,7 @@ function useInsertionEffect(
       deps: deps,
     }
   }
+  vNode.prevHook = data
 
   if (needUpdate) {
     data.value = effect

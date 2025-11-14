@@ -7,20 +7,19 @@ function useLayoutEffect(
   deps?: readonly unknown[]
 ): void {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
   let needUpdate = false
-  let data = hooks[hookIdx]
+  let data = prevHook.nextHook
   if (data) {
-    checkHook(data, useLayoutEffect, hookIdx)
+    checkHook(data, useLayoutEffect)
 
     isEqualDeps(data.deps, (data.deps = deps)) || !deps || (needUpdate = true)
   } else {
     needUpdate = true
 
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useLayoutEffect,
       vNode,
       value: effect,
@@ -28,6 +27,7 @@ function useLayoutEffect(
       deps: deps,
     }
   }
+  vNode.prevHook = data
 
   if (needUpdate) {
     data.value = effect

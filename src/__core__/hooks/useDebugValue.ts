@@ -3,20 +3,20 @@ import { checkHook } from '../utils'
 
 function useDebugValue<T>(value: T, format?: (value: T) => any): void {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx]
+  let data = prevHook.nextHook
   if (data) {
-    checkHook(data, useDebugValue, hookIdx)
+    checkHook(data, useDebugValue)
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useDebugValue,
       vNode,
-      value: hooks,
+      value: vNode,
     }
   }
+  vNode.prevHook = data
 
   if (!Object.is(data.value, value)) {
     data.value = value

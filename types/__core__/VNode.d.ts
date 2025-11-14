@@ -10,7 +10,7 @@ export declare class VNode {
     readonly children: VNode[];
     contextValue?: any;
     contextUsers?: any[];
-    hookIdx: number;
-    readonly hooks: IHook[];
+    readonly headHook: IHook;
+    prevHook: IHook;
     constructor(parent: VNode | null, jsx: any, index?: number);
 }

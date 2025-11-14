@@ -7,20 +7,19 @@ function useEffect(
   deps?: readonly unknown[]
 ): void {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
   let needUpdate = false
-  let data = hooks[hookIdx]
+  let data = prevHook.nextHook
   if (data) {
-    checkHook(data, useEffect, hookIdx)
+    checkHook(data, useEffect)
 
     isEqualDeps(data.deps, (data.deps = deps)) || !deps || (needUpdate = true)
   } else {
     needUpdate = true
 
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useEffect,
       vNode,
       value: effect,
@@ -28,6 +27,7 @@ function useEffect(
       deps: deps,
     }
   }
+  vNode.prevHook = data
 
   if (needUpdate) {
     data.value = effect

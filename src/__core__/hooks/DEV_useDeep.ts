@@ -4,17 +4,21 @@ import { checkHook } from '../utils'
 
 function devUseDeep(): number[] {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
-  const data =
-    hooks[hookIdx] ||
-    (hooks[hookIdx] = {
-      hookIdx: hookIdx,
+  const prevHook = vNode.prevHook
+
+  let data = prevHook.nextHook
+  if (data) {
+    checkHook(data, devUseDeep)
+  } else {
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: devUseDeep,
       vNode,
       value: vNode.deep.slice(),
-    })
-  checkHook(data, devUseDeep, hookIdx)
+    }
+  }
+  vNode.prevHook = data
+
   return data.value
 
   // const ref = useRef<number[]>(null)

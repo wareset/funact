@@ -19,15 +19,14 @@ function useState<S>(
   initialState?: S | (() => S)
 ): [S | undefined, (value: S | ((prevState: S | undefined) => S)) => void] {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx] as IHookDataForUseState
+  let data = prevHook.nextHook as IHookDataForUseState
   if (data) {
-    checkHook(data, useState, hookIdx)
+    checkHook(data, useState)
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useState,
       vNode,
       value:
@@ -44,6 +43,7 @@ function useState<S>(
       },
     } satisfies IHookDataForUseState
   }
+  vNode.prevHook = data
 
   return [data.value, data.update]
 }

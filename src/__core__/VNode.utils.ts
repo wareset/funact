@@ -1,4 +1,3 @@
-import { IHook } from './types'
 import { VNode } from './VNode'
 import { JSXNode } from './JSXNode'
 import { Fragment } from './components/Fragment'
@@ -34,7 +33,7 @@ export function updateVNode(iam: VNode) {
     iam.dirty = false
     const prevVNode = getCurrentVNode()
     setCurrentVNode(iam)
-    iam.hookIdx = -1
+    iam.prevHook = iam.headHook
 
     const jsx = iam.fc(iam.jsx.props)
 
@@ -80,7 +79,7 @@ function compareProps(iam: VNode, jsxList: any[]) {
         if (cNode.jsx !== (cNode.jsx = validateTextData(jsx))) {
           const prevVNode = getCurrentVNode()
           setCurrentVNode(cNode)
-          cNode.hookIdx = -1
+          iam.prevHook = iam.headHook
 
           XMLText(cNode.jsx)
 
@@ -104,16 +103,17 @@ function destroyVNode(iam?: VNode) {
 
     const prevVNode = getCurrentVNode()
     setCurrentVNode(iam)
-    iam.hookIdx = -1
+    iam.prevHook = iam.headHook
     switch (iam.fc) {
       case XMLText:
         XMLText('', true)
         break
+      // @ts-ignore
       case XMLElement:
         XMLElement({}, true)
       default:
-        for (let v: IHook, a = iam.hooks, i = 0; i < a.length; ++i) {
-          ;(v = a[i]).cleanup && v.cleanup(), (v.cleanup = null)
+        for (let hook = iam.headHook; (hook = hook.nextHook!); ) {
+          hook.cleanup && (hook.cleanup(), (hook.cleanup = null))
         }
     }
     setCurrentVNode(prevVNode)

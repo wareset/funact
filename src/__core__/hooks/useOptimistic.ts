@@ -31,12 +31,11 @@ function useOptimistic<State, Action>(
     | ((action: State | ((pendingState: State) => State)) => void),
 ] {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx] as IHookDataForUseOptimistic
+  let data = prevHook.nextHook as IHookDataForUseOptimistic
   if (data) {
-    checkHook(data, useOptimistic, hookIdx)
+    checkHook(data, useOptimistic)
 
     data.reducer = reducer
 
@@ -47,8 +46,8 @@ function useOptimistic<State, Action>(
       data.value = passthrough
     }
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useOptimistic,
       vNode,
       value: passthrough,
@@ -71,6 +70,7 @@ function useOptimistic<State, Action>(
       },
     } satisfies IHookDataForUseOptimistic
   }
+  vNode.prevHook = data
 
   return [data.value, data.dispatch]
 }

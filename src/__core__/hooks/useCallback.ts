@@ -3,17 +3,16 @@ import { checkHook, isEqualDeps } from '../utils'
 
 function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx]
+  let data = prevHook.nextHook
   if (data) {
-    checkHook(data, useCallback, hookIdx)
+    checkHook(data, useCallback)
 
     isEqualDeps(data.deps, (data.deps = deps)) || (data.value = cb)
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useCallback,
       vNode,
       value: cb,
@@ -21,6 +20,7 @@ function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
       deps: deps,
     }
   }
+  vNode.prevHook = data
 
   return data.value
 }

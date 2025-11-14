@@ -9,15 +9,14 @@ interface IHookDataForUseContext extends IHook {
 
 function useContext<T>(context: IContext<T>): T {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx] as IHookDataForUseContext
+  let data = prevHook.nextHook as IHookDataForUseContext
   if (data) {
-    checkHook(data, useContext, hookIdx)
+    checkHook(data, useContext)
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useContext,
       vNode,
       value: null,
@@ -47,6 +46,7 @@ function useContext<T>(context: IContext<T>): T {
       }
     }
   }
+  vNode.prevHook = data
 
   return data.value
 }

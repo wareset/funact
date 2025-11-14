@@ -4,20 +4,20 @@ import { addVNodeInQueue } from '../scheduler'
 
 function useDeferredValue<T>(value: T, initialValue?: T): T {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx]
+  let data = prevHook.nextHook
   if (data) {
-    checkHook(data, useDeferredValue, hookIdx)
+    checkHook(data, useDeferredValue)
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useDeferredValue,
       vNode,
       value: initialValue !== void 0 ? initialValue : value,
     }
   }
+  vNode.prevHook = data
 
   const prevValue = data.value
   if (!Object.is(prevValue, value)) {

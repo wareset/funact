@@ -11,7 +11,7 @@ export type FC = {
     compare?: Comparator;
 };
 export interface IHook {
-    hookIdx: number;
+    nextHook: IHook | null;
     hookType: (...a: any[]) => any;
     vNode: VNode;
     value: any;

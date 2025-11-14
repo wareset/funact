@@ -38,17 +38,16 @@ function useActionState<State, Payload>(
   isPending: boolean,
 ] {
   const vNode = getCurrentVNode()
-  const hookIdx = ++vNode.hookIdx
-  const hooks = vNode.hooks
+  const prevHook = vNode.prevHook
 
-  let data = hooks[hookIdx] as IHookDataForUseActionState
+  let data = prevHook.nextHook as IHookDataForUseActionState
   if (data) {
-    checkHook(data, useActionState, hookIdx)
+    checkHook(data, useActionState)
 
     data.action = action
   } else {
-    data = hooks[hookIdx] = {
-      hookIdx,
+    data = prevHook.nextHook = {
+      nextHook: null,
       hookType: useActionState,
       vNode,
       value: initialState,
@@ -80,6 +79,7 @@ function useActionState<State, Payload>(
       },
     } satisfies IHookDataForUseActionState
   }
+  vNode.prevHook = data
 
   return [data.value, data.dispatch, data.pending]
 }
