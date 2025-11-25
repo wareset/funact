@@ -11,19 +11,19 @@ function useRef<T>(initialValue: T): RefObject<T> {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, useRef)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, useRef)
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useRef,
       vNode,
       value: { current: initialValue },
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return data.value
+  return hook.value
 }
 export { useRef }

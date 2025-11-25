@@ -12,15 +12,15 @@ function useImperativeHandle<T, R extends T>(
   const prevHook = vNode.prevHook
 
   let needUpdate = false
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, useImperativeHandle)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, useImperativeHandle)
 
-    isEqualDeps(data.deps, (data.deps = deps)) || (needUpdate = true)
+    isEqualDeps(hook.deps, (hook.deps = deps)) || (needUpdate = true)
   } else {
     needUpdate = true
 
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useImperativeHandle,
       vNode,
@@ -29,10 +29,10 @@ function useImperativeHandle<T, R extends T>(
       deps: deps,
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  if ((needUpdate || data.value !== ref) && ref) {
-    ;(data.value = ref).current = init()
+  if ((needUpdate || hook.value !== ref) && ref) {
+    ;(hook.value = ref).current = init()
   }
 }
 export { useImperativeHandle }

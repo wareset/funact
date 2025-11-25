@@ -19,11 +19,11 @@ function useTransition(): [
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook as IHookDataForUseTransition
-  if (data) {
-    checkHook(data, useTransition)
+  let hook = prevHook.nextHook as IHookDataForUseTransition
+  if (hook) {
+    checkHook(hook, useTransition)
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useTransition,
       vNode,
@@ -31,25 +31,25 @@ function useTransition(): [
 
       callbacks: [],
       run() {
-        const res = data.callbacks.shift()()
-        if (res == null || typeof res.then !== 'function') data.then()
-        else res.then(data.then)
+        const res = hook.callbacks.shift()()
+        if (res == null || typeof res.then !== 'function') hook.then()
+        else res.then(hook.then)
       },
       then() {
-        if (data.callbacks.length) schedule(data.run)
-        else (data.value = false), addVNodeInQueue(data.vNode)
+        if (hook.callbacks.length) schedule(hook.run)
+        else (hook.value = false), addVNodeInQueue(hook.vNode)
       },
       dispatch(callback: TransitionFunction) {
-        data.callbacks.push(callback)
-        if (!data.value) {
-          data.value = true
-          addVNodeInQueue(data.vNode), schedule(data.run)
+        hook.callbacks.push(callback)
+        if (!hook.value) {
+          hook.value = true
+          addVNodeInQueue(hook.vNode), schedule(hook.run)
         }
       },
     } satisfies IHookDataForUseTransition
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return [data.value, data.dispatch]
+  return [hook.value, hook.dispatch]
 }
 export { useTransition }

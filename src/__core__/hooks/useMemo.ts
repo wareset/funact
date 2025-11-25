@@ -6,15 +6,15 @@ function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
   const prevHook = vNode.prevHook
 
   let needUpdate = false
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, useMemo)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, useMemo)
 
-    isEqualDeps(data.deps, (data.deps = deps)) || (needUpdate = true)
+    isEqualDeps(hook.deps, (hook.deps = deps)) || (needUpdate = true)
   } else {
     needUpdate = true
 
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useMemo,
       vNode,
@@ -23,8 +23,8 @@ function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
       deps: deps,
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return needUpdate ? (data.value = factory()) : data.value
+  return needUpdate ? (hook.value = factory()) : hook.value
 }
 export { useMemo }

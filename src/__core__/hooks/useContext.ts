@@ -11,11 +11,11 @@ function useContext<T>(context: IContext<T>): T {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook as IHookDataForUseContext
-  if (data) {
-    checkHook(data, useContext)
+  let hook = prevHook.nextHook as IHookDataForUseContext
+  if (hook) {
+    checkHook(hook, useContext)
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useContext,
       vNode,
@@ -25,29 +25,29 @@ function useContext<T>(context: IContext<T>): T {
       users: null,
 
       cleanup() {
-        if (data.users) {
-          const idx = data.users.lastIndexOf(data)
-          idx === -1 || data.users.splice(idx, 1)
-          data.users = null
+        if (hook.users) {
+          const idx = hook.users.lastIndexOf(hook)
+          idx === -1 || hook.users.splice(idx, 1)
+          hook.users = null
         }
       },
     } satisfies IHookDataForUseContext
   }
 
-  if (data.context !== context && data.cleanup) {
-    data.cleanup()
-    data.value = (data.context = context).defaultValue
+  if (hook.context !== context && hook.cleanup) {
+    hook.cleanup()
+    hook.value = (hook.context = context).defaultValue
 
     for (let ctxVNode = vNode; (ctxVNode = ctxVNode.parent!); ) {
       if (ctxVNode.fc === (context as any)) {
-        data.value = ctxVNode.contextValue
-        ;(data.users = ctxVNode.contextUsers!).push(data)
+        hook.value = ctxVNode.contextValue
+        ;(hook.users = ctxVNode.contextUsers!).push(hook)
         break
       }
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return data.value
+  return hook.value
 }
 export { useContext }

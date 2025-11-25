@@ -10,15 +10,15 @@ function useEffect(
   const prevHook = vNode.prevHook
 
   let needUpdate = false
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, useEffect)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, useEffect)
 
-    isEqualDeps(data.deps, (data.deps = deps)) || !deps || (needUpdate = true)
+    isEqualDeps(hook.deps, (hook.deps = deps)) || !deps || (needUpdate = true)
   } else {
     needUpdate = true
 
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useEffect,
       vNode,
@@ -27,11 +27,11 @@ function useEffect(
       deps: deps,
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
   if (needUpdate) {
-    data.value = effect
-    addEffectInQueue(data)
+    hook.value = effect
+    addEffectInQueue(hook)
   }
 }
 export { useEffect }

@@ -21,11 +21,11 @@ function useState<S>(
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook as IHookDataForUseState
-  if (data) {
-    checkHook(data, useState)
+  let hook = prevHook.nextHook as IHookDataForUseState
+  if (hook) {
+    checkHook(hook, useState)
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useState,
       vNode,
@@ -35,16 +35,16 @@ function useState<S>(
           : initialState,
 
       update(state: any) {
-        if (typeof state === 'function') state = state(data.value)
-        if (!Object.is(data.value, state)) {
-          data.value = state
-          addVNodeInQueue(data.vNode)
+        if (typeof state === 'function') state = state(hook.value)
+        if (!Object.is(hook.value, state)) {
+          hook.value = state
+          addVNodeInQueue(hook.vNode)
         }
       },
     } satisfies IHookDataForUseState
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return [data.value, data.update]
+  return [hook.value, hook.update]
 }
 export { useState }

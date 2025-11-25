@@ -13,11 +13,11 @@ function useId(): string {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, useId)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, useId)
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useId,
       vNode,
@@ -25,8 +25,8 @@ function useId(): string {
       value: (Math.random() * 6e16 + 4e16).toString(36),
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return data.value
+  return hook.value
 }
 export { useId }

@@ -40,13 +40,13 @@ function useActionState<State, Payload>(
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook as IHookDataForUseActionState
-  if (data) {
-    checkHook(data, useActionState)
+  let hook = prevHook.nextHook as IHookDataForUseActionState
+  if (hook) {
+    checkHook(hook, useActionState)
 
-    data.action = action
+    hook.action = action
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useActionState,
       vNode,
@@ -57,30 +57,30 @@ function useActionState<State, Payload>(
       pending: false,
       queue: [],
       run() {
-        const item = data.queue.shift()!
-        const res = item[0](data.valueTemp, item[1])
-        if (res == null || typeof res.then !== 'function') data.then(res)
-        else res.then(data.then)
+        const item = hook.queue.shift()!
+        const res = item[0](hook.valueTemp, item[1])
+        if (res == null || typeof res.then !== 'function') hook.then(res)
+        else res.then(hook.then)
       },
       then(state: any) {
-        data.valueTemp = state
-        if (data.queue.length) schedule(data.run)
+        hook.valueTemp = state
+        if (hook.queue.length) schedule(hook.run)
         else {
-          data.pending = false
-          ;(data.value = state), addVNodeInQueue(data.vNode)
+          hook.pending = false
+          ;(hook.value = state), addVNodeInQueue(hook.vNode)
         }
       },
       dispatch(payload?: Payload) {
-        data.queue.push([data.action, payload])
-        if (!data.pending) {
-          data.pending = true
-          addVNodeInQueue(data.vNode), schedule(data.run)
+        hook.queue.push([hook.action, payload])
+        if (!hook.pending) {
+          hook.pending = true
+          addVNodeInQueue(hook.vNode), schedule(hook.run)
         }
       },
     } satisfies IHookDataForUseActionState
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return [data.value, data.dispatch, data.pending]
+  return [hook.value, hook.dispatch, hook.pending]
 }
 export { useActionState }

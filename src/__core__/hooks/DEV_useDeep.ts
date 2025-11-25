@@ -6,20 +6,20 @@ function devUseDeep(): number[] {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, devUseDeep)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, devUseDeep)
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: devUseDeep,
       vNode,
       value: vNode.deep.slice(),
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return data.value
+  return hook.value
 
   // const ref = useRef<number[]>(null)
   // return ref.current || (ref.current = getHookIndexAndVNode()[1].deep.slice())

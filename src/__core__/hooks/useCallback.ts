@@ -5,13 +5,13 @@ function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, useCallback)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, useCallback)
 
-    isEqualDeps(data.deps, (data.deps = deps)) || (data.value = cb)
+    isEqualDeps(hook.deps, (hook.deps = deps)) || (hook.value = cb)
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useCallback,
       vNode,
@@ -20,8 +20,8 @@ function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
       deps: deps,
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return data.value
+  return hook.value
 }
 export { useCallback }

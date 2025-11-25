@@ -10,15 +10,15 @@ function useInsertionEffect(
   const prevHook = vNode.prevHook
 
   let needUpdate = false
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, useInsertionEffect)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, useInsertionEffect)
 
-    isEqualDeps(data.deps, (data.deps = deps)) || !deps || (needUpdate = true)
+    isEqualDeps(hook.deps, (hook.deps = deps)) || !deps || (needUpdate = true)
   } else {
     needUpdate = true
 
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useInsertionEffect,
       vNode,
@@ -27,11 +27,11 @@ function useInsertionEffect(
       deps: deps,
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
   if (needUpdate) {
-    data.value = effect
-    addInsertionEffectInQueue(data)
+    hook.value = effect
+    addInsertionEffectInQueue(hook)
   }
 }
 export { useInsertionEffect }

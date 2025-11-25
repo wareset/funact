@@ -5,21 +5,21 @@ function useDebugValue<T>(value: T, format?: (value: T) => any): void {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook
-  if (data) {
-    checkHook(data, useDebugValue)
+  let hook = prevHook.nextHook
+  if (hook) {
+    checkHook(hook, useDebugValue)
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useDebugValue,
       vNode,
       value: vNode,
     }
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  if (!Object.is(data.value, value)) {
-    data.value = value
+  if (!Object.is(hook.value, value)) {
+    hook.value = value
     console.log('USE_DEBUG:', format ? format(value) : value, vNode)
   }
 }

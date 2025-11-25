@@ -33,20 +33,20 @@ function useOptimistic<State, Action>(
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook as IHookDataForUseOptimistic
-  if (data) {
-    checkHook(data, useOptimistic)
+  let hook = prevHook.nextHook as IHookDataForUseOptimistic
+  if (hook) {
+    checkHook(hook, useOptimistic)
 
-    data.reducer = reducer
+    hook.reducer = reducer
 
-    if (data.isTemp) {
-      data.isTemp = false
-      data.value = data.valueTemp
+    if (hook.isTemp) {
+      hook.isTemp = false
+      hook.value = hook.valueTemp
     } else {
-      data.value = passthrough
+      hook.value = passthrough
     }
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useOptimistic,
       vNode,
@@ -57,21 +57,21 @@ function useOptimistic<State, Action>(
 
       reducer: reducer,
       dispatch(action: any) {
-        data.valueTemp = data.reducer
-          ? data.reducer(data.value, action)
+        hook.valueTemp = hook.reducer
+          ? hook.reducer(hook.value, action)
           : typeof action === 'function'
-            ? action(data.value)
+            ? action(hook.value)
             : action
-        if (!Object.is(data.value, data.valueTemp)) {
-          data.isTemp = true
-          data.value = data.valueTemp
-          addVNodeInQueue(data.vNode)
+        if (!Object.is(hook.value, hook.valueTemp)) {
+          hook.isTemp = true
+          hook.value = hook.valueTemp
+          addVNodeInQueue(hook.vNode)
         }
       },
     } satisfies IHookDataForUseOptimistic
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return [data.value, data.dispatch]
+  return [hook.value, hook.dispatch]
 }
 export { useOptimistic }

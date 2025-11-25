@@ -28,29 +28,29 @@ function useReducer<S, I, A extends [] | [any]>(
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
-  let data = prevHook.nextHook as IHookDataForUseOptimistic
-  if (data) {
-    checkHook(data, useReducer)
+  let hook = prevHook.nextHook as IHookDataForUseOptimistic
+  if (hook) {
+    checkHook(hook, useReducer)
 
-    data.reducer = reducer
+    hook.reducer = reducer
   } else {
-    data = prevHook.nextHook = {
+    hook = prevHook.nextHook = {
       nextHook: null,
       hookType: useReducer,
       vNode,
       value: (init ? init(initialState) : initialState) as S,
       reducer,
       dispatch(...args: any[]) {
-        args = data.reducer(data.value, ...args)
-        if (!Object.is(data.value, args)) {
-          data.value = args
-          addVNodeInQueue(data.vNode)
+        args = hook.reducer(hook.value, ...args)
+        if (!Object.is(hook.value, args)) {
+          hook.value = args
+          addVNodeInQueue(hook.vNode)
         }
       },
     } satisfies IHookDataForUseOptimistic
   }
-  vNode.prevHook = data
+  vNode.prevHook = hook
 
-  return [data.value, data.dispatch]
+  return [hook.value, hook.dispatch]
 }
 export { useReducer }
