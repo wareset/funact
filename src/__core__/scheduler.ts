@@ -46,7 +46,7 @@ function update() {
 }
 
 function update_any_effects(effects: IHook[][]) {
-  // Здесь же это не обязательно?
+  // это нужно для startTransition
   const prevVNode = getCurrentVNode()
 
   for (let i = 0, a: IHook[]; i < effects.length; ++i) {

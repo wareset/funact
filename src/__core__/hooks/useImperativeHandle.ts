@@ -1,5 +1,5 @@
+import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { checkHook, isEqualDeps } from '../utils'
 
 import { RefObject } from '../types'
 
@@ -15,7 +15,6 @@ function useImperativeHandle<T, R extends T>(
   let hook = prevHook.nextHook
   if (hook) {
     checkHook(hook, useImperativeHandle)
-
     isEqualDeps(hook.deps, (hook.deps = deps)) || (needUpdate = true)
   } else {
     needUpdate = true

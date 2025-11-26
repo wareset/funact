@@ -1,6 +1,5 @@
+import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { checkHook } from '../utils'
-// import { useRef } from './useRef'
 
 function devUseDeep(): number[] {
   const vNode = getCurrentVNode()

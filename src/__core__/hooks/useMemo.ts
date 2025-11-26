@@ -1,5 +1,5 @@
+import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { checkHook, isEqualDeps } from '../utils'
 
 function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
   const vNode = getCurrentVNode()
@@ -9,7 +9,6 @@ function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
   let hook = prevHook.nextHook
   if (hook) {
     checkHook(hook, useMemo)
-
     isEqualDeps(hook.deps, (hook.deps = deps)) || (needUpdate = true)
   } else {
     needUpdate = true

@@ -1,7 +1,8 @@
+import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { IHook } from '../types'
-import { checkHook } from '../utils'
 import { addVNodeInQueue, schedule } from '../scheduler'
+
+import { IHook } from '../types'
 
 interface IHookDataForUseActionState extends IHook {
   valueTemp: any
@@ -43,7 +44,6 @@ function useActionState<State, Payload>(
   let hook = prevHook.nextHook as IHookDataForUseActionState
   if (hook) {
     checkHook(hook, useActionState)
-
     hook.action = action
   } else {
     hook = prevHook.nextHook = {

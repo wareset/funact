@@ -1,5 +1,5 @@
+import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { checkHook } from '../utils'
 
 import type { RefObject } from '../types'
 

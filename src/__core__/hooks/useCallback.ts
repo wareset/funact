@@ -1,5 +1,5 @@
+import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { checkHook, isEqualDeps } from '../utils'
 
 function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
   const vNode = getCurrentVNode()
@@ -8,7 +8,6 @@ function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
   let hook = prevHook.nextHook
   if (hook) {
     checkHook(hook, useCallback)
-
     isEqualDeps(hook.deps, (hook.deps = deps)) || (hook.value = cb)
   } else {
     hook = prevHook.nextHook = {

@@ -1,7 +1,8 @@
+import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { IHook } from '../types'
-import { checkHook } from '../utils'
 import { addVNodeInQueue } from '../scheduler'
+
+import { IHook } from '../types'
 
 interface IHookDataForUseOptimistic extends IHook {
   valueTemp: any
@@ -36,7 +37,6 @@ function useOptimistic<State, Action>(
   let hook = prevHook.nextHook as IHookDataForUseOptimistic
   if (hook) {
     checkHook(hook, useOptimistic)
-
     hook.reducer = reducer
 
     if (hook.isTemp) {

@@ -1,6 +1,6 @@
+import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { IHook, IContext } from '../types'
-import { checkHook } from '../utils'
 
 interface IHookDataForUseContext extends IHook {
   context: any

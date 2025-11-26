@@ -1,5 +1,5 @@
+import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { checkHook } from '../utils'
 import { addVNodeInQueue } from '../scheduler'
 
 function useDeferredValue<T>(value: T, initialValue?: T): T {

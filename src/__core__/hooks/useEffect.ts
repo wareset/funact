@@ -1,5 +1,5 @@
+import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { checkHook, isEqualDeps } from '../utils'
 import { addEffectInQueue } from '../scheduler'
 
 function useEffect(
@@ -13,8 +13,7 @@ function useEffect(
   let hook = prevHook.nextHook
   if (hook) {
     checkHook(hook, useEffect)
-
-    isEqualDeps(hook.deps, (hook.deps = deps)) || !deps || (needUpdate = true)
+    ;(deps && isEqualDeps(hook.deps, (hook.deps = deps))) || (needUpdate = true)
   } else {
     needUpdate = true
 
