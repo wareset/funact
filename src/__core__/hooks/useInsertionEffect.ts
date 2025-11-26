@@ -13,7 +13,7 @@ function useInsertionEffect(
   let hook = prevHook.nextHook
   if (hook) {
     checkHook(hook, useInsertionEffect)
-    ;(deps && isEqualDeps(hook.deps, (hook.deps = deps))) || (needUpdate = true)
+    ;(isEqualDeps(hook.deps, (hook.deps = deps)) && deps) || (needUpdate = true)
   } else {
     needUpdate = true
 
