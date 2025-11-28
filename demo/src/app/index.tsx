@@ -7,11 +7,11 @@ console.log('barely-react')
 //   console.log(await test2())
 // })()
 
-import { render } from 'barely-react'
+import { createRoot } from 'barely-react'
 
 import Test from '@/routes/test/page'
 
-console.log(render(document.body, <Test />))
+console.log(createRoot(document.body).render(<Test />))
 
 // import Bootstrap from '@/routes/bootstrap/page'
 
