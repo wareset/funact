@@ -4,11 +4,11 @@ export type Props = { [key: string]: any }
 
 export type Comparator = (prevProps: Props, nextProps: Props) => boolean
 
-export type FC =
+export type FC<P extends Props = any> =
   // | ((props: Props) => any)
   // | (() => any)
   | {
-      (props: Props): any
+      (props: P): any
       compare?: Comparator
     }
   | {

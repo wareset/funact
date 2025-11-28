@@ -10,9 +10,14 @@ export const schedule =
     ? queueMicrotask
     : typeof Promise !== 'undefined'
       ? function (callback: () => void) {
-          return Promise.resolve(null).then(callback)
+          Promise.resolve(null).then(callback)
         }
       : setTimeout
+
+// Для экспериментов
+export const schedule2 = function (callback: () => void) {
+  setTimeout(callback, 1000)
+}
 
 let V_NODES: VNode[] = []
 let INSERTION_EFFECTS: IHook[][] = []
@@ -23,32 +28,27 @@ let EFFECTS: IHook[][] = []
 Вероятно исполнение effect должно происходить в следующем микротаске,
 но пока реализовано так, чтобы посмотреть как будет.
 */
-let updating = false
+let updating = 0
 function update() {
-  const PREV_V_NODES = V_NODES
-  const PREV_INSERTION_EFFECTS = INSERTION_EFFECTS
-  const PREV_LAYOUT_EFFECTS = LAYOUT_EFFECTS
-  const PREV_EFFECTS = EFFECTS
+  if (updating > 4e4) throw 'loop'
+  const prevUpdating = updating
 
-  updating = false
-
-  V_NODES = []
-  INSERTION_EFFECTS = []
-  LAYOUT_EFFECTS = []
-  EFFECTS = []
-
-  for (let i = 0; i < PREV_V_NODES.length; ++i) updateVNode(PREV_V_NODES[i])
-
-  update_any_effects(PREV_INSERTION_EFFECTS)
-  update_any_effects(PREV_LAYOUT_EFFECTS)
-  document.body.clientWidth
-  update_any_effects(PREV_EFFECTS)
-}
-
-function update_any_effects(effects: IHook[][]) {
-  // это нужно для startTransition
+  // не помню зачем это здесь нужно
   const prevVNode = getCurrentVNode()
 
+  const PREV_V_NODES = V_NODES
+  ;(V_NODES = []), PREV_V_NODES.forEach(updateVNode)
+  update_any_effects(INSERTION_EFFECTS, (INSERTION_EFFECTS = []))
+  update_any_effects(LAYOUT_EFFECTS, (LAYOUT_EFFECTS = []))
+  update_any_effects(EFFECTS, (EFFECTS = []))
+
+  setCurrentVNode(prevVNode)
+
+  prevUpdating === updating ? (updating = 0) : schedule(update)
+}
+
+function update_any_effects(effects: IHook[][], _?: any): void
+function update_any_effects(effects: IHook[][]) {
   for (let i = 0, a: IHook[]; i < effects.length; ++i) {
     if ((a = effects[i]).length) {
       setCurrentVNode(a[0].vNode)
@@ -68,8 +68,6 @@ function update_any_effects(effects: IHook[][]) {
       }
     }
   }
-
-  setCurrentVNode(prevVNode)
 }
 
 export function addVNodeInQueue(vNode: VNode) {
@@ -81,7 +79,7 @@ export function addVNodeInQueue(vNode: VNode) {
     for (; i-- > 0; ) if (sortDeeps(V_NODES[i].deep, deep) < 0) break
 
     V_NODES.splice(i + 1, 0, vNode)
-    updating || ((updating = true), schedule(update))
+    updating++ || schedule(update)
   }
 }
 
@@ -106,6 +104,6 @@ function add_task_for_any_effect(hook: IHook, effects: IHook[][]) {
     }
 
     effects.splice(i + 1, 0, [hook])
-    updating || ((updating = true), schedule(update))
+    updating++ || schedule(update)
   }
 }
