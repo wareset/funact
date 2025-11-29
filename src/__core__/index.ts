@@ -37,7 +37,7 @@ export { getContext as use } from './use'
 
 import { VNode } from './VNode'
 import { JSXNode } from './JSXNode'
-// import { useState } from './hooks/useState'
+import { useState } from './hooks/useState'
 import { Portal } from './components/Portal'
 
 /*@__NO_SIDE_EFFECTS__*/
@@ -49,23 +49,23 @@ export function createElement(
   return new JSXNode(type, props, children)
 }
 
-// function Root(props: any) {
-//   const { 0: res, 1: setRes } = useState<JSXNode>()
-//   res || setRes(new JSXNode(Portal as any, props, []))
-//   return res
-// }
+function Root(props: any) {
+  const { 0: res, 1: setRes } = useState<JSXNode>()
+  res || setRes(new JSXNode(Portal as any, props, []))
+  return res
+}
 // export function render(domNode: HTMLElement | SVGElement, children: any) {
 //   return new VNode(null, new JSXNode(Root, { domNode, children }, []))
 // }
 
 // export function render(domNode: HTMLElement | SVGElement, children: any) {
-//   return new VNode(null, new JSXNode(Portal as any, { domNode, children }, []))
+//   return new VNode(null, new JSXNode(Portal, { domNode, children }, []))
 // }
 
 export function createRoot(domNode: HTMLElement | SVGElement) {
   return {
     render(children: any) {
-      return new VNode(null, new JSXNode(Portal, { domNode, children }, []))
+      return new VNode(null, new JSXNode(Root, { domNode, children }, []))
     },
   }
 }

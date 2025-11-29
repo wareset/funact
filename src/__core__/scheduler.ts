@@ -2,7 +2,7 @@ import { IHook } from './types'
 import { type VNode } from './VNode'
 
 import { sortDeeps } from './utils'
-import { getCurrentVNode, setCurrentVNode, updateVNode } from './VNode.utils'
+import { updateVNode } from './VNode.utils'
 
 // Взято из react 18
 export const schedule =
@@ -15,95 +15,112 @@ export const schedule =
       : setTimeout
 
 // Для экспериментов
-export const schedule2 = function (callback: () => void) {
-  setTimeout(callback, 1000)
-}
+// export const schedule2 = function (callback: () => void) {
+//   setTimeout(callback, 1000)
+// }
 
-let V_NODES: VNode[] = []
-let INSERTION_EFFECTS: IHook[][] = []
-let LAYOUT_EFFECTS: IHook[][] = []
-let EFFECTS: IHook[][] = []
+const V_NODES: VNode[] = []
 
-/*
-Вероятно исполнение effect должно происходить в следующем микротаске,
-но пока реализовано так, чтобы посмотреть как будет.
-*/
+const EFFECTS: IHook[][] = []
+const LAYOUT_EFFECTS: IHook[][] = []
+const INSERTION_AND_LAYOUT_EFFECTS: {
+  deep: number[]
+  INSERTION: IHook[]
+  LAYOUT: IHook[]
+}[] = []
+
 let updating = 0
 function update() {
-  if (updating > 4e4) throw 'loop'
-  const prevUpdating = updating
+  for (let vNode: VNode; (vNode = V_NODES.pop()!); ) {
+    if (updating > 3e3) throw 'loop'
+    if (vNode.dirty) {
+      INSERTION_AND_LAYOUT_EFFECTS.length =
+        LAYOUT_EFFECTS.length =
+        EFFECTS.length =
+          0
 
-  // не помню зачем это здесь нужно
-  const prevVNode = getCurrentVNode()
+      updateVNode(vNode)
 
-  const PREV_V_NODES = V_NODES
-  ;(V_NODES = []), PREV_V_NODES.forEach(updateVNode)
-  update_any_effects(INSERTION_EFFECTS, (INSERTION_EFFECTS = []))
-  update_any_effects(LAYOUT_EFFECTS, (LAYOUT_EFFECTS = []))
-  update_any_effects(EFFECTS, (EFFECTS = []))
-
-  setCurrentVNode(prevVNode)
-
-  prevUpdating === updating ? (updating = 0) : schedule(update)
-}
-
-function update_any_effects(effects: IHook[][], _?: any): void
-function update_any_effects(effects: IHook[][]) {
-  for (let i = 0, a: IHook[]; i < effects.length; ++i) {
-    if ((a = effects[i]).length) {
-      setCurrentVNode(a[0].vNode)
-      for (let v: IHook, j = 0; j < a.length; ++j) {
-        v = a[j]
-        v.cleanup && (v.cleanup(), (v.cleanup = null))
-      }
+      INSERTION_AND_LAYOUT_EFFECTS.forEach(insertions_and_layouts)
+      LAYOUT_EFFECTS.forEach(execute_effects)
+      EFFECTS.forEach(cleanup_effects)
+      EFFECTS.forEach(execute_effects)
     }
   }
+  updating = 0
+}
 
-  for (let i = 0, a: IHook[]; i < effects.length; ++i) {
-    if ((a = effects[i]).length) {
-      setCurrentVNode(a[0].vNode)
-      for (let v: IHook, j = 0; j < a.length; ++j) {
-        v = a[j]
-        v.vNode!.alive && (v.cleanup = v.value())
-      }
-    }
+function insertions_and_layouts(
+  // this: typeof EFFECTS,
+  item: (typeof INSERTION_AND_LAYOUT_EFFECTS)[number],
+  a: any
+) {
+  if ((a = item.INSERTION).length) cleanup_effects(a), execute_effects(a)
+  if ((a = item.LAYOUT).length) cleanup_effects(a), LAYOUT_EFFECTS.push(a)
+}
+function cleanup_effects(a: IHook[]) {
+  for (let v, cleanup, j = 0; j < a.length; ++j) {
+    ;(cleanup = (v = a[j]).cleanup) && ((v.cleanup = null), cleanup())
+  }
+}
+function execute_effects(a: IHook[], vNode?: any) {
+  vNode = a[0].vNode
+  for (let v, j = 0; j < a.length && vNode.alive; ++j) {
+    ;(v = a[j]), (v.cleanup = v.value())
   }
 }
 
 export function addVNodeInQueue(vNode: VNode) {
-  if (!vNode.dirty && vNode.alive) {
+  if (!vNode.dirty) {
     vNode.dirty = true
     const deep = vNode.deep
     let i = V_NODES.length
 
-    for (; i-- > 0; ) if (sortDeeps(V_NODES[i].deep, deep) < 0) break
+    for (; i-- > 0; ) if (sortDeeps(V_NODES[i].deep, deep, true) > 0) break
 
     V_NODES.splice(i + 1, 0, vNode)
     updating++ || schedule(update)
   }
 }
 
-export function addInsertionEffectInQueue(hook: IHook) {
-  add_task_for_any_effect(hook, INSERTION_EFFECTS)
-}
-export function addLayoutEffectInQueue(hook: IHook) {
-  add_task_for_any_effect(hook, LAYOUT_EFFECTS)
-}
-export function addEffectInQueue(hook: IHook) {
-  add_task_for_any_effect(hook, EFFECTS)
-}
-function add_task_for_any_effect(hook: IHook, effects: IHook[][]) {
+export function addInsertionOrLayoutEffectInQueue(
+  hook: IHook,
+  type: 'INSERTION' | 'LAYOUT'
+) {
   const vNode = hook.vNode
   if (vNode.alive) {
     const deep = vNode.deep
-    let i = effects.length
+    let i = INSERTION_AND_LAYOUT_EFFECTS.length
 
     for (let n: number; i-- > 0; ) {
-      if ((n = sortDeeps(effects[i][0].vNode.deep, deep)) < 0) break
-      else if (n === 0) return void effects[i].push(hook)
+      if ((n = sortDeeps(INSERTION_AND_LAYOUT_EFFECTS[i].deep, deep)) < 0)
+        break
+      else if (n === 0)
+        return void INSERTION_AND_LAYOUT_EFFECTS[i][type].push(hook)
     }
 
-    effects.splice(i + 1, 0, [hook])
-    updating++ || schedule(update)
+    INSERTION_AND_LAYOUT_EFFECTS.splice(
+      i + 1,
+      0,
+      type === 'INSERTION'
+        ? { deep, INSERTION: [hook], LAYOUT: [] }
+        : { deep, INSERTION: [], LAYOUT: [hook] }
+    )
+    // updating++ || schedule(update)
+  }
+}
+export function addEffectInQueue(hook: IHook) {
+  const vNode = hook.vNode
+  if (vNode.alive) {
+    const deep = vNode.deep
+    let i = EFFECTS.length
+
+    for (let n: number; i-- > 0; ) {
+      if ((n = sortDeeps(EFFECTS[i][0].vNode.deep, deep)) < 0) break
+      else if (n === 0) return void EFFECTS[i].push(hook)
+    }
+
+    EFFECTS.splice(i + 1, 0, [hook])
+    // updating++ || schedule(update)
   }
 }

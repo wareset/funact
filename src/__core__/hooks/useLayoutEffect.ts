@@ -1,6 +1,6 @@
 import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { addLayoutEffectInQueue } from '../scheduler'
+import { addInsertionOrLayoutEffectInQueue } from '../scheduler'
 
 function useLayoutEffect(
   effect: (() => void) | (() => () => void),
@@ -30,7 +30,7 @@ function useLayoutEffect(
 
   if (needUpdate) {
     hook.value = effect
-    addLayoutEffectInQueue(hook)
+    addInsertionOrLayoutEffectInQueue(hook, 'LAYOUT')
   }
 }
 export { useLayoutEffect }

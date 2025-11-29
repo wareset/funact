@@ -25,6 +25,7 @@ export interface IHook {
   // hookIdx: number
 
   vNode: VNode
+
   value: any
   // Зависимости, если есть
   deps?: null | readonly unknown[]

@@ -29,7 +29,7 @@ export function createChildren(vNode: VNode, jsx: any, isDeep?: boolean) {
 }
 
 export function updateVNode(iam: VNode) {
-  if (iam.dirty && iam.alive) {
+  if (iam.alive) {
     iam.dirty = false
     const prevVNode = getCurrentVNode()
     setCurrentVNode(iam)
@@ -67,7 +67,6 @@ function compareProps(iam: VNode, jsxList: any[]) {
       ) {
         if (!cNode.fc.compare || !cNode.fc.compare(cNode.jsx, jsx)) {
           cNode.jsx = jsx
-          cNode.dirty = true
           updateVNode(cNode)
         }
       } else {
@@ -97,7 +96,7 @@ function compareProps(iam: VNode, jsxList: any[]) {
 
 function destroyVNode(iam?: VNode) {
   if (iam && iam.alive) {
-    iam.alive = false
+    iam.alive = iam.dirty = false
 
     for (let a = iam.children; a.length > 0; ) destroyVNode(a.pop())
 
@@ -112,8 +111,8 @@ function destroyVNode(iam?: VNode) {
       case XMLElement:
         XMLElement({}, true)
       default:
-        for (let hook = iam.headHook; (hook = hook.nextHook!); ) {
-          hook.cleanup && (hook.cleanup(), (hook.cleanup = null))
+        for (let cleanup, hook = iam.headHook; (hook = hook.nextHook!); ) {
+          ;(cleanup = hook.cleanup) && ((hook.cleanup = null), cleanup())
         }
     }
     setCurrentVNode(prevVNode)

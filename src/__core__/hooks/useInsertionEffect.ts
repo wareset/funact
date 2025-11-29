@@ -1,6 +1,6 @@
 import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { addInsertionEffectInQueue } from '../scheduler'
+import { addInsertionOrLayoutEffectInQueue } from '../scheduler'
 
 function useInsertionEffect(
   effect: (() => void) | (() => () => void),
@@ -30,7 +30,7 @@ function useInsertionEffect(
 
   if (needUpdate) {
     hook.value = effect
-    addInsertionEffectInQueue(hook)
+    addInsertionOrLayoutEffectInQueue(hook, 'INSERTION')
   }
 }
 export { useInsertionEffect }
