@@ -59,12 +59,12 @@ export class VNode {
     this.prevHook = this.headHook = { nextHook: null } as IHook
 
     if (jsx instanceof JSXNode) {
-      if (typeof jsx.type !== 'string') {
+      if (typeof jsx.type === 'string') {
+        this.fc = XMLElement
+        this._ = 'elem: ' + jsx.type
+      } else {
         this.fc = jsx.type
         this._ = 'comp: ' + this.fc.name
-      } else {
-        this.fc = XMLElement
-        this._ = 'node: ' + jsx.type
       }
       this.jsx = jsx
       createChildren(this, this.fc(jsx.props))

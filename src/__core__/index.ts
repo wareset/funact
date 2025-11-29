@@ -51,7 +51,7 @@ export function createElement(
 
 function Root(props: any) {
   const { 0: res, 1: setRes } = useState<JSXNode>()
-  res || setRes(new JSXNode(Portal as any, props, []))
+  res || setRes(new JSXNode(Portal, props, []))
   return res
 }
 // export function render(domNode: HTMLElement | SVGElement, children: any) {

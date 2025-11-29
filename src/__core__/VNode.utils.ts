@@ -48,30 +48,34 @@ function compareProps(iam: VNode, jsxList: any[]) {
   const is = Object.is
 
   let i = 0
-  for (let l = jsxList.length; i < l; ++i) {
+  for (; i < jsxList.length; ++i) {
     const jsx = jsxList[i]
     const cNode: VNode | undefined = children[i]
-    if (isArray(jsx)) {
-      if (cNode && cNode.fc === Fragment) {
-        compareProps(cNode, jsx)
-      } else {
-        destroyVNode(cNode)
-        new VNode(iam, new JSXNode(Fragment, null, [jsx]), i)
-      }
-    } else if (jsx instanceof JSXNode) {
+
+    if (jsx instanceof JSXNode) {
       if (
         cNode &&
         cNode.jsx instanceof JSXNode &&
         is(cNode.jsx.type, jsx.type) &&
         is(cNode.jsx.key, jsx.key)
       ) {
-        if (!cNode.fc.compare || !cNode.fc.compare(cNode.jsx, jsx)) {
+        if (
+          !cNode.fc.compare ||
+          !cNode.fc.compare(cNode.jsx.props, jsx.props)
+        ) {
           cNode.jsx = jsx
           updateVNode(cNode)
         }
       } else {
         destroyVNode(cNode)
         new VNode(iam, jsx, i)
+      }
+    } else if (isArray(jsx)) {
+      if (cNode && cNode.fc === Fragment) {
+        compareProps(cNode, jsx)
+      } else {
+        destroyVNode(cNode)
+        new VNode(iam, new JSXNode(Fragment, null, [jsx]), i)
       }
     } else {
       if (cNode && cNode.fc === XMLText) {

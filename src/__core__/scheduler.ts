@@ -32,8 +32,8 @@ const INSERTION_AND_LAYOUT_EFFECTS: {
 let updating = 0
 function update() {
   for (let vNode: VNode; (vNode = V_NODES.pop()!); ) {
-    if (updating > 3e3) throw 'loop'
     if (vNode.dirty) {
+      if (updating > 4e4) throw 'loop'
       INSERTION_AND_LAYOUT_EFFECTS.length =
         LAYOUT_EFFECTS.length =
         EFFECTS.length =
@@ -58,8 +58,9 @@ function insertions_and_layouts(
   if ((a = item.INSERTION).length) cleanup_effects(a), execute_effects(a)
   if ((a = item.LAYOUT).length) cleanup_effects(a), LAYOUT_EFFECTS.push(a)
 }
-function cleanup_effects(a: IHook[]) {
-  for (let v, cleanup, j = 0; j < a.length; ++j) {
+function cleanup_effects(a: IHook[], vNode?: any) {
+  vNode = a[0].vNode
+  for (let v, cleanup, j = 0; j < a.length && vNode.alive; ++j) {
     ;(cleanup = (v = a[j]).cleanup) && ((v.cleanup = null), cleanup())
   }
 }
@@ -93,10 +94,11 @@ export function addInsertionOrLayoutEffectInQueue(
     let i = INSERTION_AND_LAYOUT_EFFECTS.length
 
     for (let n: number; i-- > 0; ) {
-      if ((n = sortDeeps(INSERTION_AND_LAYOUT_EFFECTS[i].deep, deep)) < 0)
+      if ((n = sortDeeps(INSERTION_AND_LAYOUT_EFFECTS[i].deep, deep)) < 0) {
         break
-      else if (n === 0)
+      } else if (n === 0) {
         return void INSERTION_AND_LAYOUT_EFFECTS[i][type].push(hook)
+      }
     }
 
     INSERTION_AND_LAYOUT_EFFECTS.splice(
