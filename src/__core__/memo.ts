@@ -46,9 +46,9 @@ function defaultCompare(prevProps: Props, nextProps: Props) {
 
 /*@__NO_SIDE_EFFECTS__*/
 export function memo<T extends FC, C extends Comparator>(fc: T, compare?: C) {
-  const memoFc = function (props: Props) {
+  function Memo(props: Props) {
     return fc(props)
   }
-  memoFc.compare = compare || (defaultCompare as Comparator)
-  return memoFc
+  ;(Memo as any).compare = compare || (defaultCompare as Comparator)
+  return Memo
 }
