@@ -53,6 +53,7 @@ export function XMLElement(
 ) {
   const vNode = getCurrentVNode()
   let node = null
+  const ref = props.ref
 
   if (needDestroy) {
     const contextValue = vNode.contextValue
@@ -81,7 +82,7 @@ export function XMLElement(
         }
 
         vNode.contextValue = {
-          tempEffectDeps: [props.ref, null],
+          tempEffectDeps: [ref, null],
           nodeAttrs: node ? setAttributes(node, props, {}) : null,
 
           node,
@@ -103,7 +104,6 @@ export function XMLElement(
    * и компоненты 'XMLElement' будут вызываться множество раз,
    * это небольшая оптимизация
    */
-  const ref = props.ref
   const tempEffectDeps = vNode.contextValue.tempEffectDeps
   if (
     (ref || tempEffectDeps[0]) &&
