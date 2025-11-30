@@ -3,7 +3,7 @@ export { type RefObject } from './types'
 export { Fragment } from './components/Fragment'
 export { Portal } from './components/Portal'
 
-export { classnames, stylesheet } from './components/xml_attrs'
+export { classnames, stylesheet } from './components/xml.attrs'
 
 export { useActionState } from './hooks/useActionState'
 export { useCallback } from './hooks/useCallback'

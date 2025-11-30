@@ -1,4 +1,4 @@
-import { NAMESPACES_URI } from './xml_utils'
+import { NAMESPACES_URI } from './xml.utils'
 
 const CSS_PROPERTIES: { [k: string]: string } = { __proto__: null as any }
 

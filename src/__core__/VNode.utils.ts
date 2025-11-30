@@ -2,7 +2,7 @@ import { VNode } from './VNode'
 import { JSXNode } from './JSXNode'
 import { Fragment } from './components/Fragment'
 import { XMLElement, XMLText } from './components/xml'
-import { validateTextData } from './components/xml_utils'
+import { validateTextData } from './components/xml.utils'
 
 let currentVNode: VNode
 export function getCurrentVNode() {

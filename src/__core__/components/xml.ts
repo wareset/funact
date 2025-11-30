@@ -4,8 +4,8 @@ import {
   getParentXMLContext,
   insertAndAddNodeInParentContext,
   removeAndDelNodeInParentContext,
-} from './xml_utils'
-import { setAttributes, removeEventListeners } from './xml_attrs'
+} from './xml.utils'
+import { setAttributes, removeEventListeners } from './xml.attrs'
 import { useLayoutEffect } from '../hooks/useLayoutEffect'
 
 /*
@@ -97,20 +97,21 @@ export function XMLElement(
   }
 
   /**
-   * Помещать хуки в условия, разумеется, не желательно.
-   * Но, в этом случае никаких проблем нет.
+   * Помещать хуки в условия, разумеется, нельзя.
+   * Но в этом случае, и в данной библиотеке, никаких проблем нет.
    * И учитывая, что сайты в целом состоят из сотен и сотен элементов,
    * и компоненты 'XMLElement' будут вызываться множество раз,
    * это небольшая оптимизация
    */
-  let tempEffectDeps = vNode.contextValue.tempEffectDeps
-  if (tempEffectDeps[0] !== props.ref || tempEffectDeps[1] !== node) {
-    vNode.contextValue.tempEffectDeps = tempEffectDeps = [props.ref, node]
-
-    useLayoutEffect(function (): any {
-      if (node) {
-        const ref = props.ref
-        if (ref) {
+  const ref = props.ref
+  const tempEffectDeps = vNode.contextValue.tempEffectDeps
+  if (
+    (ref || tempEffectDeps[0]) &&
+    (tempEffectDeps[0] !== ref || tempEffectDeps[1] !== node)
+  ) {
+    useLayoutEffect(
+      function (): any {
+        if (ref && node) {
           if (typeof ref === 'function') {
             ref(node)
             return function () {
@@ -123,8 +124,9 @@ export function XMLElement(
             }
           }
         }
-      }
-    }, tempEffectDeps)
+      },
+      (vNode.contextValue.tempEffectDeps = [ref, node])
+    )
   }
 
   // if (props.ref) props.ref.current = node

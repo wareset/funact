@@ -1,7 +1,7 @@
 import { IHook, FC } from './types'
 import { JSXNode } from './JSXNode'
 import { XMLElement, XMLText } from './components/xml'
-import { validateTextData } from './components/xml_utils'
+import { validateTextData } from './components/xml.utils'
 import { createChildren, getCurrentVNode, setCurrentVNode } from './VNode.utils'
 
 export class VNode {
