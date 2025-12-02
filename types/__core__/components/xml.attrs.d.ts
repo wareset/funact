@@ -11,6 +11,4 @@ export declare function setAttributes(node: HTMLElement | SVGElement, newAttrs: 
 };
 export declare function removeEventListeners(node: HTMLElement | SVGElement, oldAttrs: {
     [key: string]: any;
-} | null | undefined): {
-    [key: string]: any;
-};
+} | null | undefined): void;

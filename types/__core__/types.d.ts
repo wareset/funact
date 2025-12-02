@@ -11,13 +11,14 @@ export type FC<P extends Props = any> = {
     compare?: Comparator;
 };
 export interface IHook {
-    nextHook: IHook | null;
+    nextHook: (IHook & {
+        [key: string]: any;
+    }) | null;
     hookType: (...a: any[]) => any;
     vNode: VNode;
     value: any;
     deps?: null | readonly unknown[];
     cleanup?: null | (() => void);
-    [key: string]: any;
 }
 export type RefObject<T> = {
     current: T;

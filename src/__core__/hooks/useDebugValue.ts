@@ -1,6 +1,8 @@
 import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
+import { IHook } from '../types'
+
 function useDebugValue<T>(value: T, format?: (value: T) => any): void {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
@@ -14,7 +16,7 @@ function useDebugValue<T>(value: T, format?: (value: T) => any): void {
       hookType: useDebugValue,
       vNode,
       value: vNode,
-    }
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

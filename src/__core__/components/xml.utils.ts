@@ -2,6 +2,7 @@ import { type VNode } from '../VNode'
 import { sortDeeps } from '../utils'
 import { XMLElement } from './xml'
 import { Portal } from './Portal'
+import { removeEventListeners } from './xml.attrs'
 
 // https://developer.mozilla.org/ru/docs/Web/SVG/Element/foreignObject
 const __uri__ = 'http://www.w3.org/'
@@ -32,50 +33,81 @@ export function createElementNS(
 //   pNode.insertBefore(node, bNode || null)
 // }
 
-type XMLContext = {
-  nodeAttrs: any
-  node: HTMLElement | SVGElement
-  childNodes: (HTMLElement | SVGElement | null)[]
-  childDeeps: number[][]
-  parentContext: XMLContext
+type VNodeWithContextValue = VNode & { contextValue: XMLContext }
+
+export type XMLContext = {
+  node: HTMLElement | SVGElement | null
+  text?: string
+  attrs?: { [key: string]: any }
+  parentContext?: XMLContext
+  tempEffectDeps?: [any, any]
+  childVNodes?: VNodeWithContextValue[]
 }
 
-export function getParentXMLContext(vNode: VNode): XMLContext | void {
+// @ts-ignore
+export function getParentXMLContext(vNode: VNode): XMLContext | undefined {
   for (; (vNode = vNode.parent!); )
     if (vNode.fc === XMLElement || vNode.fc === Portal)
-      return vNode.contextValue
+      return vNode.contextValue as XMLContext
 }
 
 export function insertAndAddNodeInParentContext(
   node: HTMLElement | SVGElement,
   parentContext: XMLContext,
-  nodeDeep: number[]
+  vNode: VNode
 ) {
-  const childNodes = parentContext.childNodes
-  const childDeeps = parentContext.childDeeps
-  let i = childDeeps.length
-  for (; i-- > 0; ) if (sortDeeps(childDeeps[i], nodeDeep) < 0) break
-  parentContext.node.insertBefore(node, childNodes[++i] || null)
-  childNodes.splice(i, 0, node)
-  childDeeps.splice(i, 0, nodeDeep)
+  const pN = parentContext.node
+  if (pN) {
+    const childVNodes = parentContext.childVNodes!
+    let i = childVNodes.length
+    for (; i-- > 0; ) if (sortDeeps(childVNodes[i].deep, vNode.deep) < 0) break
+
+    let bN = childVNodes[++i] && (childVNodes[i].contextValue.node as any)
+    ;(bN && bN.parentNode === pN) || (bN = pN.childNodes[i] || null)
+
+    pN.insertBefore(node, bN)
+    childVNodes.splice(i, 0, vNode as VNodeWithContextValue)
+  }
 }
 
-export function removeAndDelNodeInParentContext(
+function removeAndDelNodeInParentContext(
   node: HTMLElement | SVGElement,
   parentContext: XMLContext,
-  nodeDeep: number[]
+  vNode: VNode
 ) {
-  node.parentNode && node.parentNode.removeChild(node)
+  const pN = node.parentNode
+  if (pN) {
+    const childVNodes = parentContext.childVNodes!
+    const idx = childVNodes.lastIndexOf(vNode as VNodeWithContextValue)
 
-  const childNodes = parentContext.childNodes
-  const childDeeps = parentContext.childDeeps
-  let idx = childDeeps.lastIndexOf(nodeDeep)
-  idx === -1 || childDeeps.splice(idx, 1)
-  childNodes[idx] === node || (idx = childNodes.lastIndexOf(node))
-  idx === -1 || childNodes.splice(idx, 1)
+    pN && pN === parentContext.node && pN.removeChild(node)
+    idx === -1 || childVNodes.splice(idx, 1)
+  }
 }
 
 export function validateTextData(v: any) {
   const t = typeof v
-  return t === 'string' || t === 'number' || t === 'bigint' ? '' + v : ''
+  return t === 'string' ? v : t === 'number' ? v.toString() : ''
+  // return t === 'string' || t === 'number' || t === 'bigint' ? '' + v : ''
+}
+
+export function destroyXMLText(vNode: VNode) {
+  let node: HTMLElement | SVGElement | null
+  let contextValue = vNode.contextValue as XMLContext
+
+  if (contextValue && (node = contextValue.node)) {
+    const parentContext = contextValue.parentContext!
+    removeAndDelNodeInParentContext(node, parentContext, vNode)
+  }
+}
+
+export function destroyXMLElement(vNode: VNode) {
+  let node: HTMLElement | SVGElement | null
+  let contextValue = vNode.contextValue as XMLContext
+
+  if (contextValue && (node = contextValue.node)) {
+    const parentContext = contextValue.parentContext!
+    removeAndDelNodeInParentContext(node, parentContext, vNode)
+    removeEventListeners(node, contextValue.attrs)
+  }
 }

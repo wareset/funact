@@ -1,6 +1,8 @@
 import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
+import { IHook } from '../types'
+
 // function simpleHash(str: string) {
 //   let hash = 0
 //   for (let i = 0; i < str.length; ++i) {
@@ -23,7 +25,7 @@ function useId(): string {
       vNode,
       // value: 'id' + simpleHash(vNode.deep.join('_') + '__' + hookIdx),
       value: (Math.random() * 6e16 + 4e16).toString(36),
-    }
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

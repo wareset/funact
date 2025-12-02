@@ -4,13 +4,13 @@ export declare class VNode {
     alive: boolean;
     dirty: boolean;
     fc: FC;
-    jsx: any;
+    jsx: unknown;
     readonly deep: number[];
     readonly parent: VNode | null;
-    readonly children: VNode[];
-    contextValue?: any;
+    readonly children: (VNode | null | undefined)[];
+    contextValue?: unknown;
     contextUsers?: any[];
     readonly headHook: IHook;
     prevHook: IHook;
-    constructor(parent: VNode | null, jsx: any, index?: number);
+    constructor(parent: VNode | null, jsx: any, isJSXNode: 1 | 0, index: number);
 }

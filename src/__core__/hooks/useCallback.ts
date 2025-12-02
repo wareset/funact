@@ -1,6 +1,8 @@
 import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
+import { IHook } from '../types'
+
 function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
@@ -17,7 +19,7 @@ function useCallback<T extends Function>(cb: T, deps: readonly unknown[]): T {
       value: cb,
 
       deps: deps,
-    }
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

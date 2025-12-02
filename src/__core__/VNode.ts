@@ -1,7 +1,5 @@
 import { IHook, FC } from './types'
-import { JSXNode } from './JSXNode'
 import { XMLElement, XMLText } from './components/xml'
-import { validateTextData } from './components/xml.utils'
 import { createChildren, getCurrentVNode, setCurrentVNode } from './VNode.utils'
 
 export class VNode {
@@ -15,67 +13,57 @@ export class VNode {
   // Функция самого компонента
   fc: FC //| IContext<any>
 
-  jsx: any
+  jsx: unknown
 
   // Глубина и порядок всех компонентов
   readonly deep: number[]
 
   readonly parent: VNode | null
-  readonly children: VNode[]
+  readonly children: (VNode | null | undefined)[]
 
   // Для работы контекста (createContext and etc.)
-  contextValue?: any
+  contextValue?: unknown
   contextUsers?: any[]
 
   // Для работы с хуками
-  readonly headHook: IHook
-  prevHook: IHook
+  declare readonly headHook: IHook
+  declare prevHook: IHook
 
-  constructor(parent: VNode | null, jsx: any, index?: number) {
+  constructor(parent: VNode | null, jsx: any, isJSXNode: 1 | 0, index: number) {
     this._ = ''
+    this.jsx = jsx
 
     this.alive = true
     this.dirty = false
 
     this.children = []
-    this.parent = parent
 
-    if (parent) {
-      const pc = parent.children
-      this.deep = parent.deep.slice()
-      if (index === void 0) {
-        this.deep.push(pc.length)
-        pc.push(this)
-      } else {
-        this.deep.push(index)
-        pc[index] = this
-      }
+    if ((this.parent = parent)) {
+      parent.children[index] = this
+      ;(this.deep = parent.deep.slice()).push(index)
     } else {
       this.deep = [0]
     }
 
-    const prevVNode = getCurrentVNode()
-    setCurrentVNode(this)
-    this.prevHook = this.headHook = { nextHook: null } as IHook
+    // if (jsx instanceof JSXNode) {
+    if (isJSXNode) {
+      const prevVNode = getCurrentVNode()
+      setCurrentVNode(this)
+      this.prevHook = this.headHook = { nextHook: null } as IHook
 
-    if (jsx instanceof JSXNode) {
       if (typeof jsx.type === 'string') {
-        this.fc = XMLElement
+        this.fc = XMLElement as any
         this._ = 'elem: ' + jsx.type
       } else {
         this.fc = jsx.type
         this._ = 'comp: ' + this.fc.name
       }
-      this.jsx = jsx
-      createChildren(this, this.fc(jsx.props))
+      createChildren(this, this.fc(jsx.props), 0)
+
+      setCurrentVNode(prevVNode)
     } else {
       this.fc = XMLText as any
-      this._ = 'text: ' + jsx
-      if ((this.jsx = validateTextData(jsx))) {
-        XMLText(jsx)
-      }
+      XMLText(this)
     }
-
-    setCurrentVNode(prevVNode)
   }
 }

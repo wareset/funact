@@ -1,7 +1,8 @@
 import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
-import type { RefObject } from '../types'
+import { IHook } from '../types'
+import { RefObject } from '../types'
 
 function useRef<T>(initialValue: T): RefObject<T>
 function useRef<T>(initialValue: T | null): RefObject<T | null>
@@ -20,7 +21,7 @@ function useRef<T>(initialValue: T): RefObject<T> {
       hookType: useRef,
       vNode,
       value: { current: initialValue },
-    }
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

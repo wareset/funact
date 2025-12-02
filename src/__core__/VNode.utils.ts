@@ -2,7 +2,18 @@ import { VNode } from './VNode'
 import { JSXNode } from './JSXNode'
 import { Fragment } from './components/Fragment'
 import { XMLElement, XMLText } from './components/xml'
-import { validateTextData } from './components/xml.utils'
+import {
+  validateTextData,
+  destroyXMLText,
+  destroyXMLElement,
+} from './components/xml.utils'
+import {
+  addInsertionOrLayoutEffectInQueue,
+  addEffectInQueue,
+} from './scheduler'
+import { useInsertionEffect } from './hooks/useInsertionEffect'
+import { useLayoutEffect } from './hooks/useLayoutEffect'
+import { useEffect } from './hooks/useEffect'
 
 let currentVNode: VNode
 export function getCurrentVNode() {
@@ -12,19 +23,24 @@ export function setCurrentVNode(vNode: VNode) {
   currentVNode = vNode
 }
 
-export function createChildren(vNode: VNode, jsx: any, isDeep?: boolean) {
-  if (isDeep || jsx != null) {
-    if (Array.isArray(jsx)) {
-      if (isDeep) {
-        new VNode(vNode, new JSXNode(Fragment, null, [jsx]))
-      } else {
-        for (let i = 0; i < jsx.length && vNode.alive; ++i) {
-          createChildren(vNode, jsx[i], true)
-        }
+export function createChildren(
+  iam: VNode,
+  jsx: any,
+  index: number,
+  isDeep?: 1
+) {
+  if (Array.isArray(jsx)) {
+    if (isDeep) {
+      new VNode(iam, new JSXNode(Fragment, null, [jsx]), 1, index)
+    } else {
+      for (let i = 0; i < jsx.length && iam.alive; ++i) {
+        createChildren(iam, jsx[i], i, 1)
       }
-    } else if (vNode.alive) {
-      new VNode(vNode, jsx)
     }
+  } else if (jsx instanceof JSXNode) {
+    new VNode(iam, jsx, 1, index)
+  } else if (validateTextData(jsx)) {
+    new VNode(iam, jsx, 0, index)
   }
 }
 
@@ -35,7 +51,7 @@ export function updateVNode(iam: VNode) {
     setCurrentVNode(iam)
     iam.prevHook = iam.headHook
 
-    const jsx = iam.fc(iam.jsx.props)
+    const jsx = iam.fc((iam.jsx as JSXNode).props)
 
     setCurrentVNode(prevVNode)
     compareProps(iam, Array.isArray(jsx) ? jsx : [jsx])
@@ -50,47 +66,42 @@ function compareProps(iam: VNode, jsxList: any[]) {
   let i = 0
   for (; i < jsxList.length; ++i) {
     const jsx = jsxList[i]
-    const cNode: VNode | undefined = children[i]
+    const cNode: VNode | null | undefined = children[i]
 
     if (jsx instanceof JSXNode) {
       if (
         cNode &&
         cNode.jsx instanceof JSXNode &&
-        is(cNode.jsx.type, jsx.type) &&
-        is(cNode.jsx.key, jsx.key)
+        is(cNode.jsx.type, jsx.type) // &&
+        // is(cNode.jsx.key, jsx.key)
       ) {
         if (
           !cNode.fc.compare ||
           !cNode.fc.compare(cNode.jsx.props, jsx.props)
         ) {
+          if (cNode.jsx.props === jsx.props) throw 'props'
           cNode.jsx = jsx
           updateVNode(cNode)
         }
       } else {
         destroyVNode(cNode)
-        new VNode(iam, jsx, i)
+        new VNode(iam, jsx, 1, i)
       }
     } else if (isArray(jsx)) {
       if (cNode && cNode.fc === Fragment) {
         compareProps(cNode, jsx)
       } else {
         destroyVNode(cNode)
-        new VNode(iam, new JSXNode(Fragment, null, [jsx]), i)
+        new VNode(iam, new JSXNode(Fragment, null, [jsx]), 1, i)
       }
     } else {
       if (cNode && cNode.fc === XMLText) {
-        if (cNode.jsx !== (cNode.jsx = validateTextData(jsx))) {
-          const prevVNode = getCurrentVNode()
-          setCurrentVNode(cNode)
-          iam.prevHook = iam.headHook
-
-          XMLText(cNode.jsx)
-
-          setCurrentVNode(prevVNode)
-        }
+        cNode.jsx = jsx
+        XMLText(cNode)
       } else {
         destroyVNode(cNode)
-        new VNode(iam, jsx, i)
+        if (validateTextData(jsx)) new VNode(iam, jsx, 0, i)
+        else children[i] = null
       }
     }
   }
@@ -98,27 +109,39 @@ function compareProps(iam: VNode, jsxList: any[]) {
   for (; children.length > i; ) destroyVNode(children.pop())
 }
 
-function destroyVNode(iam?: VNode) {
+function destroyVNode(iam: VNode | null | undefined) {
   if (iam && iam.alive) {
+    // console.log('destroyVNode', iam)
     iam.alive = iam.dirty = false
 
-    for (let a = iam.children; a.length > 0; ) destroyVNode(a.pop())
+    // for (let a = iam.children; a.length > 0; ) destroyVNode(a.pop())
+    for (let a = iam.children, i = 0; i < a.length; ++i) destroyVNode(a[i])
 
-    const prevVNode = getCurrentVNode()
-    setCurrentVNode(iam)
-    iam.prevHook = iam.headHook
     switch (iam.fc) {
       case XMLText:
-        XMLText('', true)
+        destroyXMLText(iam)
         break
       // @ts-ignore
       case XMLElement:
-        XMLElement({}, true)
+        destroyXMLElement(iam)
       default:
         for (let cleanup, hook = iam.headHook; (hook = hook.nextHook!); ) {
-          ;(cleanup = hook.cleanup) && ((hook.cleanup = null), cleanup())
+          if ((cleanup = hook.cleanup)) {
+            switch (hook.hookType) {
+              case useInsertionEffect:
+                addInsertionOrLayoutEffectInQueue(hook, 1)
+                break
+              case useLayoutEffect:
+                addInsertionOrLayoutEffectInQueue(hook, 0)
+                break
+              case useEffect:
+                addEffectInQueue(hook)
+                break
+              default:
+                ;(hook.cleanup = null), cleanup()
+            }
+          }
         }
     }
-    setCurrentVNode(prevVNode)
   }
 }

@@ -2,6 +2,8 @@ import { checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { addVNodeInQueue } from '../scheduler'
 
+import { IHook } from '../types'
+
 function useDeferredValue<T>(value: T, initialValue?: T): T {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
@@ -15,7 +17,7 @@ function useDeferredValue<T>(value: T, initialValue?: T): T {
       hookType: useDeferredValue,
       vNode,
       value: initialValue !== void 0 ? initialValue : value,
-    }
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

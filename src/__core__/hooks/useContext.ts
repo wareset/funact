@@ -33,6 +33,7 @@ function useContext<T>(context: IContext<T>): T {
       },
     } satisfies IHookDataForUseContext
   }
+  vNode.prevHook = hook
 
   if (hook.context !== context && hook.cleanup) {
     hook.cleanup()
@@ -46,7 +47,6 @@ function useContext<T>(context: IContext<T>): T {
       }
     }
   }
-  vNode.prevHook = hook
 
   return hook.value
 }

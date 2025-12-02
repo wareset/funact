@@ -9,8 +9,6 @@ interface IHookDataForUseOptimistic extends IHook {
   dispatch: (...a: any[]) => void
 }
 
-// import { useState } from './useState'
-
 function useReducer<S, A extends [] | [any]>(
   reducer: (prevState: S, ...args: A) => S,
   initialState: S
@@ -39,6 +37,7 @@ function useReducer<S, I, A extends [] | [any]>(
       hookType: useReducer,
       vNode,
       value: (init ? init(initialState) : initialState) as S,
+      
       reducer,
       dispatch(...args: any[]) {
         args = hook.reducer(hook.value, ...args)

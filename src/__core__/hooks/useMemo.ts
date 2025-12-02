@@ -1,6 +1,8 @@
 import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
+import { IHook } from '../types'
+
 function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
   const vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
@@ -20,7 +22,7 @@ function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
       value: null,
 
       deps: deps,
-    }
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

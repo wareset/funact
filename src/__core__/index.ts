@@ -65,7 +65,8 @@ function Root(props: any) {
 export function createRoot(domNode: HTMLElement | SVGElement) {
   return {
     render(children: any) {
-      return new VNode(null, new JSXNode(Root, { domNode, children }, []))
+      // return new VNode(null, new JSXNode(Portal, { domNode, children }, []))
+      return new VNode(null, new JSXNode(Root, { domNode, children }, []), 1, 0)
     },
   }
 }

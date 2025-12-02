@@ -19,7 +19,7 @@ export type FC<P extends Props = any> =
 // Возможно хуки станут классами?
 export interface IHook {
   // Следующий хук
-  nextHook: IHook | null
+  nextHook: (IHook & { [key: string]: any }) | null
   // Тип хука (в роли него выступает сама функция хука)
   hookType: (...a: any[]) => any
   // hookIdx: number
@@ -32,7 +32,7 @@ export interface IHook {
   // Очистка, если есть
   cleanup?: null | (() => void)
 
-  [key: string]: any
+  // [key: string]: any
 }
 
 export type RefObject<T> = {

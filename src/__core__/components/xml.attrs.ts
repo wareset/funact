@@ -70,7 +70,7 @@ function class2string(v: any): string {
     case 'number':
       return '' + v
     case 'object': {
-      const a: (string | number)[] = []
+      const a: string[] = []
       if (Array.isArray(v)) {
         for (let c: any, i = 0, l = v.length; i < l; ++i) {
           if ((c = class2string(v[i]))) a.push(c)
@@ -123,10 +123,12 @@ function setOrRemoveAttributeNS(
   )
 }
 
-const DSA: { [key: string]: { [key: string]: any } } = {}
+const DSA: { [key: string]: { [key: string]: any } } = {
+  __proto__: null as any,
+}
 function dsa_get_descriptor(lName: string, k: string, E: any) {
-  const nodeProps = DSA[lName] || (DSA[lName] = {})
-  if (!nodeProps.hasOwnProperty(k)) {
+  const nodeProps = DSA[lName] || (DSA[lName] = { __proto__: null })
+  if (!(k in nodeProps)) {
     const getPrototypeOf = Object.getPrototypeOf
     const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor
     let r: PropertyDescriptor | undefined
@@ -152,16 +154,14 @@ function setEventListener(
   newFn: any,
   oldFn: any
 ) {
-  if (newFn !== oldFn) {
-    if (RX_CAPTURE.test(k)) {
-      k = k.slice(2, -7).toLocaleLowerCase()
-      if (oldFn) node.removeEventListener(k, oldFn, true)
-      if (newFn) node.addEventListener(k, newFn, true)
-    } else {
-      k = k.slice(2).toLocaleLowerCase()
-      if (oldFn) node.removeEventListener(k, oldFn)
-      if (newFn) node.addEventListener(k, newFn)
-    }
+  if (RX_CAPTURE.test(k)) {
+    k = k.slice(2, -7).toLowerCase()
+    if (oldFn) node.removeEventListener(k, oldFn, true)
+    if (newFn) node.addEventListener(k, newFn, true)
+  } else {
+    k = k.slice(2).toLowerCase()
+    if (oldFn) node.removeEventListener(k, oldFn)
+    if (newFn) node.addEventListener(k, newFn)
   }
 }
 
@@ -172,7 +172,7 @@ export function setAttributes(
   newAttrs: { [key: string]: any },
   oldAttrs: { [key: string]: any }
 ) {
-  const resAttrs: { [key: string]: any } = {}
+  const resAttrs: { [key: string]: any } = { __proto__: null }
   let val: any
   for (let key in newAttrs) {
     if (key !== 'ref' && key !== 'children') {
@@ -189,17 +189,16 @@ export function setAttributes(
         if (oldAttrs[key] !== val) {
           setOrRemoveAttribute(node, key, val)
         }
-      } else if (RX_EVENTS.test(key)) {
-        setEventListener(node, key, val, oldAttrs[key])
-      } else if (RX_XLINKS.test(key)) {
-        if (oldAttrs[key] !== val) {
+      } else if (oldAttrs[key] !== val) {
+        if (RX_EVENTS.test(key)) {
+          setEventListener(node, key, val, oldAttrs[key])
+        } else if (RX_XLINKS.test(key)) {
           setOrRemoveAttributeNS(node, key, val)
-        }
-      } else {
-        if (oldAttrs[key] !== val) {
+        } else {
           setOrRemoveOtherProperties(node, key, val)
         }
       }
+
       resAttrs[key] = val
       delete oldAttrs[key]
     }
@@ -228,5 +227,4 @@ export function removeEventListeners(
       }
     }
   }
-  return oldAttrs
 }

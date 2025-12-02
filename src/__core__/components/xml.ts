@@ -1,11 +1,13 @@
+import { VNode } from '../VNode'
 import { getCurrentVNode } from '../VNode.utils'
 import {
+  XMLContext,
   createElementNS,
+  validateTextData,
   getParentXMLContext,
   insertAndAddNodeInParentContext,
-  removeAndDelNodeInParentContext,
 } from './xml.utils'
-import { setAttributes, removeEventListeners } from './xml.attrs'
+import { setAttributes } from './xml.attrs'
 import { useLayoutEffect } from '../hooks/useLayoutEffect'
 
 /*
@@ -16,54 +18,49 @@ import { useLayoutEffect } from '../hooks/useLayoutEffect'
 И для того, чтобы изменения текста на странице отслеживались,
 используется такой хак
 */
-export function XMLText(value: string, needDestroy?: boolean) {
-  const vNode = getCurrentVNode()
-  let node = null
+export function XMLText(vNode: VNode) {
+  let node: HTMLElement | SVGElement | null = null
+  let contextValue = vNode.contextValue as XMLContext
 
-  if (needDestroy) {
-    const contextValue = vNode.contextValue
-    if (contextValue && (node = contextValue.node)) {
-      const parentContext = contextValue.parentContext
-      removeAndDelNodeInParentContext(node, parentContext, vNode.deep)
-    }
-  } else if (!vNode.contextValue) {
-    const parentContext = getParentXMLContext(vNode)
-    if (parentContext && parentContext.node) {
-      node = createElementNS('font', parentContext.node)
-      node.style.verticalAlign = 'inherit'
-      node.textContent = value
-      insertAndAddNodeInParentContext(node, parentContext, vNode.deep)
-    }
+  const text = validateTextData(vNode.jsx)
+  vNode._ = 'text: ' + text
 
-    vNode.contextValue = {
-      node,
-      parentContext,
+  if (!contextValue) {
+    if (text) {
+      const parentContext = getParentXMLContext(vNode)
+      if (parentContext && parentContext.node) {
+        node = createElementNS('font', parentContext.node)
+        node.style.verticalAlign = 'inherit'
+        node.textContent = text
+        insertAndAddNodeInParentContext(node, parentContext, vNode)
+      }
+
+      vNode.contextValue = {
+        node,
+        text,
+        parentContext,
+      } satisfies XMLContext
     }
-  } else if ((node = vNode.contextValue.node)) {
-    const text = node.childNodes.length === 1 && node.childNodes[0]
-    text && text.nodeType === 3
-      ? ((text as Text).data = value)
-      : (node.textContent = value)
+  } else if (
+    (node = contextValue.node) &&
+    contextValue.text !== (contextValue.text = text)
+  ) {
+    const textNode = node.childNodes.length === 1 && node.childNodes[0]
+    textNode && textNode.nodeType === 3
+      ? ((textNode as Text).data = text)
+      : (node.textContent = text)
   }
 }
 
-export function XMLElement(
-  props: { [key: string]: any },
-  needDestroy?: boolean
-) {
+export function XMLElement(props: { [key: string]: any }) {
   const vNode = getCurrentVNode()
-  let node = null
+  let node: HTMLElement | SVGElement | null = null
+  let contextValue = vNode.contextValue as XMLContext
+
   const ref = props.ref
 
-  if (needDestroy) {
-    const contextValue = vNode.contextValue
-    if (contextValue && (node = contextValue.node)) {
-      const parentContext = contextValue.parentContext
-      removeAndDelNodeInParentContext(node, parentContext, vNode.deep)
-      removeEventListeners(node, contextValue.nodeAttrs)
-    }
-  } else if (!vNode.contextValue) {
-    const tagName = vNode.jsx.type
+  if (!contextValue) {
+    const tagName = (vNode.jsx as any).type
     switch (tagName) {
       case 'html':
       case 'body':
@@ -78,33 +75,30 @@ export function XMLElement(
         const parentContext = getParentXMLContext(vNode)
         if (parentContext && parentContext.node) {
           node = createElementNS(tagName, parentContext.node)
-          insertAndAddNodeInParentContext(node, parentContext, vNode.deep)
+          insertAndAddNodeInParentContext(node, parentContext, vNode)
         }
 
-        vNode.contextValue = {
-          tempEffectDeps: [ref, null],
-          nodeAttrs: node ? setAttributes(node, props, {}) : null,
-
+        vNode.contextValue = contextValue = {
           node,
-          childNodes: [],
-          childDeeps: [],
+          attrs: node ? setAttributes(node, props, {}) : {},
           parentContext,
-        }
+          tempEffectDeps: [ref, null],
+          childVNodes: [],
+        } satisfies XMLContext
       }
     }
-  } else if ((node = vNode.contextValue.node)) {
-    const contextValue = vNode.contextValue
-    contextValue.nodeAttrs = setAttributes(node, props, contextValue.nodeAttrs)
+  } else if ((node = contextValue.node)) {
+    contextValue.attrs = setAttributes(node, props, contextValue.attrs!)
   }
 
   /**
    * Помещать хуки в условия, разумеется, нельзя.
    * Но в этом случае, и в данной библиотеке, никаких проблем нет.
-   * И учитывая, что сайты в целом состоят из сотен и сотен элементов,
+   * И учитывая, что сайты в целом состоят из сотен и тысяч элементов,
    * и компоненты 'XMLElement' будут вызываться множество раз,
    * это небольшая оптимизация
    */
-  const tempEffectDeps = vNode.contextValue.tempEffectDeps
+  const tempEffectDeps = contextValue.tempEffectDeps!
   if (
     (ref || tempEffectDeps[0]) &&
     (tempEffectDeps[0] !== ref || tempEffectDeps[1] !== node)
@@ -125,10 +119,9 @@ export function XMLElement(
           }
         }
       },
-      (vNode.contextValue.tempEffectDeps = [ref, node])
+      (contextValue.tempEffectDeps = [ref, node])
     )
   }
 
-  // if (props.ref) props.ref.current = node
   return props.children
 }

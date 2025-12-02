@@ -2,6 +2,8 @@ import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { addEffectInQueue } from '../scheduler'
 
+import { IHook } from '../types'
+
 function useEffect(
   effect: (() => void) | (() => () => void),
   deps?: readonly unknown[]
@@ -24,7 +26,8 @@ function useEffect(
       value: effect,
 
       deps: deps,
-    }
+      cleanup: null,
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

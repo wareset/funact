@@ -1,4 +1,5 @@
-export declare function XMLText(value: string, needDestroy?: boolean): void;
+import { VNode } from '../VNode';
+export declare function XMLText(vNode: VNode): void;
 export declare function XMLElement(props: {
     [key: string]: any;
-}, needDestroy?: boolean): any;
+}): any;

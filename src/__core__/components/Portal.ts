@@ -1,4 +1,5 @@
 import { getCurrentVNode } from '../VNode.utils'
+import { XMLContext } from './xml.utils'
 
 export function Portal(props: {
   domNode: HTMLElement | SVGElement
@@ -6,20 +7,23 @@ export function Portal(props: {
 }) {
   const vNode = getCurrentVNode()
   const domNode = props.domNode
+  let contextValue = vNode.contextValue as XMLContext
 
-  if (!vNode.contextValue) {
+  if (!contextValue) {
     vNode.contextValue = {
       node: domNode,
-      childNodes: [],
-      childDeeps: [],
+      childVNodes: [],
+    } satisfies XMLContext
+  } else if (contextValue.node !== domNode) {
+    const oldNode = contextValue.node
+    if (oldNode!.namespaceURI !== domNode.namespaceURI) {
+      throw 'Portal: incorrect namespaceURI'
     }
-  } else if (vNode.contextValue.node !== domNode) {
-    if (vNode.contextValue.node.namespaceURI !== domNode.namespaceURI) {
-      throw new Error('Portal: incorrect namespaceURI')
-    }
-    vNode.contextValue.node = domNode
-    for (let a = vNode.contextValue.childNodes, i = 0; i < a.length; ++i) {
-      domNode.appendChild(a[i])
+    contextValue.node = domNode
+    for (let node, a = contextValue.childVNodes!, i = 0; i < a.length; ++i) {
+      node = a[i].contextValue.node!
+      if (node.parentNode === oldNode) domNode.appendChild(node)
+      else throw 'Portal: wrong parent'
     }
   }
 

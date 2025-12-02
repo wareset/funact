@@ -1,6 +1,7 @@
 import { checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
+import { IHook } from '../types'
 import { RefObject } from '../types'
 
 function useImperativeHandle<T, R extends T>(
@@ -26,7 +27,7 @@ function useImperativeHandle<T, R extends T>(
       value: ref,
 
       deps: deps,
-    }
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

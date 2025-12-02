@@ -7,10 +7,10 @@ import { addVNodeInQueue } from '../scheduler'
 import { IHook } from '../types'
 
 interface IHookDataForUseSyncExternalStore extends IHook {
-  subscribe: (onStoreChange: () => void) => () => void
   getSnapshot: () => any
   check: () => void
   effect: () => void
+  effectDeps: [(onStoreChange: () => void) => () => void]
 }
 
 function useSyncExternalStore<Snapshot>(
@@ -24,7 +24,7 @@ function useSyncExternalStore<Snapshot>(
   let hook = prevHook.nextHook as IHookDataForUseSyncExternalStore
   if (hook) {
     checkHook(hook, useSyncExternalStore)
-    hook.subscribe = subscribe
+    subscribe === hook.effectDeps[0] || (hook.effectDeps = [subscribe])
     hook.getSnapshot = getSnapshot
   } else {
     hook = prevHook.nextHook = {
@@ -33,21 +33,21 @@ function useSyncExternalStore<Snapshot>(
       vNode,
       value: getSnapshot(),
 
-      subscribe: subscribe,
-      getSnapshot: getSnapshot,
+      getSnapshot,
       check() {
         if (!Object.is(hook.value, (hook.value = hook.getSnapshot()))) {
           addVNodeInQueue(hook.vNode)
         }
       },
       effect() {
-        return hook.subscribe(hook.check)
+        return hook.effectDeps[0](hook.check)
       },
+      effectDeps: [subscribe],
     } satisfies IHookDataForUseSyncExternalStore
   }
   vNode.prevHook = hook
 
-  useEffect(hook.effect, [subscribe])
+  useEffect(hook.effect, hook.effectDeps)
   useEffect(hook.check)
 
   return hook.value

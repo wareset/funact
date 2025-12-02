@@ -6,7 +6,7 @@ import { getCurrentVNode } from './VNode.utils'
 
 /*@__NO_SIDE_EFFECTS__*/
 export function createContext<T>(defaultValue: T): IContext<T> {
-  const ContextProvider = function (props: { value: T; children?: any }) {
+  function ContextProvider(props: { value: T; children?: any }) {
     const vNode = getCurrentVNode()
     const value = props.value
     const users = vNode.contextUsers || (vNode.contextUsers = [])
