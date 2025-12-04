@@ -33,9 +33,7 @@ export function createChildren(
     if (isDeep) {
       new VNode(iam, new JSXNode(Fragment, null, [jsx]), 1, index)
     } else {
-      for (let i = 0; i < jsx.length && iam.alive; ++i) {
-        createChildren(iam, jsx[i], i, 1)
-      }
+      for (let i = 0; i < jsx.length; ++i) createChildren(iam, jsx[i], i, 1)
     }
   } else if (jsx instanceof JSXNode) {
     new VNode(iam, jsx, 1, index)
@@ -64,9 +62,11 @@ function compareProps(iam: VNode, jsxList: any[]) {
   const is = Object.is
 
   let i = 0
+  let jsx: unknown
+  let cNode: VNode | null | undefined
   for (; i < jsxList.length; ++i) {
-    const jsx = jsxList[i]
-    const cNode: VNode | null | undefined = children[i]
+    cNode = children[i]
+    jsx = jsxList[i]
 
     if (jsx instanceof JSXNode) {
       if (
@@ -115,7 +115,8 @@ function destroyVNode(iam: VNode | null | undefined) {
     iam.alive = iam.dirty = false
 
     // for (let a = iam.children; a.length > 0; ) destroyVNode(a.pop())
-    for (let a = iam.children, i = 0; i < a.length; ++i) destroyVNode(a[i])
+    // for (let a = iam.children, i = 0; i < a.length; ++i) destroyVNode(a[i])
+    iam.children.forEach(destroyVNode)
 
     switch (iam.fc) {
       case XMLText:

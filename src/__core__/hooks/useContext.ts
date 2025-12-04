@@ -8,7 +8,7 @@ interface IHookDataForUseContext extends IHook {
 }
 
 function useContext<T>(context: IContext<T>): T {
-  const vNode = getCurrentVNode()
+  let vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 
   let hook = prevHook.nextHook as IHookDataForUseContext
@@ -39,10 +39,10 @@ function useContext<T>(context: IContext<T>): T {
     hook.cleanup()
     hook.value = (hook.context = context).defaultValue
 
-    for (let ctxVNode = vNode; (ctxVNode = ctxVNode.parent!); ) {
-      if (ctxVNode.fc === (context as any)) {
-        hook.value = ctxVNode.contextValue
-        ;(hook.users = ctxVNode.contextUsers!).push(hook)
+    for (; (vNode = vNode.parent!); ) {
+      if (vNode.fc === (context as any)) {
+        hook.value = vNode.contextValue
+        ;(hook.users = vNode.contextUsers!).push(hook)
         break
       }
     }

@@ -55,17 +55,19 @@ function useOptimistic<State, Action>(
       valueTemp: passthrough,
       isTemp: false,
 
-      reducer: reducer,
+      reducer,
       dispatch(action: any) {
-        hook.valueTemp = hook.reducer
-          ? hook.reducer(hook.value, action)
-          : typeof action === 'function'
-            ? action(hook.value)
-            : action
-        if (!Object.is(hook.value, hook.valueTemp)) {
-          hook.isTemp = true
-          hook.value = hook.valueTemp
-          addVNodeInQueue(hook.vNode)
+        if (hook.vNode.alive) {
+          hook.valueTemp = hook.reducer
+            ? hook.reducer(hook.value, action)
+            : typeof action === 'function'
+              ? action(hook.value)
+              : action
+          if (!Object.is(hook.value, hook.valueTemp)) {
+            hook.isTemp = true
+            hook.value = hook.valueTemp
+            addVNodeInQueue(hook.vNode)
+          }
         }
       },
     } satisfies IHookDataForUseOptimistic

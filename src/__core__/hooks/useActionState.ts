@@ -57,24 +57,30 @@ function useActionState<State, Payload>(
       pending: false,
       queue: [],
       run() {
-        const item = hook.queue.shift()!
-        const res = item[0](hook.valueTemp, item[1])
-        if (res == null || typeof res.then !== 'function') hook.then(res)
-        else res.then(hook.then)
+        if (hook.vNode.alive) {
+          const item = hook.queue.shift()!
+          const res = item[0](hook.valueTemp, item[1])
+          if (res == null || typeof res.then !== 'function') hook.then(res)
+          else res.then(hook.then)
+        }
       },
       then(state: any) {
-        hook.valueTemp = state
-        if (hook.queue.length) schedule(hook.run)
-        else {
-          hook.pending = false
-          ;(hook.value = state), addVNodeInQueue(hook.vNode)
+        if (hook.vNode.alive) {
+          hook.valueTemp = state
+          if (hook.queue.length) schedule(hook.run)
+          else {
+            hook.pending = false
+            ;(hook.value = state), addVNodeInQueue(hook.vNode)
+          }
         }
       },
       dispatch(payload?: Payload) {
-        hook.queue.push([hook.action, payload])
-        if (!hook.pending) {
-          hook.pending = true
-          addVNodeInQueue(hook.vNode), schedule(hook.run)
+        if (hook.vNode.alive) {
+          hook.queue.push([hook.action, payload])
+          if (!hook.pending) {
+            hook.pending = true
+            addVNodeInQueue(hook.vNode), schedule(hook.run)
+          }
         }
       },
     } satisfies IHookDataForUseActionState

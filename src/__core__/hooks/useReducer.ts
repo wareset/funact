@@ -37,13 +37,15 @@ function useReducer<S, I, A extends [] | [any]>(
       hookType: useReducer,
       vNode,
       value: (init ? init(initialState) : initialState) as S,
-      
+
       reducer,
       dispatch(...args: any[]) {
-        args = hook.reducer(hook.value, ...args)
-        if (!Object.is(hook.value, args)) {
-          hook.value = args
-          addVNodeInQueue(hook.vNode)
+        if (hook.vNode.alive) {
+          args = hook.reducer(hook.value, ...args)
+          if (!Object.is(hook.value, args)) {
+            hook.value = args
+            addVNodeInQueue(hook.vNode)
+          }
         }
       },
     } satisfies IHookDataForUseOptimistic

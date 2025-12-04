@@ -31,19 +31,25 @@ function useTransition(): [
 
       callbacks: [],
       run() {
-        const res = hook.callbacks.shift()()
-        if (res == null || typeof res.then !== 'function') hook.then()
-        else res.then(hook.then)
+        if (hook.vNode.alive) {
+          const res = hook.callbacks.shift()()
+          if (res == null || typeof res.then !== 'function') hook.then()
+          else res.then(hook.then)
+        }
       },
       then() {
-        if (hook.callbacks.length) schedule(hook.run)
-        else (hook.value = false), addVNodeInQueue(hook.vNode)
+        if (hook.vNode.alive) {
+          if (hook.callbacks.length) schedule(hook.run)
+          else (hook.value = false), addVNodeInQueue(hook.vNode)
+        }
       },
       dispatch(callback: TransitionFunction) {
-        hook.callbacks.push(callback)
-        if (!hook.value) {
-          hook.value = true
-          addVNodeInQueue(hook.vNode), schedule(hook.run)
+        if (hook.vNode.alive) {
+          hook.callbacks.push(callback)
+          if (!hook.value) {
+            hook.value = true
+            addVNodeInQueue(hook.vNode), schedule(hook.run)
+          }
         }
       },
     } satisfies IHookDataForUseTransition

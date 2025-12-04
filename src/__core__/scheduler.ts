@@ -34,7 +34,7 @@ const INSERTION_AND_LAYOUT_EFFECTS: {
 let updating = 0
 function update() {
   for (let vNode: VNode; (vNode = V_NODES.pop()!); ) {
-    if (vNode.dirty) {
+    if (vNode.dirty && vNode.alive) {
       if (updating > 4e4) throw 'loop'
       INSERTION_AND_LAYOUT_EFFECTS.length =
         LAYOUT_EFFECTS.length =
@@ -79,7 +79,7 @@ function execute_effects(a: IHook[], vNode?: any) {
 }
 
 export function addVNodeInQueue(vNode: VNode) {
-  if (!vNode.dirty) {
+  if (!vNode.dirty && vNode.alive) {
     vNode.dirty = true
     const deep = vNode.deep
     let i = V_NODES.length
@@ -112,7 +112,6 @@ export function addInsertionOrLayoutEffectInQueue(
     0,
     isInsertion ? { deep, i: [hook], l: [] } : { deep, i: [], l: [hook] }
   )
-  // updating++ || schedule(update)
 }
 export function addEffectInQueue(hook: IHook) {
   const vNode = hook.vNode
@@ -125,5 +124,4 @@ export function addEffectInQueue(hook: IHook) {
   }
 
   EFFECTS.splice(i + 1, 0, [hook])
-  // updating++ || schedule(update)
 }

@@ -36,10 +36,12 @@ function useState<S>(
           : initialState,
 
       update(state: any) {
-        if (typeof state === 'function') state = state(hook.value)
-        if (!Object.is(hook.value, state)) {
-          hook.value = state
-          addVNodeInQueue(hook.vNode)
+        if (hook.vNode.alive) {
+          if (typeof state === 'function') state = state(hook.value)
+          if (!Object.is(hook.value, state)) {
+            hook.value = state
+            addVNodeInQueue(hook.vNode)
+          }
         }
       },
     } satisfies IHookDataForUseState
