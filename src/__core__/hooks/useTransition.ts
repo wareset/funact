@@ -7,6 +7,7 @@ import { TransitionFunction } from '../types'
 
 interface IHookDataForUseTransition extends IHook {
   callbacks: any[]
+  lastCtx: null | any
   run: () => void
   then: () => void
   dispatch: (callback: any) => void
@@ -30,26 +31,33 @@ function useTransition(): [
       value: false,
 
       callbacks: [],
+      lastCtx: null,
       run() {
         if (hook.vNode.alive) {
-          const res = hook.callbacks.shift()()
-          if (res == null || typeof res.then !== 'function') hook.then()
-          else res.then(hook.then)
+          for (let tmp: any, a = hook.callbacks; (tmp = a.shift()); ) {
+            tmp = tmp()
+            if (!a.length) {
+              const lastCtx = (hook.lastCtx = {})
+              tmp != null && typeof tmp.then === 'function'
+                ? tmp.then(hook.then.bind(lastCtx))
+                : hook.then.apply(lastCtx)
+              return
+            }
+          }
         }
       },
       then() {
-        if (hook.vNode.alive) {
-          if (hook.callbacks.length) schedule(hook.run)
-          else (hook.value = false), addVNodeInQueue(hook.vNode)
-        }
+        if (hook.vNode.alive && this === hook.lastCtx)
+          (hook.value = false), addVNodeInQueue(hook.vNode)
       },
       dispatch(callback: TransitionFunction) {
         if (hook.vNode.alive) {
           hook.callbacks.push(callback)
           if (!hook.value) {
             hook.value = true
-            addVNodeInQueue(hook.vNode), schedule(hook.run)
+            addVNodeInQueue(hook.vNode)
           }
+          schedule(hook.run)
         }
       },
     } satisfies IHookDataForUseTransition
