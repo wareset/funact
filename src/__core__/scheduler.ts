@@ -54,9 +54,9 @@ function update() {
 
 function insertions_and_layouts(
   // this: typeof EFFECTS,
-  item: (typeof INSERTION_AND_LAYOUT_EFFECTS)[number],
-  a: any
+  item: (typeof INSERTION_AND_LAYOUT_EFFECTS)[number]
 ) {
+  let a: IHook[]
   // INSERTION
   if ((a = item.i).length) {
     cleanup_effects(a), execute_effects(a)
@@ -71,9 +71,8 @@ function cleanup_effects(a: IHook[]) {
     ;(cleanup = (v = a[j]).cleanup) && ((v.cleanup = null), cleanup())
   }
 }
-function execute_effects(a: IHook[], vNode?: any) {
-  vNode = a[0].vNode
-  for (let v, j = 0; j < a.length && vNode.alive; ++j) {
+function execute_effects(a: IHook[]) {
+  for (let v, vNode = a[0].vNode, j = 0; j < a.length && vNode.alive; ++j) {
     ;(v = a[j]), (v.cleanup = v.value())
   }
 }

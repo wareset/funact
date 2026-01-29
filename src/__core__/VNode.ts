@@ -42,7 +42,7 @@ export class VNode {
       parent.children[index] = this
       ;(this.deep = parent.deep.slice()).push(index)
     } else {
-      this.deep = [0]
+      this.deep = [index]
     }
 
     // if (jsx instanceof JSXNode) {

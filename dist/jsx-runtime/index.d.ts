@@ -9,6 +9,7 @@ export { createRoot } from "../../types/jsx-runtime";
 export { jsx } from "../../types/jsx-runtime";
 export { jsxs } from "../../types/jsx-runtime";
 export { memo } from "../../types/jsx-runtime";
+export { render } from "../../types/jsx-runtime";
 export { stylesheet } from "../../types/jsx-runtime";
 export { use } from "../../types/jsx-runtime";
 export { useActionState } from "../../types/jsx-runtime";

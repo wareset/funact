@@ -49,7 +49,7 @@ export function createElement(
   return new JSXNode(type, props, children)
 }
 
-function Root(props: any) {
+function Root(props: { domNode: HTMLElement | SVGElement, children: any }) {
   const { 0: res, 1: setRes } = useState<JSXNode>()
   res || setRes(new JSXNode(Portal, props, []))
   return res
@@ -62,11 +62,16 @@ function Root(props: any) {
 //   return new VNode(null, new JSXNode(Portal, { domNode, children }, []))
 // }
 
+let rId = 0
+export function render(children: any, domNode: HTMLElement | SVGElement) {
+  // return new VNode(null, new JSXNode(Portal, { domNode, children }, []))
+  return new VNode(null, new JSXNode(Root, { domNode, children }, []), 1, ++rId)
+}
+
 export function createRoot(domNode: HTMLElement | SVGElement) {
   return {
     render(children: any) {
-      // return new VNode(null, new JSXNode(Portal, { domNode, children }, []))
-      return new VNode(null, new JSXNode(Root, { domNode, children }, []), 1, 0)
+      return render(children, domNode)
     },
   }
 }

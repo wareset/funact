@@ -26,6 +26,7 @@ export { getContext as use } from './use';
 import { VNode } from './VNode';
 import { JSXNode } from './JSXNode';
 export declare function createElement(type: JSXNode['type'], props?: JSXNode['props'] | null | undefined, ...children: any[]): JSXNode;
+export declare function render(children: any, domNode: HTMLElement | SVGElement): VNode;
 export declare function createRoot(domNode: HTMLElement | SVGElement): {
     render(children: any): VNode;
 };
