@@ -1,8 +1,7 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { addVNodeInQueue } from '../scheduler'
-
-import { IHook } from '../types'
+import { is } from '../utils'
 
 interface IHookDataForUseOptimistic extends IHook {
   reducer: (...a: any[]) => any
@@ -42,7 +41,7 @@ function useReducer<S, I, A extends [] | [any]>(
       dispatch(...args: any[]) {
         if (hook.vNode.alive) {
           args = hook.reducer(hook.value, ...args)
-          if (!Object.is(hook.value, args)) {
+          if (!is(hook.value, args)) {
             hook.value = args
             addVNodeInQueue(hook.vNode)
           }

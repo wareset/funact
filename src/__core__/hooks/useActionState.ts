@@ -1,8 +1,6 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { addVNodeInQueue, schedule } from '../scheduler'
-
-import { IHook } from '../types'
 
 interface IHookDataForUseActionState extends IHook {
   valueTemp: any

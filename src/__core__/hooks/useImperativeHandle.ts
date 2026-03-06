@@ -1,7 +1,6 @@
-import { checkHook, isEqualDeps } from '../hooks.utils'
+import { IHook, checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
-import { IHook } from '../types'
 import { RefObject } from '../types'
 
 function useImperativeHandle<T, R extends T>(

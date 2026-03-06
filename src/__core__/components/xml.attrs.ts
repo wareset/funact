@@ -1,4 +1,5 @@
 import { NAMESPACES_URI } from './xml.utils'
+import { StyleSheet, ClassNames } from '../types'
 
 const CSS_PROPERTIES: { [k: string]: string } = { __proto__: null as any }
 
@@ -35,10 +36,10 @@ let camel2dash = function (v: string): string {
   )
 }
 
-function style2string(v: any): string {
+function style2string(v: StyleSheet): string {
   switch (typeof v) {
     case 'string':
-      return v[v.length - 1] === ';' ? v.slice(0, -1) : v
+      return v // v[v.length - 1] === ';' ? v.slice(0, -1) : v
     case 'object': {
       const a: string[] = []
       if (Array.isArray(v)) {
@@ -47,7 +48,9 @@ function style2string(v: any): string {
         }
       } else if (v) {
         for (const k in v) {
-          if (isValid(v[k])) a.push(camel2dash(k) + ':' + v[k])
+          if (isValid((v as any)[k])) {
+            a.push(camel2dash(k) + ':' + (v as any)[k])
+          }
         }
       }
       return a.join(';')
@@ -63,12 +66,14 @@ export { style2string as stylesheet }
 //   return res.join(';')
 // }
 
-function class2string(v: any): string {
+function class2string(v: ClassNames): string {
   switch (typeof v) {
     case 'string':
       return v
     case 'number':
-      return '' + v
+      return v + ''
+    case 'bigint':
+      return v + 'n'
     case 'object': {
       const a: string[] = []
       if (Array.isArray(v)) {
@@ -96,7 +101,7 @@ function isValid(v: any) {
   //   v !== '' &&
   //   ((v = typeof v) === 'string' || v === 'number' || v === 'boolean')
   // )
-  return v != null && v !== ''
+  return v != null && v !== '' && typeof v !== 'object'
 }
 
 function xkey(k: string, n: number): string {
@@ -147,7 +152,7 @@ function setOrRemoveOtherProperties(
     : setOrRemoveAttribute(node, k, v)
 }
 
-const RX_CAPTURE = /Capture$/
+const RX_CAPTURE = /[Cc]apture$/
 function setEventListener(
   node: HTMLElement | SVGElement,
   k: string,
@@ -165,7 +170,7 @@ function setEventListener(
   }
 }
 
-const RX_EVENTS = /^on[A-Z][a-z]/
+const RX_EVENTS = /^on[A-Za-z][a-z]/
 const RX_XLINKS = /^xlink[A-Z][a-z]/
 export function setAttributes(
   node: HTMLElement | SVGElement,
@@ -181,7 +186,8 @@ export function setAttributes(
       if (key === 'style') {
         val = style2string(val)
         if (oldAttrs[key] !== val) {
-          setOrRemoveAttribute(node, key, val)
+          node.style.cssText = val
+          // setOrRemoveAttribute(node, key, val)
         }
       } else if (key === 'className' || key === 'class') {
         key = 'class'

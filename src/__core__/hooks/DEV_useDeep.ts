@@ -1,4 +1,4 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
 function devUseDeep(): number[] {
@@ -14,7 +14,7 @@ function devUseDeep(): number[] {
       hookType: devUseDeep,
       vNode,
       value: vNode.deep.slice(),
-    }
+    } satisfies IHook
   }
   vNode.prevHook = hook
 

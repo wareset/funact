@@ -1,8 +1,7 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { addVNodeInQueue } from '../scheduler'
-
-import { IHook } from '../types'
+import { is } from '../utils'
 
 interface IHookDataForUseState extends IHook {
   update: (state: any) => void
@@ -38,7 +37,7 @@ function useState<S>(
       update(state: any) {
         if (hook.vNode.alive) {
           if (typeof state === 'function') state = state(hook.value)
-          if (!Object.is(hook.value, state)) {
+          if (!is(hook.value, state)) {
             hook.value = state
             addVNodeInQueue(hook.vNode)
           }

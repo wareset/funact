@@ -1,7 +1,5 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-
-import { IHook } from '../types'
 
 // function simpleHash(str: string) {
 //   let hash = 0

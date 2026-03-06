@@ -1,6 +1,7 @@
-declare function style2string(v: any): string;
+import { StyleSheet, ClassNames } from '../types';
+declare function style2string(v: StyleSheet): string;
 export { style2string as stylesheet };
-declare function class2string(v: any): string;
+declare function class2string(v: ClassNames): string;
 export { class2string as classnames };
 export declare function setAttributes(node: HTMLElement | SVGElement, newAttrs: {
     [key: string]: any;

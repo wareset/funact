@@ -1,9 +1,11 @@
-import { IHook, FC } from './types';
+import { FC, Context } from './types';
+import { IHook } from './hooks.utils';
+import { XMLText } from './components/xml';
 export declare class VNode {
     _: string;
     alive: boolean;
     dirty: boolean;
-    fc: FC;
+    fc: FC | typeof XMLText | Context<any>;
     jsx: unknown;
     readonly deep: number[];
     readonly parent: VNode | null;

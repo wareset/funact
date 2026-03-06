@@ -1,8 +1,7 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { addVNodeInQueue, schedule } from '../scheduler'
 
-import { IHook } from '../types'
 import { TransitionFunction } from '../types'
 
 interface IHookDataForUseTransition extends IHook {

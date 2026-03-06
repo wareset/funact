@@ -44,6 +44,9 @@
   "devDependencies": {
     "dester": "1.0.x"
   },
+  "dependencies": {
+    "csstype": "3.x"
+  },
   "peerDependencies": {
     "typescript": "5.x"
   }

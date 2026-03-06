@@ -1,7 +1,6 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
-import { IHook } from '../types'
 import { RefObject } from '../types'
 
 function useRef<T>(initialValue: T): RefObject<T>

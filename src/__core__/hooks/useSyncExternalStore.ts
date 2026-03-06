@@ -1,10 +1,9 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 
 import { useEffect } from './useEffect'
 import { addVNodeInQueue } from '../scheduler'
-
-import { IHook } from '../types'
+import { is } from '../utils'
 
 interface IHookDataForUseSyncExternalStore extends IHook {
   getSnapshot: () => any
@@ -35,7 +34,7 @@ function useSyncExternalStore<Snapshot>(
 
       getSnapshot,
       check() {
-        if (!Object.is(hook.value, (hook.value = hook.getSnapshot()))) {
+        if (!is(hook.value, (hook.value = hook.getSnapshot()))) {
           addVNodeInQueue(hook.vNode)
         }
       },

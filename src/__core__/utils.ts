@@ -10,3 +10,11 @@ export function sortDeeps(a: number[], b: number[], strict?: true): -1 | 0 | 1 {
   }
   return res > 0 ? 1 : res < 0 ? -1 : 0
 }
+
+export let is: (typeof Object)['is'] = function (a: any, b: any) {
+  return (is =
+    Object.is ||
+    function (a, b) {
+      return a === b ? a !== 0 || 1 / a === 1 / b : a !== a && b !== b
+    })(a, b)
+}

@@ -1,4 +1,5 @@
-import { IHook, FC } from './types'
+import { FC, Context } from './types'
+import { IHook } from './hooks.utils'
 import { XMLElement, XMLText } from './components/xml'
 import { createChildren, getCurrentVNode, setCurrentVNode } from './VNode.utils'
 
@@ -11,7 +12,7 @@ export class VNode {
   dirty: boolean
 
   // Функция самого компонента
-  fc: FC //| IContext<any>
+  fc: FC | typeof XMLText | Context<any>
 
   jsx: unknown
 
@@ -52,7 +53,7 @@ export class VNode {
       this.prevHook = this.headHook = { nextHook: null } as IHook
 
       if (typeof jsx.type === 'string') {
-        this.fc = XMLElement as any
+        this.fc = XMLElement
         this._ = 'elem: ' + jsx.type
       } else {
         this.fc = jsx.type
@@ -62,7 +63,7 @@ export class VNode {
 
       setCurrentVNode(prevVNode)
     } else {
-      this.fc = XMLText as any
+      this.fc = XMLText
       XMLText(this)
     }
   }

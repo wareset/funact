@@ -1,8 +1,7 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { addVNodeInQueue } from '../scheduler'
-
-import { IHook } from '../types'
+import { is } from '../utils'
 
 interface IHookDataForUseOptimistic extends IHook {
   valueTemp: any
@@ -63,7 +62,7 @@ function useOptimistic<State, Action>(
             : typeof action === 'function'
               ? action(hook.value)
               : action
-          if (!Object.is(hook.value, hook.valueTemp)) {
+          if (!is(hook.value, hook.valueTemp)) {
             hook.isTemp = true
             hook.value = hook.valueTemp
             addVNodeInQueue(hook.vNode)

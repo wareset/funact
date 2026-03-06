@@ -1,4 +1,4 @@
-import { IContext } from './types'
+import { Context } from './types'
 import { getCurrentVNode } from './VNode.utils'
 
 // type Usable<T> = PromiseLike<T> | Context<T>
@@ -18,7 +18,7 @@ import { getCurrentVNode } from './VNode.utils'
 // для передачи в Suspense, когда до него дойдут руки
 
 /*@__NO_SIDE_EFFECTS__*/
-export function getContext<T>(context: IContext<T>): T {
+export function getContext<T>(context: Context<T>): T {
   let vNode = getCurrentVNode()
   for (; (vNode = vNode!.parent!); )
     if (vNode.fc === context as any) return vNode.contextValue as T

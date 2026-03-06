@@ -1,4 +1,4 @@
-import { IHook } from './types'
+import { IHook } from './hooks.utils'
 import { type VNode } from './VNode'
 
 import { sortDeeps } from './utils'

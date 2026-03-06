@@ -1,8 +1,6 @@
-import { checkHook, isEqualDeps } from '../hooks.utils'
+import { IHook, checkHook, isEqualDeps } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
 import { addEffectInQueue } from '../scheduler'
-
-import { IHook } from '../types'
 
 function useEffect(
   effect: (() => void) | (() => () => void),

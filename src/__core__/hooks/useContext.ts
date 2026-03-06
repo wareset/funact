@@ -1,13 +1,13 @@
-import { checkHook } from '../hooks.utils'
+import { IHook, checkHook } from '../hooks.utils'
 import { getCurrentVNode } from '../VNode.utils'
-import { IHook, IContext } from '../types'
+import { Context } from '../types'
 
 interface IHookDataForUseContext extends IHook {
   context: any
   users: null | any[]
 }
 
-function useContext<T>(context: IContext<T>): T {
+function useContext<T>(context: Context<T>): T {
   let vNode = getCurrentVNode()
   const prevHook = vNode.prevHook
 

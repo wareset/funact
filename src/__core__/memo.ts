@@ -1,12 +1,10 @@
 // import { JSXNode } from './JSXNode'
-import { FC, Comparator } from './types'
-
-type Props = { [key: string]: any }
+import { FC, Comparator, Props } from './types'
+import { is } from './utils'
 
 // function isEqualProps(a: any[], b: any[]) {
 //   let res = a.length === b.length
 //   if (res) {
-//     const is = Object.is
 //     for (let ai: any, bi: any, i = a.length; i-- > 0; ) {
 //       ai = a[i]
 //       bi = b[i]
@@ -32,7 +30,6 @@ type Props = { [key: string]: any }
 function defaultCompare(prevProps: Props, nextProps: Props) {
   let res = Object.keys(prevProps).length === Object.keys(nextProps).length
   if (res && prevProps !== nextProps) {
-    const is = Object.is
     for (const k in prevProps) {
       if (!(k in nextProps && is(prevProps[k], nextProps[k]))) {
         res = false
@@ -45,7 +42,10 @@ function defaultCompare(prevProps: Props, nextProps: Props) {
 }
 
 /*@__NO_SIDE_EFFECTS__*/
-export function memo<T extends FC, C extends Comparator>(fc: T, compare?: C) {
+export function memo<T extends FC, C extends Comparator>(
+  fc: T,
+  compare?: C
+): FC & { compare?: Comparator } {
   function Memo(props: Props) {
     return fc(props)
   }

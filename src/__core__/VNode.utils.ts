@@ -1,5 +1,6 @@
+import { FC } from './types'
 import { VNode } from './VNode'
-import { JSXNode } from './JSXNode'
+import { createElement, isJSXNode, JSXNode } from './createElement'
 import { Fragment } from './components/Fragment'
 import { XMLElement, XMLText } from './components/xml'
 import {
@@ -14,6 +15,7 @@ import {
 import { useInsertionEffect } from './hooks/useInsertionEffect'
 import { useLayoutEffect } from './hooks/useLayoutEffect'
 import { useEffect } from './hooks/useEffect'
+import { is } from './utils'
 
 let currentVNode: VNode
 export function getCurrentVNode() {
@@ -31,11 +33,11 @@ export function createChildren(
 ) {
   if (Array.isArray(jsx)) {
     if (isDeep) {
-      new VNode(iam, new JSXNode(Fragment, null, [jsx]), 1, index)
+      new VNode(iam, createElement(Fragment, null, [jsx]), 1, index)
     } else {
       for (let i = 0; i < jsx.length; ++i) createChildren(iam, jsx[i], i, 1)
     }
-  } else if (jsx instanceof JSXNode) {
+  } else if (isJSXNode(jsx)) {
     new VNode(iam, jsx, 1, index)
   } else if (validateTextData(jsx)) {
     new VNode(iam, jsx, 0, index)
@@ -59,7 +61,6 @@ export function updateVNode(iam: VNode) {
 function compareProps(iam: VNode, jsxList: any[]) {
   const children = iam.children
   const isArray = Array.isArray
-  const is = Object.is
 
   let i = 0
   let jsx: unknown
@@ -68,16 +69,16 @@ function compareProps(iam: VNode, jsxList: any[]) {
     cNode = children[i]
     jsx = jsxList[i]
 
-    if (jsx instanceof JSXNode) {
+    if (isJSXNode(jsx)) {
       if (
         cNode &&
-        cNode.jsx instanceof JSXNode &&
+        isJSXNode(cNode.jsx) &&
         is(cNode.jsx.type, jsx.type) // &&
         // is(cNode.jsx.key, jsx.key)
       ) {
         if (
-          !cNode.fc.compare ||
-          !cNode.fc.compare(cNode.jsx.props, jsx.props)
+          !(cNode.fc as FC).compare ||
+          !(cNode.fc as FC).compare!(cNode.jsx.props, jsx.props)
         ) {
           if (cNode.jsx.props === jsx.props) throw 'props'
           cNode.jsx = jsx
@@ -92,7 +93,7 @@ function compareProps(iam: VNode, jsxList: any[]) {
         compareProps(cNode, jsx)
       } else {
         destroyVNode(cNode)
-        new VNode(iam, new JSXNode(Fragment, null, [jsx]), 1, i)
+        new VNode(iam, createElement(Fragment, null, [jsx]), 1, i)
       }
     } else {
       if (cNode && cNode.fc === XMLText) {

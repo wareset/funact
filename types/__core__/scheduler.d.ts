@@ -1,4 +1,4 @@
-import { IHook } from './types';
+import { IHook } from './hooks.utils';
 import { type VNode } from './VNode';
 export declare const schedule: typeof queueMicrotask | typeof setTimeout;
 export declare function addVNodeInQueue(vNode: VNode): void;
