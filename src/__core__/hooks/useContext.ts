@@ -40,9 +40,11 @@ function useContext<T>(context: Context<T>): T {
     hook.value = (hook.context = context).defaultValue
 
     for (; (vNode = vNode.parent!); ) {
-      if (vNode.fc === (context as any)) {
-        hook.value = vNode.contextValue
-        ;(hook.users = vNode.contextUsers!).push(hook)
+      if (vNode.fc === context) {
+        // @ts-ignore
+        hook.value = (context = vNode.context).value
+        // @ts-ignore
+        ;(hook.users = context.users).push(hook)
         break
       }
     }

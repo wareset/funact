@@ -20,12 +20,12 @@ import { useLayoutEffect } from '../hooks/useLayoutEffect'
 */
 export function XMLText(vNode: VNode) {
   let node: HTMLElement | SVGElement | null = null
-  let contextValue = vNode.contextValue as XMLContext
+  const xmlContext = vNode.xmlContext
 
   const text = validateTextData(vNode.jsx)
   vNode._ = 'text: ' + text
 
-  if (!contextValue) {
+  if (!xmlContext) {
     if (text) {
       const parentContext = getParentXMLContext(vNode)
       if (parentContext && parentContext.node) {
@@ -35,15 +35,15 @@ export function XMLText(vNode: VNode) {
         insertAndAddNodeInParentContext(node, parentContext, vNode)
       }
 
-      vNode.contextValue = {
+      vNode.xmlContext = {
         node,
         text,
         parentContext,
       } satisfies XMLContext
     }
   } else if (
-    (node = contextValue.node) &&
-    contextValue.text !== (contextValue.text = text)
+    (node = xmlContext.node) &&
+    xmlContext.text !== (xmlContext.text = text)
   ) {
     const textNode = node.childNodes.length === 1 && node.childNodes[0]
     textNode && textNode.nodeType === 3
@@ -55,11 +55,11 @@ export function XMLText(vNode: VNode) {
 export function XMLElement(props: { [key: string]: any }) {
   const vNode = getCurrentVNode()
   let node: HTMLElement | SVGElement | null = null
-  let contextValue = vNode.contextValue as XMLContext
+  let xmlContext = vNode.xmlContext
 
   const ref = props.ref
 
-  if (!contextValue) {
+  if (!xmlContext) {
     const tagName = (vNode.jsx as any).type
     switch (tagName) {
       case 'html':
@@ -78,7 +78,7 @@ export function XMLElement(props: { [key: string]: any }) {
           insertAndAddNodeInParentContext(node, parentContext, vNode)
         }
 
-        vNode.contextValue = contextValue = {
+        vNode.xmlContext = xmlContext = {
           node,
           attrs: node ? setAttributes(node, props, {}) : {},
           parentContext,
@@ -87,8 +87,8 @@ export function XMLElement(props: { [key: string]: any }) {
         } satisfies XMLContext
       }
     }
-  } else if ((node = contextValue.node)) {
-    contextValue.attrs = setAttributes(node, props, contextValue.attrs!)
+  } else if ((node = xmlContext.node)) {
+    xmlContext.attrs = setAttributes(node, props, xmlContext.attrs!)
   }
 
   /**
@@ -98,7 +98,7 @@ export function XMLElement(props: { [key: string]: any }) {
    * и компоненты 'XMLElement' будут вызываться множество раз,
    * это небольшая оптимизация
    */
-  const tempEffectDeps = contextValue.tempEffectDeps!
+  const tempEffectDeps = xmlContext.tempEffectDeps!
   if (
     (ref || tempEffectDeps[0]) &&
     (tempEffectDeps[0] !== ref || tempEffectDeps[1] !== node)
@@ -119,7 +119,7 @@ export function XMLElement(props: { [key: string]: any }) {
           }
         }
       },
-      (contextValue.tempEffectDeps = [ref, node])
+      (xmlContext.tempEffectDeps = [ref, node])
     )
   }
 

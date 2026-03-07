@@ -9,12 +9,14 @@ import { is } from './utils'
 export function createContext<T>(defaultValue: T): Context<T> {
   function ContextProvider(props: { value: T; children?: any }) {
     const vNode = getCurrentVNode()
+    const context = vNode.context
     const value = props.value
-    const users = vNode.contextUsers || (vNode.contextUsers = [])
 
-    if (!is(vNode.contextValue, value)) {
-      vNode.contextValue = value
-      for (let i = 0, l = users.length; i < l; ++i) {
+    if (!context) {
+      vNode.context = { value, users: [] }
+    } else if (!is(context.value, value)) {
+      context.value = value
+      for (let users = context.users, i = 0, l = users.length; i < l; ++i) {
         users[i].value = value
         addVNodeInQueue(users[i].vNode)
       }

@@ -21,6 +21,6 @@ import { getCurrentVNode } from './VNode.utils'
 export function getContext<T>(context: Context<T>): T {
   let vNode = getCurrentVNode()
   for (; (vNode = vNode!.parent!); )
-    if (vNode.fc === context as any) return vNode.contextValue as T
+    if (vNode.fc === context) return vNode.context!.value
   return context.defaultValue
 }

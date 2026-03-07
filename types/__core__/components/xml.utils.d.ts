@@ -6,8 +6,8 @@ export declare const NAMESPACES_URI: {
     readonly xlink: string;
 };
 export declare function createElementNS(tagName: string, parentNode: HTMLElement | SVGElement): HTMLElement | SVGElement;
-type VNodeWithContextValue = VNode & {
-    contextValue: XMLContext;
+type VNodeWithXMLContext = VNode & {
+    xmlContext: XMLContext;
 };
 export type XMLContext = {
     node: HTMLElement | SVGElement | null;
@@ -17,7 +17,7 @@ export type XMLContext = {
     };
     parentContext?: XMLContext;
     tempEffectDeps?: [any, any];
-    childVNodes?: VNodeWithContextValue[];
+    childVNodes?: VNodeWithXMLContext[];
 };
 export declare function getParentXMLContext(vNode: VNode): XMLContext | undefined;
 export declare function insertAndAddNodeInParentContext(node: HTMLElement | SVGElement, parentContext: XMLContext, vNode: VNode): void;

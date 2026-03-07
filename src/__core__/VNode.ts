@@ -1,5 +1,6 @@
 import { FC, Context } from './types'
 import { IHook } from './hooks.utils'
+import { XMLContext } from './components/xml.utils'
 import { XMLElement, XMLText } from './components/xml'
 import { createChildren, getCurrentVNode, setCurrentVNode } from './VNode.utils'
 
@@ -23,8 +24,9 @@ export class VNode {
   readonly children: (VNode | null | undefined)[]
 
   // Для работы контекста (createContext and etc.)
-  contextValue?: unknown
-  contextUsers?: any[]
+  context?: { value: any, users: any[] }
+  // Для работы xml элементов
+  xmlContext?: XMLContext
 
   // Для работы с хуками
   declare readonly headHook: IHook

@@ -1,5 +1,6 @@
 import { FC, Context } from './types';
 import { IHook } from './hooks.utils';
+import { XMLContext } from './components/xml.utils';
 import { XMLText } from './components/xml';
 export declare class VNode {
     _: string;
@@ -10,8 +11,11 @@ export declare class VNode {
     readonly deep: number[];
     readonly parent: VNode | null;
     readonly children: (VNode | null | undefined)[];
-    contextValue?: unknown;
-    contextUsers?: any[];
+    context?: {
+        value: any;
+        users: any[];
+    };
+    xmlContext?: XMLContext;
     readonly headHook: IHook;
     prevHook: IHook;
     constructor(parent: VNode | null, jsx: any, isJSXNode: 1 | 0, index: number);
