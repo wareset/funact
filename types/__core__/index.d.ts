@@ -21,10 +21,18 @@ export { useSyncExternalStore } from './hooks/useSyncExternalStore';
 export { useTransition } from './hooks/useTransition';
 export { cache } from './cache';
 export { createContext } from './createContext';
-export { createElement } from './createElement';
 export { memo } from './memo';
 export { getContext as use } from './use';
 import { VNode } from './VNode';
+import { JSXNode } from './JSXNode';
+import { FC, Props, Context, ComponentChildren, JSX } from './types';
+declare function createElement<P extends Props>(type: FC<P>, props?: null | P, ...children: ComponentChildren[]): JSXNode;
+declare function createElement<C>(type: Context<C>, props?: null | {
+    value: C;
+    children?: ComponentChildren;
+}, ...children: ComponentChildren[]): JSXNode;
+declare function createElement<E extends keyof JSX.IntrinsicElements>(type: E, props?: null | JSX.IntrinsicElements[E], ...children: ComponentChildren[]): JSXNode;
+export { createElement };
 export declare function render(children: any, domNode: HTMLElement | SVGElement): VNode;
 export declare function createRoot(domNode: HTMLElement | SVGElement): {
     render(children: any): VNode;

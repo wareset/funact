@@ -1,6 +1,6 @@
-import { JSXNode } from './createElement'
+import { JSXNode } from './JSXNode'
 
-export type Props = Record<any, any>
+export type Props = Record<string, any>
 
 export type ComponentChildren =
   | JSXNode
@@ -18,8 +18,8 @@ export type ComponentChildren =
 export type Comparator = (prevProps: Props, nextProps: Props) => boolean
 
 export type FC<P extends Props = Props> = (
-  | ((props: P) => ComponentChildren)
   | (() => ComponentChildren)
+  | ((props: P) => ComponentChildren)
 ) & {
   compare?: Comparator
   displayName?: string
@@ -51,7 +51,7 @@ export type ClassNames =
   | undefined
   | ClassNames[]
 
-export interface Context<T> {
+export interface Context<T = unknown> {
   (props: { value: T; children?: ComponentChildren }): ComponentChildren
   Provider: Context<T>
   // Consumer: (props: {children: ((value: T) => any) }) => any
@@ -127,7 +127,7 @@ export namespace JSX {
     >
   }
 
-  interface IntrinsicSVGElements
+  export interface IntrinsicSVGElements
     extends ElementTagNameMap<
       Omit<
         SVGElementTagNameMap,
@@ -135,7 +135,7 @@ export namespace JSX {
       >
     > {}
 
-  interface IntrinsicMathMLElements
+  export interface IntrinsicMathMLElements
     extends ElementTagNameMap<
       Omit<
         MathMLElementTagNameMap,
@@ -143,10 +143,13 @@ export namespace JSX {
       >
     > {}
 
+  export interface IntrinsicHTMLElements
+    extends ElementTagNameMap<HTMLElementTagNameMap> {}
+
   export interface IntrinsicElements
     extends IntrinsicSVGElements,
       IntrinsicMathMLElements,
-      ElementTagNameMap<HTMLElementTagNameMap> {
+      IntrinsicHTMLElements {
     // [key: string]: any
   }
 }

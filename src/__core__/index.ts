@@ -28,7 +28,6 @@ export { useTransition } from './hooks/useTransition'
 export { cache } from './cache'
 
 export { createContext } from './createContext'
-export { createElement } from './createElement'
 
 export { memo } from './memo'
 
@@ -39,20 +38,51 @@ export { memo } from './memo'
 export { getContext as use } from './use'
 
 import { VNode } from './VNode'
+import { JSXNode } from './JSXNode'
 // import { useState } from './hooks/useState'
 import { Portal } from './components/Portal'
-import { createElement } from './createElement'
+import { FC, Props, Context, ComponentChildren, JSX } from './types'
+
+function createElement<P extends Props>(
+  type: FC<P>,
+  props?: null | P,
+  ...children: ComponentChildren[]
+): JSXNode
+function createElement<C>(
+  type: Context<C>,
+  props?: null | { value: C; children?: ComponentChildren },
+  ...children: ComponentChildren[]
+): JSXNode
+function createElement<E extends keyof JSX.IntrinsicElements>(
+  type: E,
+  props?: null | JSX.IntrinsicElements[E],
+  ...children: ComponentChildren[]
+): JSXNode
+/*@__NO_SIDE_EFFECTS__*/
+function createElement(
+  type: any,
+  props: any,
+  ...children: ComponentChildren[]
+): JSXNode {
+  return new JSXNode(type, props || {}, children)
+}
+export { createElement }
 
 // function Root(props: { domNode: HTMLElement | SVGElement; children: any }) {
 //   const { 0: res, 1: setRes } = useState<JSXNode>()
-//   res || setRes(createElement(Portal, props))
+//   res || setRes(new JSXNode(Portal, props, []))
 //   return res
 // }
 
 let rId = 0
 export function render(children: any, domNode: HTMLElement | SVGElement) {
-  return new VNode(null, createElement(Portal, { domNode, children }), 1, ++rId)
-  // return new VNode(null, createElement(Root, { domNode, children }), 1, ++rId)
+  return new VNode(
+    null,
+    new JSXNode(Portal, { domNode, children }, []),
+    1,
+    ++rId
+  )
+  // return new VNode(null, new JSXNode(Root, { domNode, children }, []), 1, ++rId)
 }
 
 export function createRoot(domNode: HTMLElement | SVGElement) {

@@ -6,7 +6,7 @@ export declare class VNode {
     _: string;
     alive: boolean;
     dirty: boolean;
-    fc: FC | typeof XMLText | Context<any>;
+    fc: FC | typeof XMLText | Context;
     jsx: unknown;
     readonly deep: number[];
     readonly parent: VNode | null;

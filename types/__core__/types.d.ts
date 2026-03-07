@@ -1,8 +1,8 @@
-import { JSXNode } from './createElement';
-export type Props = Record<any, any>;
+import { JSXNode } from './JSXNode';
+export type Props = Record<string, any>;
 export type ComponentChildren = JSXNode | ComponentChildren[] | object | boolean | number | bigint | string | void | null | undefined;
 export type Comparator = (prevProps: Props, nextProps: Props) => boolean;
-export type FC<P extends Props = Props> = (((props: P) => ComponentChildren) | (() => ComponentChildren)) & {
+export type FC<P extends Props = Props> = ((() => ComponentChildren) | ((props: P) => ComponentChildren)) & {
     compare?: Comparator;
     displayName?: string;
 };
@@ -13,7 +13,7 @@ export type RefCallback<T> = (instance: T | null) => void | (() => void);
 export type Ref<T> = RefObject<T> | RefCallback<T>;
 export type StyleSheet = (CSSProperties & Record<`--${string}`, any>) | boolean | number | bigint | string | void | null | undefined | StyleSheet[];
 export type ClassNames = Record<string, any> | boolean | number | bigint | string | void | null | undefined | ClassNames[];
-export interface Context<T> {
+export interface Context<T = unknown> {
     (props: {
         value: T;
         children?: ComponentChildren;
@@ -63,11 +63,13 @@ export declare namespace JSX {
             ref: Ref<any>;
         }>;
     };
-    interface IntrinsicSVGElements extends ElementTagNameMap<Omit<SVGElementTagNameMap, keyof HTMLElementTagNameMap | keyof MathMLElementTagNameMap>> {
+    export interface IntrinsicSVGElements extends ElementTagNameMap<Omit<SVGElementTagNameMap, keyof HTMLElementTagNameMap | keyof MathMLElementTagNameMap>> {
     }
-    interface IntrinsicMathMLElements extends ElementTagNameMap<Omit<MathMLElementTagNameMap, keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap>> {
+    export interface IntrinsicMathMLElements extends ElementTagNameMap<Omit<MathMLElementTagNameMap, keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap>> {
     }
-    export interface IntrinsicElements extends IntrinsicSVGElements, IntrinsicMathMLElements, ElementTagNameMap<HTMLElementTagNameMap> {
+    export interface IntrinsicHTMLElements extends ElementTagNameMap<HTMLElementTagNameMap> {
+    }
+    export interface IntrinsicElements extends IntrinsicSVGElements, IntrinsicMathMLElements, IntrinsicHTMLElements {
     }
     export {};
 }

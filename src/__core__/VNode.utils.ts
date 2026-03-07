@@ -1,6 +1,6 @@
 import { FC } from './types'
 import { VNode } from './VNode'
-import { createElement, isJSXNode, JSXNode } from './createElement'
+import { JSXNode } from './JSXNode'
 import { Fragment } from './components/Fragment'
 import { XMLElement, XMLText } from './components/xml'
 import {
@@ -33,11 +33,11 @@ export function createChildren(
 ) {
   if (Array.isArray(jsx)) {
     if (isDeep) {
-      new VNode(iam, createElement(Fragment, null, [jsx]), 1, index)
+      new VNode(iam, new JSXNode(Fragment, {}, [jsx]), 1, index)
     } else {
       for (let i = 0; i < jsx.length; ++i) createChildren(iam, jsx[i], i, 1)
     }
-  } else if (isJSXNode(jsx)) {
+  } else if (jsx instanceof JSXNode) {
     new VNode(iam, jsx, 1, index)
   } else if (validateTextData(jsx)) {
     new VNode(iam, jsx, 0, index)
@@ -51,7 +51,7 @@ export function updateVNode(iam: VNode) {
     setCurrentVNode(iam)
     iam.prevHook = iam.headHook
 
-    const jsx = iam.fc((iam.jsx as JSXNode).props)
+    const jsx = (iam.fc as FC)((iam.jsx as JSXNode).props)
 
     setCurrentVNode(prevVNode)
     compareProps(iam, Array.isArray(jsx) ? jsx : [jsx])
@@ -69,10 +69,10 @@ function compareProps(iam: VNode, jsxList: any[]) {
     cNode = children[i]
     jsx = jsxList[i]
 
-    if (isJSXNode(jsx)) {
+    if (jsx instanceof JSXNode) {
       if (
         cNode &&
-        isJSXNode(cNode.jsx) &&
+        cNode.jsx instanceof JSXNode &&
         is(cNode.jsx.type, jsx.type) // &&
         // is(cNode.jsx.key, jsx.key)
       ) {
@@ -93,7 +93,7 @@ function compareProps(iam: VNode, jsxList: any[]) {
         compareProps(cNode, jsx)
       } else {
         destroyVNode(cNode)
-        new VNode(iam, createElement(Fragment, null, [jsx]), 1, i)
+        new VNode(iam, new JSXNode(Fragment, {}, [jsx]), 1, i)
       }
     } else {
       if (cNode && cNode.fc === XMLText) {

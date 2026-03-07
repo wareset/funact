@@ -13,7 +13,7 @@ export class VNode {
   dirty: boolean
 
   // Функция самого компонента
-  fc: FC | typeof XMLText | Context<any>
+  fc: FC | typeof XMLText | Context
 
   jsx: unknown
 

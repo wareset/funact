@@ -1,8 +1,8 @@
-import { FC } from './types';
-export declare class JSXNode {
-    type: FC | string;
-    props: {
-        [key: string]: any;
-    };
-    constructor(type: JSXNode['type'], props: JSXNode['props'] | null | undefined, children: any[]);
+import { FC, Props, Context, ComponentChildren } from './types';
+export declare class JSXNode<P extends Props = Props> {
+    type: FC<P> | string | Context;
+    props: P;
+    constructor(type: FC<P>, props: P, children: ComponentChildren[]);
+    constructor(type: string, props: P, children: ComponentChildren[]);
+    constructor(type: Context, props: P, children: ComponentChildren[]);
 }
