@@ -1,5 +1,5 @@
 {
-  "name": "barely-react-demo",
+  "name": "three-js-max",
   "version": "0.0.0",
   "description": "WIP",
   "license": "MIT",
@@ -9,12 +9,11 @@
     "dev": "serve ./app & rollup -cw"
   },
   "devDependencies": {
-    "@types/react": "19.x",
-    "@rollup/plugin-alias": "^5.1.1",
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-inject": "^5.0.5",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-replace": "^6.0.2",
+    "@rollup/plugin-alias": "^5.0.0",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-inject": "^5.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-replace": "^6.0.0",
     "rollup": "3.29.5",
     "rollup-plugin-livereload": "^2.0.5",
     "serve": "^14.2.4",
@@ -22,9 +21,9 @@
   },
   "dependencies": {
     "prism": "4.1.2",
-    "bootstrap": "5.3.7",
+    "bootstrap": "5.3.8",
     "bootstrap-icons": "1.13.1",
-    "barely-react": "file:..",
+    "heract": "file:..",
     "@rease/css": "https://gitpkg.vercel.app/wareset/rease/packages/css?main"
   },
   "peerDependencies": {

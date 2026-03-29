@@ -1,7 +1,7 @@
-import 'barely-react'
+import 'heract'
 
 declare global {
   declare namespace R {
-    export * from 'barely-react'
+    export * from 'heract'
   }
 }

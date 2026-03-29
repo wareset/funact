@@ -2,7 +2,7 @@ import {
   AccordionItem,
   AccordionHeader,
   AccordionBody,
-} from '@/ui/bs/Accordion'
+} from '@/ui/bs/Components/Accordion'
 
 export function AccordionItemWrapper({
   expanded,

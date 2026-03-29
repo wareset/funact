@@ -1,19 +1,18 @@
-export type Breakpoint = 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+export type Breakpoints = 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 
-export type Theme = 'light' | 'dark'
+export type Themes = 'light' | 'dark'
 
-export type Variant =
+export type Variants =
   | 'primary'
   | 'secondary'
   | 'success'
   | 'info'
   | 'warning'
   | 'danger'
-  | 'light'
-  | 'dark'
+  | Themes
 
-export type BackgroundColor =
-  | Variant
+export type BackgroundColors =
+  | Variants
   | 'black'
   | 'white'
   | 'body'

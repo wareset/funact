@@ -68,7 +68,7 @@ export default function HookUseReducer() {
 
 import { useReducer, useRef } from 'barely-react'
 
-import { Button } from '@/ui/bs/Button'
+import { Button } from '@/ui/bs/Components/Button'
 
 function reducer(state, action) {
   switch (action.type) {

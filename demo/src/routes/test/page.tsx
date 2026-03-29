@@ -1,6 +1,6 @@
 import { Header } from '@/ui/Header'
-import { Container } from '@/ui/bs/Container'
-import { Accordion } from '@/ui/bs/Accordion'
+import { Container } from '@/ui/bs/Layout/Container'
+import { Accordion } from '@/ui/bs/Components/Accordion'
 
 import { AccordionItemWrapper } from './_include/AccordionItemWrapper'
 

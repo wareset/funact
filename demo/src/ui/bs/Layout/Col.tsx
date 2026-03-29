@@ -1,40 +1,13 @@
-import { isBoolean } from './utils'
+import { isBoolean } from '@/utils'
 
 type ColTypes = 'auto' | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 type OrderTypes = 'first' | 'last' | 1 | 2 | 3 | 4 | 5
 type OffsetTypes = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
 
-export interface ColProps extends React.HTMLAttributes<HTMLElement> {
-  children?: any
-  as?: React.ElementType
-
-  col?: ColTypes
-  'col-xs'?: boolean | ColTypes
-  'col-sm'?: boolean | ColTypes
-  'col-md'?: boolean | ColTypes
-  'col-lg'?: boolean | ColTypes
-  'col-xl'?: boolean | ColTypes
-  'col-xxl'?: boolean | ColTypes
-
-  order?: OrderTypes
-  'order-xs'?: OrderTypes
-  'order-sm'?: OrderTypes
-  'order-md'?: OrderTypes
-  'order-lg'?: OrderTypes
-  'order-xl'?: OrderTypes
-  'order-xxl'?: OrderTypes
-
-  offset?: OffsetTypes
-  'offset-xs'?: OffsetTypes
-  'offset-sm'?: OffsetTypes
-  'offset-md'?: OffsetTypes
-  'offset-lg'?: OffsetTypes
-  'offset-xl'?: OffsetTypes
-  'offset-xxl'?: OffsetTypes
-}
-export function Col({
+export function Col<T extends keyof HTMLElementTagNameMap = 'div'>({
   children,
-  as: TagName = 'div',
+  className,
+  as,
 
   col,
   'col-xs': col_xs,
@@ -61,13 +34,41 @@ export function Col({
   'offset-xxl': offset_xxl,
 
   ...attrs
-}: ColProps) {
+}: R.JSX.Attributes<HTMLElementTagNameMap[T]> & {
+  as?: T
+
+  col?: ColTypes
+  'col-xs'?: boolean | ColTypes
+  'col-sm'?: boolean | ColTypes
+  'col-md'?: boolean | ColTypes
+  'col-lg'?: boolean | ColTypes
+  'col-xl'?: boolean | ColTypes
+  'col-xxl'?: boolean | ColTypes
+
+  order?: OrderTypes
+  'order-xs'?: OrderTypes
+  'order-sm'?: OrderTypes
+  'order-md'?: OrderTypes
+  'order-lg'?: OrderTypes
+  'order-xl'?: OrderTypes
+  'order-xxl'?: OrderTypes
+
+  offset?: OffsetTypes
+  'offset-xs'?: OffsetTypes
+  'offset-sm'?: OffsetTypes
+  'offset-md'?: OffsetTypes
+  'offset-lg'?: OffsetTypes
+  'offset-xl'?: OffsetTypes
+  'offset-xxl'?: OffsetTypes
+}) {
+  const TagName = (as as 'div') || 'div'
+
   return (
     <TagName
       {...attrs}
-      className={R.classnames([
+      className={[
         'col',
-        attrs.className,
+        className,
 
         col && 'col-' + col,
         col_xs && 'col-xs' + (isBoolean(col_xs) ? '' : '-' + col_xs),
@@ -92,7 +93,7 @@ export function Col({
         offset_lg && 'offset-lg-' + offset_lg,
         offset_xl && 'offset-xl-' + offset_xl,
         offset_xxl && 'offset-xxl-' + offset_xxl,
-      ])}
+      ]}
     >
       {children}
     </TagName>

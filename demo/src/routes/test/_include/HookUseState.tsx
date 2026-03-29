@@ -48,7 +48,7 @@ export default function HookUseState() {
 `
 
 import { useState, useRef } from 'barely-react'
-import { Button } from '@/ui/bs/Button'
+import { Button } from '@/ui/bs/Components/Button'
 
 export default function HookUseState() {
   const [count, setCount] = useState(0)

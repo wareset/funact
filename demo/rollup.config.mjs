@@ -29,7 +29,7 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
     return path.join(...dirs)
   }
 
-  fs.rmSync(path.join('app/build'), opts)
+  if (fs.existsSync('app/build')) fs.rmSync('app/build', opts)
 
   // copy bootstrap to app/css
   fs.cpSync(from('bootstrap', 'dist/css'), to('app/css', 'bs'), opts)
@@ -42,7 +42,7 @@ const livereload = !production && rollupLivereload({ watch: 'app', delay: 999 })
 
 /** @type { import('rollup').RollupOptions } */
 const config = {
-  input: { index: 'src/app/index.tsx' },
+  input: { index: 'src/index.tsx' },
   // output: {
   //   sourcemap: false,
   //   format: 'iife',
@@ -78,10 +78,10 @@ const config = {
             code = sucrase(code, {
               transforms: ['jsx', 'typescript'],
               production: true,
-              jsxRuntime: 'classic', // "classic" | "automatic" | "preserve"
-              // jsxImportSource: 'rease',
-              // jsxPragma: 'rease.h',
-              // jsxFragmentPragma: 'rease.ReaseFragment'
+              jsxRuntime: 'automatic', // "classic" | "automatic" | "preserve"
+              jsxImportSource: 'heract',
+              jsxPragma: 'heract.createElement',
+              jsxFragmentPragma: 'heract.Fragment',
             }).code
           } catch (e) {
             console.error('sucrase-custom')
@@ -94,23 +94,22 @@ const config = {
     },
 
     (() => {
-      // const barelyReact = path.resolve('../dist')
-      const barelyReact = 'barely-react'
+      // const heract = path.resolve('../dist')
+      const heract = 'heract'
       return inject({
-        'React.createElement': [barelyReact, 'createElement'],
-        // 'jsxRuntime': [barelyReact, 'jsxRuntime'],
-        // 'jsxRuntime.jsxs': [barelyReact, 'createElement'],
-        // 'jsxRuntime.jsx': [barelyReact, 'createElement'],
-        'React.Fragment': [barelyReact, 'Fragment'],
-        
-        R: [barelyReact, '*'],
+        // 'React.createElement': [heract, 'createElement'],
+        // 'jsxRuntime': [heract, 'jsxRuntime'],
+        // 'jsxRuntime.jsxs': [heract, 'createElement'],
+        // 'jsxRuntime.jsx': [heract, 'createElement'],
+        // 'React.Fragment': [heract, 'Fragment'],
+
+        R: [heract, '*'],
       })
     })(),
 
     resolve({
       browser: true,
       preferBuiltins: false,
-      // dedupe: ['svelte'],
       extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', '.json'],
     }),
     commonjs(),

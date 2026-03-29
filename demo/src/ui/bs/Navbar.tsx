@@ -1,6 +1,6 @@
 import { Breakpoint, Theme, BackgroundColor } from './types'
 
-import { Collapse, CollapseTrigger, CollapseContent } from './Collapse'
+import { Collapse, CollapseTrigger, CollapseContent } from './Components/Collapse'
 
 export interface NavbarProps extends React.HTMLAttributes<HTMLElement> {
   children?: any

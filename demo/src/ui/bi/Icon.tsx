@@ -1,20 +1,15 @@
 import { IconName } from './types'
 
-export interface IconProps extends React.HTMLAttributes<HTMLElement> {
-  children?: never
-  as?: React.ElementType
-  name: IconName
-}
-export function Icon({
+export function Icon<T extends keyof HTMLElementTagNameMap = 'i'>({
   children,
-  as: TagName = 'i',
+  as,
   name,
   ...attrs
-}: IconProps) {
-  return (
-    <TagName
-      {...attrs}
-      className={R.classnames(['bi bi-' + name, attrs.className])}
-    />
-  )
+}: R.JSX.Attributes<HTMLElementTagNameMap[T]> & {
+  children?: never
+  as?: T
+  name: IconName
+}) {
+  const TagName = (as as 'i') || 'i'
+  return <TagName {...attrs} className={['bi bi-' + name, attrs.className]} />
 }

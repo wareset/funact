@@ -3,15 +3,16 @@ type TCollapseGroupContext = {
   collapses: TCollapseContext[]
 }
 const CollapseGroupContext = R.createContext<TCollapseGroupContext | null>(null)
-export interface CollapseGroupProps {
-  children?: any
-  alwaysOpen?: boolean
-}
+
 export function CollapseGroup({
   children,
-  alwaysOpen = false,
-}: CollapseGroupProps) {
+  alwaysOpen,
+}: {
+  children?: any
+  alwaysOpen?: boolean
+}) {
   const context = R.useRef<TCollapseGroupContext>(null)
+  alwaysOpen = !!alwaysOpen
   if (!context.current) {
     context.current = { alwaysOpen, collapses: [] }
   } else if (context.current.alwaysOpen !== alwaysOpen) {
@@ -40,18 +41,22 @@ type TCollapseContext = {
   isDelay?: boolean
   setShow: (v: boolean) => void
   timeoutId: null | ReturnType<typeof setTimeout>
-  nodeTriggerRef?: R.IRefObject<HTMLButtonElement | null>
-  nodeContentRef?: R.IRefObject<HTMLDivElement | null>
+  nodeTriggerRef?: R.RefObject<HTMLButtonElement | null>
+  nodeContentRef?: R.RefObject<HTMLDivElement | null>
 }
 const CollapseContext = R.createContext<TCollapseContext>(null as any)
-export interface CollapseProps {
+
+export function Collapse({
+  children,
+  group,
+  expanded,
+}: {
   children?: any
   group?: boolean
   expanded?: boolean
-}
-export function Collapse({ children, group, expanded = false }: CollapseProps) {
+}) {
   const id = R.useId()
-  const [show, setShow] = R.useState(expanded)
+  const [show, setShow] = R.useState(!!expanded)
   const context = R.useRef<TCollapseContext>(null)
   if (!context.current) {
     context.current = { id, show, setShow, timeoutId: null }
@@ -142,11 +147,17 @@ export function Collapse({ children, group, expanded = false }: CollapseProps) {
   return <CollapseContext value={context.current}>{children}</CollapseContext>
 }
 
-export interface CollapseTriggerProps
-  extends React.HTMLAttributes<HTMLElement> {
-  children?: any
-}
-export function CollapseTrigger({ children, ...attrs }: CollapseTriggerProps) {
+export function CollapseTrigger<
+  T extends keyof HTMLElementTagNameMap = 'button',
+>({
+  children,
+  className,
+  as,
+  ...attrs
+}: R.JSX.Attributes<HTMLElementTagNameMap[T]> & {
+  as?: T
+}) {
+  const TagName = (as as 'button') || 'button'
   const item = R.useContext(CollapseContext)
   const nodeTriggerRef = (item.nodeTriggerRef =
     R.useRef<HTMLButtonElement>(null))
@@ -160,25 +171,25 @@ export function CollapseTrigger({ children, ...attrs }: CollapseTriggerProps) {
   }
 
   return (
-    <button
+    <TagName
+      type={TagName === 'button' ? TagName : void 0}
+      role={TagName !== 'button' ? 'button' : void 0}
       {...attrs}
       id={'heading-' + itemId}
-      type='button'
       ref={nodeTriggerRef}
       onClick={clickRef.current}
       aria-expanded={item.show}
       aria-controls={'collapse-' + itemId}
     >
       {children}
-    </button>
+    </TagName>
   )
 }
 
-export interface CollapseContentProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  children?: any
-}
-export function CollapseContent({ children, ...attrs }: CollapseContentProps) {
+export function CollapseContent({
+  children,
+  ...attrs
+}: R.JSX.Attributes<HTMLDivElement>) {
   const item = R.useContext(CollapseContext)
   const nodeContentRef = R.useRef<HTMLDivElement>(null)
   const itemId = item.id

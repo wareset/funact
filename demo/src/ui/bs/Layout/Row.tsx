@@ -1,20 +1,9 @@
 type RowColsTypes = 'auto' | 1 | 2 | 3 | 4 | 5 | 6
 
-export interface RowProps extends React.HTMLAttributes<HTMLElement> {
-  children?: any
-  as?: React.ElementType
-
-  cols?: RowColsTypes
-  'cols-xs'?: RowColsTypes
-  'cols-sm'?: RowColsTypes
-  'cols-md'?: RowColsTypes
-  'cols-lg'?: RowColsTypes
-  'cols-xl'?: RowColsTypes
-  'cols-xxl'?: RowColsTypes
-}
-export function Row({
+export function Row<T extends keyof HTMLElementTagNameMap = 'div'>({
   children,
-  as: TagName = 'div',
+  className,
+  as,
 
   cols,
   'cols-xs': cols_xs,
@@ -25,13 +14,24 @@ export function Row({
   'cols-xxl': cols_xxl,
 
   ...attrs
-}: RowProps) {
+}: R.JSX.Attributes<HTMLElementTagNameMap[T]> & {
+  as?: T
+
+  cols?: RowColsTypes
+  'cols-xs'?: RowColsTypes
+  'cols-sm'?: RowColsTypes
+  'cols-md'?: RowColsTypes
+  'cols-lg'?: RowColsTypes
+  'cols-xl'?: RowColsTypes
+  'cols-xxl'?: RowColsTypes
+}) {
+  const TagName = (as as 'div') || 'div'
+
   return (
     <TagName
       {...attrs}
-      className={R.classnames([
+      className={[
         'row',
-        attrs.className,
 
         cols && 'row-cols-' + cols,
         cols_xs && 'row-cols-xs-' + cols_xs,
@@ -40,7 +40,9 @@ export function Row({
         cols_lg && 'row-cols-lg-' + cols_lg,
         cols_xl && 'row-cols-xl-' + cols_xl,
         cols_xxl && 'row-cols-xxl-' + cols_xxl,
-      ])}
+
+        className,
+      ]}
     >
       {children}
     </TagName>

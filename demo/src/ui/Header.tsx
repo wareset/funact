@@ -1,4 +1,4 @@
-import { Container } from '@/ui/bs/Container'
+import { Container } from '@/ui/bs/Layout/Container'
 import {
   Navbar,
   NavbarBrand,
@@ -6,7 +6,7 @@ import {
   NavbarCollapse,
   NavbarNav,
 } from '@/ui/bs/Navbar'
-import { NavLink } from '@/ui/bs/Nav'
+import { NavLink } from '@/ui/bs/Components/Nav'
 import { Icon } from '@/ui/bi/Icon'
 
 export function Header(): any {
