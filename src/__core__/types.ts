@@ -17,13 +17,11 @@ export type ComponentChildren =
 
 export type Comparator = (prevProps: Props, nextProps: Props) => boolean
 
-export type FC<P extends Props = Props> = (
-  | (() => ComponentChildren)
-  | ((props: P) => ComponentChildren)
-) & {
-  compare?: Comparator
-  displayName?: string
-}
+export type FC<P extends Props = any> = // | (() => ComponentChildren)
+  ((props: P) => ComponentChildren) & {
+    compare?: Comparator
+    displayName?: string
+  }
 
 export type RefObject<T> = { current: T | null }
 export type RefCallback<T> = (instance: T | null) => void | (() => void)
@@ -68,13 +66,17 @@ import { Properties as CSSProperties } from 'csstype'
 
 // declare global {
 export namespace JSX {
-  export type ElementType<P = any> =
-    | {
-        [K in keyof IntrinsicElements]: P extends IntrinsicElements[K]
-          ? K
-          : never
-      }[keyof IntrinsicElements]
-    | FC
+  // export type ElementType<P = any> =
+  //   | {
+  //       [K in keyof IntrinsicElements]: P extends IntrinsicElements[K]
+  //         ? K
+  //         : never
+  //     }[keyof IntrinsicElements]
+  //   | FC
+  export type ElementType<
+    P = any,
+    Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements,
+  > = { [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never }[Tag] | FC
 
   type Defaultize<Props, Defaults> =
     // Distribute over unions
@@ -101,12 +103,18 @@ export namespace JSX {
   }
 
   export interface IntrinsicAttributes {
-    // children?: any
     key?: any
   }
 
-  type Events<T extends { [key: string]: any }> = {
-    // [K in keyof T & string as `${Capitalize<K>}Capture`]: T[K]
+  type Mutable<T> = {
+    -readonly [P in keyof T]: T[P]
+  }
+  type OmitExtra<T> = {
+    [K in keyof T as T[K] extends any[] | object | ((...args: any[]) => any)
+      ? never
+      : K]: T[K]
+  }
+  type AddEvents<T> = {
     [K in keyof T as K extends `on${infer Rest}`
       ? `on${Capitalize<Rest>}` | `on${Capitalize<Rest>}Capture`
       : K]: T[K] extends null | ((e: infer E) => any)
@@ -115,20 +123,23 @@ export namespace JSX {
         : T[K]
       : T[K]
   }
-  type ElementTagNameMap<T extends { [key: string]: any }> = {
-    [K in keyof T]: Partial<
-      Omit<Events<T[K]>, 'style' | 'className'> & {
-        style: StyleSheet
-        class: ClassNames
-        className: ClassNames
-        children: any
-        ref: Ref<any>
-      }
-    >
+
+  export type Attributes<T> = Partial<
+    Omit<AddEvents<OmitExtra<Mutable<T>>>, 'style' | 'className'>
+  > & {
+    style?: StyleSheet
+    class?: string
+    className?: ClassNames
+    children?: any
+    ref?: Ref<any>
+  } & Record<`data-${string}`, any>
+
+  type EachTagNameMap<T extends { [key: string]: any }> = {
+    [K in keyof T]: Attributes<T[K]>
   }
 
   export interface IntrinsicSVGElements
-    extends ElementTagNameMap<
+    extends EachTagNameMap<
       Omit<
         SVGElementTagNameMap,
         keyof HTMLElementTagNameMap | keyof MathMLElementTagNameMap
@@ -136,7 +147,7 @@ export namespace JSX {
     > {}
 
   export interface IntrinsicMathMLElements
-    extends ElementTagNameMap<
+    extends EachTagNameMap<
       Omit<
         MathMLElementTagNameMap,
         keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
@@ -144,7 +155,7 @@ export namespace JSX {
     > {}
 
   export interface IntrinsicHTMLElements
-    extends ElementTagNameMap<HTMLElementTagNameMap> {}
+    extends EachTagNameMap<HTMLElementTagNameMap> {}
 
   export interface IntrinsicElements
     extends IntrinsicSVGElements,

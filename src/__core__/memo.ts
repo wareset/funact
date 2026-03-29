@@ -27,7 +27,7 @@ import { is } from './utils'
 //   return res
 // }
 
-function defaultCompare(prevProps: Props, nextProps: Props) {
+export function defaultIsEqual(prevProps: Props, nextProps: Props) {
   let res = Object.keys(prevProps).length === Object.keys(nextProps).length
   if (res && prevProps !== nextProps) {
     for (const k in prevProps) {
@@ -49,6 +49,6 @@ export function memo<T extends FC, C extends Comparator>(
   function Memo(props: Props) {
     return fc(props)
   }
-  ;(Memo as any).compare = compare || (defaultCompare as Comparator)
+  ;(Memo as any).compare = compare || (defaultIsEqual as Comparator)
   return Memo
 }

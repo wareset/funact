@@ -33,7 +33,7 @@ declare function createElement<C>(type: Context<C>, props?: null | {
 }, ...children: ComponentChildren[]): JSXNode;
 declare function createElement<E extends keyof JSX.IntrinsicElements>(type: E, props?: null | JSX.IntrinsicElements[E], ...children: ComponentChildren[]): JSXNode;
 export { createElement };
-export declare function render(children: any, domNode: HTMLElement | SVGElement): VNode;
+export declare function render(jsx: any, domNode: HTMLElement | SVGElement): VNode;
 export declare function createRoot(domNode: HTMLElement | SVGElement): {
-    render(children: any): VNode;
+    render(jsx: any): VNode;
 };

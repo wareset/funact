@@ -180,7 +180,7 @@ export function setAttributes(
   const resAttrs: { [key: string]: any } = { __proto__: null }
   let val: any
   for (let key in newAttrs) {
-    if (key !== 'ref' && key !== 'children') {
+    if (key !== 'children' && key !== 'ref' && key !== 'key') {
       val = newAttrs[key]
       val === val || (val = null)
       if (key === 'style') {

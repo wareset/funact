@@ -1,18 +1,14 @@
-import { FC, Props, Context, ComponentChildren } from './types'
+import { FC, Props, Context } from './types'
 
-export class JSXNode<P extends Props = Props> {
+export class JSXNode<P extends Props = any> {
   type: FC<P> | string | Context
   // key: any
   props: P
 
-  constructor(type: FC<P>, props: P, children: ComponentChildren[])
-  constructor(type: string, props: P, children: ComponentChildren[])
-  constructor(type: Context, props: P, children: ComponentChildren[])
-  constructor(type: any, props: any, children: ComponentChildren[]) {
-    if (children.length) {
-      props.children = children.length > 1 ? children : children[0]
-    }
-
+  constructor(type: FC<P>, props: P)
+  constructor(type: string, props: P)
+  constructor(type: Context, props: P)
+  constructor(type: any, props: any) {
     this.type = type
     // this.key = key
     this.props = props

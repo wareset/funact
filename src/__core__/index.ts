@@ -1,6 +1,4 @@
 export * from './types'
-// import { JSXInternal } from './types'
-// export import JSX = JSXInternal
 
 export { Fragment } from './components/Fragment'
 export { Portal } from './components/Portal'
@@ -39,9 +37,9 @@ export { getContext as use } from './use'
 
 import { VNode } from './VNode'
 import { JSXNode } from './JSXNode'
-// import { useState } from './hooks/useState'
 import { Portal } from './components/Portal'
 import { FC, Props, Context, ComponentChildren, JSX } from './types'
+import { classnames, stylesheet } from './components/xml.attrs'
 
 function createElement<P extends Props>(
   type: FC<P>,
@@ -64,7 +62,21 @@ function createElement(
   props: any,
   ...children: ComponentChildren[]
 ): JSXNode {
-  return new JSXNode(type, props || {}, children)
+  props || (props = {})
+
+  if (children.length) {
+    props.children = children.length > 1 ? children : children[0]
+  }
+
+  if (props.style) {
+    props.style = stylesheet(props.style)
+  }
+
+  if (props.className) {
+    props.className = classnames(props.className)
+  }
+
+  return new JSXNode(type, props)
 }
 export { createElement }
 
@@ -75,10 +87,10 @@ export { createElement }
 // }
 
 let rId = 0
-export function render(children: any, domNode: HTMLElement | SVGElement) {
+export function render(jsx: any, domNode: HTMLElement | SVGElement) {
   return new VNode(
     null,
-    new JSXNode(Portal, { domNode, children }, []),
+    new JSXNode(Portal, { domNode, children: jsx }),
     1,
     ++rId
   )
@@ -87,8 +99,8 @@ export function render(children: any, domNode: HTMLElement | SVGElement) {
 
 export function createRoot(domNode: HTMLElement | SVGElement) {
   return {
-    render(children: any) {
-      return render(children, domNode)
+    render(jsx: any) {
+      return render(jsx, domNode)
     },
   }
 }

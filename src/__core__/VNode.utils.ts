@@ -16,6 +16,7 @@ import { useInsertionEffect } from './hooks/useInsertionEffect'
 import { useLayoutEffect } from './hooks/useLayoutEffect'
 import { useEffect } from './hooks/useEffect'
 import { is } from './utils'
+import { defaultIsEqual } from './memo'
 
 let currentVNode: VNode
 export function getCurrentVNode() {
@@ -33,7 +34,7 @@ export function createChildren(
 ) {
   if (Array.isArray(jsx)) {
     if (isDeep) {
-      new VNode(iam, new JSXNode(Fragment, {}, [jsx]), 1, index)
+      new VNode(iam, new JSXNode(Fragment, { children: jsx }), 1, index)
     } else {
       for (let i = 0; i < jsx.length; ++i) createChildren(iam, jsx[i], i, 1)
     }
@@ -77,8 +78,12 @@ function compareProps(iam: VNode, jsxList: any[]) {
         // is(cNode.jsx.key, jsx.key)
       ) {
         if (
-          !(cNode.fc as FC).compare ||
-          !(cNode.fc as FC).compare!(cNode.jsx.props, jsx.props)
+          cNode.fc === XMLElement ||
+          // !(cNode.fc as FC).compare ||
+          !((cNode.fc as FC).compare || defaultIsEqual)(
+            cNode.jsx.props,
+            jsx.props
+          )
         ) {
           if (cNode.jsx.props === jsx.props) throw 'props'
           cNode.jsx = jsx
@@ -93,7 +98,7 @@ function compareProps(iam: VNode, jsxList: any[]) {
         compareProps(cNode, jsx)
       } else {
         destroyVNode(cNode)
-        new VNode(iam, new JSXNode(Fragment, {}, [jsx]), 1, i)
+        new VNode(iam, new JSXNode(Fragment, { children: jsx }), 1, i)
       }
     } else {
       if (cNode && cNode.fc === XMLText) {
