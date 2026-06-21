@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+
+  <!-- src/svg/undo.svg -->
+  <symbol id="uo1xuypkvs0_undo" viewBox="0 0 8.467 8.467"><path d="M.53 4.233 4.232.53h1.323L3.175 3.44l4.762.265v1.058l-4.762.265 2.381 2.91H4.233Z" style="fill:'currentColor';fill-opacity:1;stroke:none;stroke-width:.8;stroke-dasharray:.8,3.36;stroke-dashoffset:1.6"/></symbol>
+
+  <!-- src/svg/redo.svg -->
+  <symbol id="unqymoh2fj4_redo" viewBox="0 0 8.467 8.467"><path d="M7.937 4.233 4.233.53H2.91l2.382 2.91-4.763.265v1.058l4.763.265-2.382 2.91h1.323z" style="fill:'currentColor';fill-opacity:1;stroke:none;stroke-width:.8;stroke-dasharray:.8,3.36;stroke-dashoffset:1.6"/></symbol>
+
+</svg>

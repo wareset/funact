@@ -1,0 +1,51 @@
+._context_menu {
+  user-select: none;
+  outline: none;
+  font-size: 0.75em;
+
+  &>form {
+    position: absolute;
+    z-index: 999;
+    background-color: var(--bg-color);
+    overflow: hidden;
+    padding: 0 0.25em;
+    border-radius: var(--border-radius);
+    white-space: nowrap;
+    max-width: calc(100% - 12px);
+    max-height: calc(100% - 6px);
+    outline: var(--border);
+    outline-offset: var(--outline-offset);
+
+    &:focus,
+    /* &:focus-within, */
+    &:focus-visible {
+      outline: var(--outline);
+    }
+
+    &>div {
+      padding: 0.25em 0;
+      box-sizing: border-box;
+
+      &+div {
+        border-top: var(--border);
+      }
+
+      &>button {
+        width: 100%;
+        display: block;
+        padding: 0.25em 0.5em;
+        font-size: 1em;
+
+        &>code {
+          float: right;
+          margin-left: 2em;
+
+          &.arrow {
+            line-height: 0.875;
+            margin-right: -0.125em;
+          }
+        }
+      }
+    }
+  }
+}

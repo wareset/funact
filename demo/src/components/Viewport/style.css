@@ -1,0 +1,130 @@
+._viewport {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &>.top,
+  &>.bottom {
+    display: flex;
+    flex-direction: row;
+
+    &>.left {
+      order: 1;
+      flex: 0 0 50%;
+    }
+
+    &>.right {
+      order: 3;
+      flex: 1 1 auto;
+    }
+
+    &>.div {
+      width: 0;
+      height: 100%;
+      cursor: ew-resize;
+      cursor: col-resize;
+
+      &::before {
+        width: 10px;
+        height: 100%;
+        margin: 0 -5px;
+      }
+    }
+  }
+
+  &>.top {
+    order: 1;
+    flex: 0 0 50%;
+
+    &>.left {
+      background-color: aqua;
+    }
+
+    &>.right {
+      background-color: aquamarine;
+    }
+  }
+
+  &>.bottom {
+    order: 3;
+    flex: 1 1 auto;
+
+    &>.left {
+      background-color: blueviolet;
+    }
+
+    &>.right {
+      background-color: brown;
+    }
+  }
+
+  &>.div {
+    width: 100%;
+    height: 0;
+    cursor: ns-resize;
+    cursor: row-resize;
+
+    &::before {
+      width: 100%;
+      height: 10px;
+      margin: -5px 0;
+    }
+  }
+
+  &>.div,
+  &>.top>.div,
+  &>.bottom>.div {
+    order: 2;
+    user-select: none;
+    position: relative;
+    outline: var(--border);
+    
+
+    &::before {
+      content: '';
+      display: block;
+      background-color: rgb(128, 128, 128);
+      opacity: 0.25;
+    }
+  }
+
+  &>.bottom>.div>.cross {
+    position: absolute;
+    background-color: #333;
+    z-index: 1;
+    top: -10px;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    cursor: crosshair;
+    cursor: move;
+  }
+}
+
+._move_x {
+  cursor: ew-resize;
+  cursor: col-resize;
+}
+
+._move_y {
+  cursor: ns-resize;
+  cursor: row-resize;
+}
+
+._move_xy {
+  cursor: crosshair;
+  cursor: move;
+}
+
+._move_x,
+._move_y,
+._move_xy {
+  /* pointer-events: none !important; */
+
+  * {
+    cursor: inherit !important;
+    user-select: none !important;
+  }
+}

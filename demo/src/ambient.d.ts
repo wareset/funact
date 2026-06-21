@@ -47,3 +47,22 @@ declare module '*.yml' {
   const value: { [key: string]: any }
   export default value
 }
+
+type Style = { [key: `_${string}`]: string }
+
+declare module '*.css' {
+  const value: Style
+  export default value
+}
+declare module '*.less' {
+  const value: Style
+  export default value
+}
+declare module '*.scss' {
+  const value: Style
+  export default value
+}
+declare module '*.sass' {
+  const value: Style
+  export default value
+}

@@ -1,0 +1,31 @@
+._main {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &>div {
+    /* padding: 5px; */
+  }
+
+  &>.menubar {
+    background: #ad3;
+  }
+
+  &>.toolbar {
+    background: #add;
+  }
+
+  &>.surface {
+    background: #a33;
+    flex-grow: 1; 
+  }
+
+  &>.control {
+    background: #3da;
+  }
+}

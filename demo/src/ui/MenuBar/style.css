@@ -1,0 +1,45 @@
+._menubar {
+  user-select: none;
+  outline: none;
+  font-size: 0.75em;
+
+  &.show {
+    &>form {
+      z-index: 999;
+    }
+  }
+
+  &>form {
+    /* это чтобы z-index сработал */
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    box-sizing: border-box;
+    background-color: var(--bg-color);
+    border-bottom: var(--border);
+    padding: 4px 0;
+    outline: none;
+    /* overflow-x: scroll; */
+
+    &:focus,
+    &:focus-visible {
+      outline: var(--outline);
+      outline-offset: var(--outline-offset);
+    }
+
+    &>div {
+      display: flex;
+      flex-direction: row;
+      padding: 0 4px;
+
+      &+div {
+        border-left: var(--border);
+      }
+
+      &>input {
+        font-size: 1em;
+      }
+    }
+  }
+}

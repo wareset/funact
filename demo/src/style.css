@@ -1,0 +1,46 @@
+:root {
+  --bg-color: #333;
+  --text-color: #eee;
+  --fade-color: rgba(0, 9, 9, 0.25);
+  --icon-color: rgba(128, 128, 128, 0.125);
+
+  --outline: 1px solid #eee;
+  --outline-offset: -1px;
+
+  --border: 1px solid rgba(128, 128, 128, 0.25);
+  --border-radius: 3px;
+
+  --button-hover: rgba(128, 128, 128, 0.25);
+  --button-focus: rgba(128, 128, 128, 0.25);
+  --button-active: rgba(128, 128, 128, 0.5);
+  --button-disabled-opacity: 0.25;
+}
+
+button, input, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fade {
+  &::before {
+    content: '';
+    opacity: 0;
+    position: absolute;
+    z-index: 998;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    transition: opacity 0.25s ease 0s, width 0s 0.25s, height 0s 0.25s;
+    background-color: var(--fade-color);
+  }
+
+  &.show {
+    &::before {
+      opacity: 1;
+      width: 100%;
+      height: 100%;
+      transition: opacity 0.25s ease 0s, width 0s 0s, height 0s 0s;
+    }
+  }
+}
+

@@ -1,0 +1,88 @@
+._split_grid {
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  &>.one {
+    order: 1;
+    background-color: aqua;
+  }
+
+  &>.two {
+    order: 3;
+    background-color: aquamarine;
+  }
+
+  &>.div {
+    order: 2;
+    user-select: none;
+    position: relative;
+    outline: var(--border);
+
+    &::after {
+      content: '';
+      display: block;
+      background-color: rgb(128, 128, 128);
+      opacity: 0.25;
+    }
+  }
+
+  &.row {
+    flex-direction: row;
+
+    &>.div {
+      width: 0;
+      height: 100%;
+      cursor: ew-resize;
+      cursor: col-resize;
+      /* border-left: var(--border); */
+
+
+      &::after {
+        width: 10px;
+        height: 100%;
+        margin: 0 -5px;
+      }
+    }
+  }
+
+  &.col {
+    flex-direction: column;
+
+    &>.div {
+      width: 100%;
+      height: 0;
+      cursor: ns-resize;
+      cursor: row-resize;
+      /* border-top: var(--border); */
+
+
+      &::after {
+        width: 100%;
+        height: 10px;
+        margin: -5px 0;
+      }
+    }
+  }
+
+}
+
+._move_row {
+  cursor: ew-resize;
+  cursor: col-resize;
+}
+
+._move_col {
+  cursor: ns-resize;
+  cursor: row-resize;
+}
+
+._move_row,
+._move_col {
+  /* pointer-events: none !important; */
+
+  * {
+    cursor: inherit !important;
+    user-select: none !important;
+  }
+}

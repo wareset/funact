@@ -1,0 +1,90 @@
+._toolbar {
+  user-select: none;
+  outline: none;
+  font-size: 0.75em;
+
+  &.show {
+    &>form {
+      z-index: 999;
+    }
+  }
+
+  &>form {
+    /* это чтобы z-index сработал */
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    box-sizing: border-box;
+    background-color: var(--bg-color);
+    border-bottom: var(--border);
+    outline: none;
+    padding: 4px 0;
+    fill: var(--text-color);
+    stroke: var(--text-color);
+
+    &:focus,
+    &:focus-visible {
+      outline: var(--outline);
+      outline-offset: var(--outline-offset);
+    }
+
+    &>div {
+      display: flex;
+      flex-direction: row;
+      padding: 0 2px;
+
+      &+div {
+        border-left: var(--border);
+      }
+
+      &>button {
+        background-color: transparent;
+        border: none;
+        box-sizing: border-box;
+        cursor: pointer;
+        outline: none;
+        text-align: left;
+        padding: 0 2px;
+        font-size: 1em;
+
+        &>svg {
+          width: 2.5em;
+          height: 2.5em;
+          display: block;
+          padding: 4px;
+          /* border: var(--border); */
+          border-radius: var(--border-radius);
+          background-color: var(--icon-color);
+
+          &>use {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        &:hover>svg {
+          background-color: var(--button-hover);
+        }
+
+        &:focus>svg,
+        &:focus-visible>svg {
+          background-color: var(--button-focus);
+          outline: var(--outline);
+          outline-offset: var(--outline-offset);
+        }
+
+        &:active>svg {
+          background-color: var(--button-active);
+          outline: none;
+        }
+
+        &.disabled>svg,
+        &:disabled>svg {
+          opacity: var(--button-disabled-opacity);
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

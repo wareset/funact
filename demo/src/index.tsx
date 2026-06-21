@@ -1,4 +1,4 @@
-console.log('heract')
+// console.log('heract')
 
 // export const test = () => import('@/ui/Header')
 // export const test2 = () => import('@/ui/bs/Container')
@@ -7,41 +7,19 @@ console.log('heract')
 //   console.log(await test2())
 // })()
 
-// import { createRoot } from 'barely-react'
+import '@/style.css'
+import { App } from '@/App'
 
-// import Test from '@/routes/test/page'
+addEventListener('keydown', (e) => {
+  console.log('window keydown:', e.key)
+})
 
-// console.log(createRoot(document.body).render(<Test />))
+// addEventListener('focus', (e) => {
+//   console.log('window focus:', e)
+// })
 
-// import Bootstrap from '@/routes/bootstrap/page'
-
-// function App() {
-//   return <Bootstrap />
-// }
-
-// console.log(render(document.body, <App />))
-
-import { Icon } from '@/ui'
-import { Container, Progress, Spinner } from '@/ui'
-
-function Test() {
-  console.log(12)
-  // return (<h1>H1</h1>)
-}
-
-function App() {
-  return (
-    <Container sm>
-      <div className={['asd', 'zxc']} ariaAutoComplete={'qwe'} data-qwe={12}>
-        work
-        <div children={'sp'}></div>
-        <Test />
-        <Icon name='arrow-bar-left' className='aaaa'></Icon>
-      </div>
-      <div>
-      </div>
-    </Container>
-  )
-}
+// addEventListener('blur', (e) => {
+//   console.log('window blur:', e)
+// })
 
 console.log(R.render(<App />, document.body))
