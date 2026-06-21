@@ -1,4 +1,5 @@
-import { JSXNode } from './JSXNode';
+import { JSXNode } from '../JSXNode';
+import { IntrinsicElements as IntrinsicElementsGenerated } from './generated/IntristicElements';
 export type Props = Record<string, any>;
 export type ComponentChildren = JSXNode | ComponentChildren[] | object | boolean | number | bigint | string | void | null | undefined;
 export type Comparator = (prevProps: Props, nextProps: Props) => boolean;
@@ -12,6 +13,7 @@ export type RefObject<T> = {
 };
 export type RefCallback<T> = (instance: T | null) => void | (() => void);
 export type Ref<T> = RefObject<T> | RefCallback<T>;
+import { Properties as CSSProperties } from 'csstype';
 export type StyleSheet = (CSSProperties & Record<`--${string}`, any>) | boolean | number | bigint | string | void | null | undefined | StyleSheet[];
 export type ClassNames = Record<string, any> | boolean | number | bigint | string | void | null | undefined | ClassNames[];
 export interface Context<T = unknown> {
@@ -24,7 +26,6 @@ export interface Context<T = unknown> {
     displayName?: string;
 }
 export type TransitionFunction = () => void | undefined | Promise<void | undefined>;
-import { Properties as CSSProperties } from 'csstype';
 export declare namespace JSX {
     export type ElementType<P = any, Tag extends keyof JSX.IntrinsicElements = keyof JSX.IntrinsicElements> = {
         [K in Tag]: P extends JSX.IntrinsicElements[K] ? K : never;
@@ -44,38 +45,9 @@ export declare namespace JSX {
         children: any;
     }
     export interface IntrinsicAttributes {
-        key?: any;
     }
-    type Mutable<T> = {
-        -readonly [P in keyof T]: T[P];
-    };
-    type OmitExtra<T> = {
-        [K in keyof T as T[K] extends any[] | object | ((...args: any[]) => any) ? never : K]: T[K];
-    };
-    type AddEvents<T> = {
-        [K in keyof T as K extends `on${infer Rest}` ? `on${Capitalize<Rest>}` | `on${Capitalize<Rest>}Capture` : K]: T[K] extends null | ((e: infer E) => any) ? E extends Event ? null | ((e: Omit<E, 'target'> & {
-            target: T;
-        }) => any) : T[K] : T[K];
-    };
-    export type Attributes<T> = Partial<Omit<AddEvents<OmitExtra<Mutable<T>>>, 'style' | 'className'>> & {
-        style?: StyleSheet;
-        class?: string;
-        className?: ClassNames;
-        children?: any;
-        ref?: Ref<any>;
-    } & Record<`data-${string}`, any>;
-    type EachTagNameMap<T extends {
-        [key: string]: any;
-    }> = {
-        [K in keyof T]: Attributes<T[K]>;
-    };
-    export interface IntrinsicSVGElements extends EachTagNameMap<Omit<SVGElementTagNameMap, keyof HTMLElementTagNameMap | keyof MathMLElementTagNameMap>> {
-    }
-    export interface IntrinsicMathMLElements extends EachTagNameMap<Omit<MathMLElementTagNameMap, keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap>> {
-    }
-    export interface IntrinsicHTMLElements extends EachTagNameMap<HTMLElementTagNameMap> {
-    }
-    export interface IntrinsicElements extends IntrinsicSVGElements, IntrinsicMathMLElements, IntrinsicHTMLElements {
+    export interface IntrinsicElements extends IntrinsicElementsGenerated {
+        [key: `${string}-${string}`]: any;
     }
     export {};
 }

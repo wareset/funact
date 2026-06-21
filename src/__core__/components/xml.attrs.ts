@@ -1,7 +1,7 @@
-import { NAMESPACES_URI } from './xml.utils'
+import { XLINK } from './xml.utils'
 import { StyleSheet, ClassNames } from '../types'
 
-const CSS_PROPERTIES: { [k: string]: string } = { __proto__: null as any }
+const CSS_PROPERTIES = { __proto__: null } as unknown as Record<string, string>
 
 let needInitCSSProperties = true
 function initCSSProperties(): void {
@@ -11,14 +11,19 @@ function initCSSProperties(): void {
       const RX = /^-[^-]+-/
       const CS = getComputedStyle(document.documentElement)
       for (let k in CS) {
-        if (+k > -1) (k = CS[k]), (CSS_PROPERTIES[k.replace(RX, '')] = k)
+        if (+k > -1) {
+          k = CS[k]
+          const origin = k.replace(RX, '')
+          origin !== k && (CSS_PROPERTIES[origin] = k)
+          // (k = CS[k]), (CSS_PROPERTIES[k.replace(RX, '')] = k)
+        }
       }
     } catch {}
   }
 }
 
 const RX_DASH = /([A-Z])/g
-const C2D: { [key: string]: string } = { __proto__: null as any }
+const C2D = { __proto__: null } as unknown as Record<string, string>
 let camel2dash = function (v: string): string {
   return (
     initCSSProperties(),
@@ -43,7 +48,7 @@ function style2string(v: StyleSheet): string {
     case 'object': {
       const a: string[] = []
       if (Array.isArray(v)) {
-        for (let c: any, i = 0, l = v.length; i < l; ++i) {
+        for (let c: string, i = 0, l = v.length; i < l; ++i) {
           if ((c = style2string(v[i]))) a.push(c)
         }
       } else if (v) {
@@ -70,14 +75,14 @@ function class2string(v: ClassNames): string {
   switch (typeof v) {
     case 'string':
       return v
-    case 'number':
-      return v + ''
-    case 'bigint':
-      return v + 'n'
+    // case 'number':
+    //   return v + ''
+    // case 'bigint':
+    //   return v + 'n'
     case 'object': {
       const a: string[] = []
       if (Array.isArray(v)) {
-        for (let c: any, i = 0, l = v.length; i < l; ++i) {
+        for (let c: string, i = 0, l = v.length; i < l; ++i) {
           if ((c = class2string(v[i]))) a.push(c)
         }
       } else if (v) {
@@ -113,30 +118,33 @@ function setOrRemoveAttribute(
   k: string,
   v: any
 ) {
-  node[isValid(v) ? 'setAttribute' : 'removeAttribute'](k, '' + v)
+  isValid(v) ? node.setAttribute(k, String(v)) : node.removeAttribute(k)
 }
 
+const XLINK_KEYS_CACHE = {
+  __proto__: null,
+} as unknown as Record<string, string>
 function setOrRemoveAttributeNS(
   node: HTMLElement | SVGElement,
   k: string,
   v: any
 ) {
-  node[isValid(v) ? 'setAttributeNS' : 'removeAttributeNS'](
-    NAMESPACES_URI.xlink,
-    'xlink:' + xkey(k, 5),
-    '' + v
-  )
+  k = XLINK_KEYS_CACHE[k] || (XLINK_KEYS_CACHE[k] = 'xlink:' + xkey(k, 5))
+  isValid(v)
+    ? node.setAttributeNS(XLINK, k, String(v))
+    : node.removeAttributeNS(XLINK, k)
 }
 
-const DSA: { [key: string]: { [key: string]: any } } = {
-  __proto__: null as any,
-}
-function dsa_get_descriptor(lName: string, k: string, E: any) {
+const DSA = {
+  __proto__: null,
+} as unknown as Record<string, Record<string, any>>
+function dsa_get_descriptor(E: HTMLElement | SVGElement, k: string) {
+  const lName = E.localName
   const nodeProps = DSA[lName] || (DSA[lName] = { __proto__: null })
   if (!(k in nodeProps)) {
+    let r: PropertyDescriptor | undefined
     const getPrototypeOf = Object.getPrototypeOf
     const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor
-    let r: PropertyDescriptor | undefined
     for (; (E = getPrototypeOf(E)) && !(r = getOwnPropertyDescriptor(E, k)); );
     nodeProps[k] = r && r.set
   }
@@ -147,12 +155,12 @@ function setOrRemoveOtherProperties(
   k: string,
   v: any
 ) {
-  k in node && dsa_get_descriptor(node.localName, k, node)
+  k in node && dsa_get_descriptor(node, k)
     ? (node[k as 'id'] = v)
     : setOrRemoveAttribute(node, k, v)
 }
 
-const RX_CAPTURE = /[Cc]apture$/
+const RX_CAPTURE = /Capture$/
 function setEventListener(
   node: HTMLElement | SVGElement,
   k: string,
@@ -170,8 +178,8 @@ function setEventListener(
   }
 }
 
-const RX_EVENTS = /^on[A-Za-z][a-z]/
-const RX_XLINKS = /^xlink[A-Z][a-z]/
+const RX_EVENTS = /^on[A-Za-z]/
+const RX_XLINKS = /^xlink[A-Z]/
 export function setAttributes(
   node: HTMLElement | SVGElement,
   newAttrs: { [key: string]: any },
@@ -185,17 +193,17 @@ export function setAttributes(
       val === val || (val = null)
       if (key === 'style') {
         val = style2string(val)
-        if (oldAttrs[key] !== val) {
+        if (val !== oldAttrs.style) {
           node.style.cssText = val
           // setOrRemoveAttribute(node, key, val)
         }
       } else if (key === 'className' || key === 'class') {
         key = 'class'
         val = class2string(val)
-        if (oldAttrs[key] !== val) {
+        if (val !== oldAttrs.class) {
           setOrRemoveAttribute(node, key, val)
         }
-      } else if (oldAttrs[key] !== val) {
+      } else if (val !== oldAttrs[key]) {
         if (RX_EVENTS.test(key)) {
           setEventListener(node, key, val, oldAttrs[key])
         } else if (RX_XLINKS.test(key)) {
@@ -206,16 +214,18 @@ export function setAttributes(
       }
 
       resAttrs[key] = val
-      delete oldAttrs[key]
+      // delete oldAttrs[key]
     }
   }
   for (let key in oldAttrs) {
-    if (RX_EVENTS.test(key)) {
-      setEventListener(node, key, null, oldAttrs[key])
-    } else if (RX_XLINKS.test(key)) {
-      setOrRemoveAttributeNS(node, key, null)
-    } else {
-      setOrRemoveOtherProperties(node, key, null)
+    if (!(key in resAttrs)) {
+      if (RX_EVENTS.test(key)) {
+        setEventListener(node, key, null, oldAttrs[key])
+      } else if (RX_XLINKS.test(key)) {
+        setOrRemoveAttributeNS(node, key, null)
+      } else {
+        setOrRemoveOtherProperties(node, key, null)
+      }
     }
   }
   return resAttrs
@@ -229,7 +239,6 @@ export function removeEventListeners(
     for (let key in oldAttrs) {
       if (RX_EVENTS.test(key)) {
         setEventListener(node, key, null, oldAttrs[key])
-        delete oldAttrs[key]
       }
     }
   }

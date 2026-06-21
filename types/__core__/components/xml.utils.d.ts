@@ -1,10 +1,5 @@
 import { type VNode } from '../VNode';
-export declare const NAMESPACES_URI: {
-    readonly __proto__: any;
-    readonly svg: string;
-    readonly math: string;
-    readonly xlink: string;
-};
+export declare const XLINK: string;
 export declare function createElementNS(tagName: string, parentNode: HTMLElement | SVGElement): HTMLElement | SVGElement;
 type VNodeWithXMLContext = VNode & {
     xmlContext: XMLContext;

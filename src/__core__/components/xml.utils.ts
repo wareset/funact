@@ -6,13 +6,15 @@ import { removeEventListeners } from './xml.attrs'
 
 // https://developer.mozilla.org/ru/docs/Web/SVG/Element/foreignObject
 const __uri__ = 'http://www.w3.org/'
-export const NAMESPACES_URI = {
+const NAMESPACES_URI = {
   __proto__: null,
-  // _   : __uri__ + '1999/xhtml',
+  // _: __uri__ + '1999/xhtml',
   svg: __uri__ + '2000/svg',
   math: __uri__ + '1998/Math/MathML',
-  xlink: __uri__ + '1999/xlink',
+  // xlink: __uri__ + '1999/xlink',
 } as const
+
+export const XLINK = __uri__ + '1999/xlink'
 
 export function createElementNS(
   tagName: string,

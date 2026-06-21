@@ -1,4 +1,5 @@
-import { JSXNode } from './JSXNode'
+import { JSXNode } from '../JSXNode'
+import { IntrinsicElements as IntrinsicElementsGenerated } from './generated/IntristicElements'
 
 export type Props = Record<string, any>
 
@@ -27,6 +28,7 @@ export type RefObject<T> = { current: T | null }
 export type RefCallback<T> = (instance: T | null) => void | (() => void)
 export type Ref<T> = RefObject<T> | RefCallback<T>
 
+import { Properties as CSSProperties } from 'csstype'
 //  & { [K: `--${string}`]: string | number }
 export type StyleSheet =
   | (CSSProperties & Record<`--${string}`, any>)
@@ -61,8 +63,6 @@ export type TransitionFunction = () =>
   | void
   | undefined
   | Promise<void | undefined>
-
-import { Properties as CSSProperties } from 'csstype'
 
 // declare global {
 export namespace JSX {
@@ -103,65 +103,68 @@ export namespace JSX {
   }
 
   export interface IntrinsicAttributes {
-    key?: any
+    // key?: any
   }
 
-  type Mutable<T> = {
-    -readonly [P in keyof T]: T[P]
-  }
-  type OmitExtra<T> = {
-    [K in keyof T as T[K] extends any[] | object | ((...args: any[]) => any)
-      ? never
-      : K]: T[K]
-  }
-  type AddEvents<T> = {
-    [K in keyof T as K extends `on${infer Rest}`
-      ? `on${Capitalize<Rest>}` | `on${Capitalize<Rest>}Capture`
-      : K]: T[K] extends null | ((e: infer E) => any)
-      ? E extends Event
-        ? null | ((e: Omit<E, 'target'> & { target: T }) => any)
-        : T[K]
-      : T[K]
+  export interface IntrinsicElements extends IntrinsicElementsGenerated {
+    [key: `${string}-${string}`]: any
   }
 
-  export type Attributes<T> = Partial<
-    Omit<AddEvents<OmitExtra<Mutable<T>>>, 'style' | 'className'>
-  > & {
-    style?: StyleSheet
-    class?: string
-    className?: ClassNames
-    children?: any
-    ref?: Ref<any>
-  } & Record<`data-${string}`, any>
+  // type Mutable<T> = {
+  //   -readonly [P in keyof T]: T[P]
+  // }
+  // type OmitExtra<T> = {
+  //   [K in keyof T as T[K] extends any[] | object | ((...args: any[]) => any)
+  //     ? never
+  //     : K]: T[K]
+  // }
+  // type AddEvents<T> = {
+  //   [K in keyof T as K extends `on${infer Rest}`
+  //     ? `on${Capitalize<Rest>}` | `on${Capitalize<Rest>}Capture`
+  //     : K]: T[K] extends null | ((e: infer E) => any)
+  //     ? E extends Event
+  //       ? null | ((e: Omit<E, 'target'> & { target: T }) => any)
+  //       : T[K]
+  //     : T[K]
+  // }
 
-  type EachTagNameMap<T extends { [key: string]: any }> = {
-    [K in keyof T]: Attributes<T[K]>
-  }
+  // export type Attributes<T> = Partial<
+  //   Omit<AddEvents<OmitExtra<Mutable<T>>>, 'style' | 'className'>
+  // > & {
+  //   style?: StyleSheet
+  //   class?: string
+  //   className?: ClassNames
+  //   children?: any
+  //   ref?: Ref<T>
+  //   [key: string]: any
+  // } & Record<`data-${string}`, any>
 
-  export interface IntrinsicSVGElements
-    extends EachTagNameMap<
-      Omit<
-        SVGElementTagNameMap,
-        keyof HTMLElementTagNameMap | keyof MathMLElementTagNameMap
-      >
-    > {}
+  // type EachTagNameMap<T extends { [key: string]: any }> = {
+  //   [K in keyof T]: Attributes<T[K]>
+  // }
 
-  export interface IntrinsicMathMLElements
-    extends EachTagNameMap<
-      Omit<
-        MathMLElementTagNameMap,
-        keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
-      >
-    > {}
+  // export interface IntrinsicSVGElements
+  //   extends EachTagNameMap<
+  //     Omit<
+  //       SVGElementTagNameMap,
+  //       keyof HTMLElementTagNameMap | keyof MathMLElementTagNameMap
+  //     >
+  //   > {}
 
-  export interface IntrinsicHTMLElements
-    extends EachTagNameMap<HTMLElementTagNameMap> {}
+  // export interface IntrinsicMathMLElements
+  //   extends EachTagNameMap<
+  //     Omit<
+  //       MathMLElementTagNameMap,
+  //       keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
+  //     >
+  //   > {}
 
-  export interface IntrinsicElements
-    extends IntrinsicSVGElements,
-      IntrinsicMathMLElements,
-      IntrinsicHTMLElements {
-    // [key: string]: any
-  }
+  // export interface IntrinsicHTMLElements
+  //   extends EachTagNameMap<HTMLElementTagNameMap> {}
+
+  // export interface IntrinsicElements
+  //   extends IntrinsicSVGElements,
+  //     IntrinsicMathMLElements,
+  //     IntrinsicHTMLElements {}
 }
 // }

@@ -28,17 +28,19 @@ import { is } from './utils'
 // }
 
 export function defaultIsEqual(prevProps: Props, nextProps: Props) {
-  let res = Object.keys(prevProps).length === Object.keys(nextProps).length
-  if (res && prevProps !== nextProps) {
-    for (const k in prevProps) {
-      if (!(k in nextProps && is(prevProps[k], nextProps[k]))) {
-        res = false
-        break
+  if (prevProps !== nextProps) {
+    const keys = Object.keys(prevProps)
+    let i = keys.length
+    if (i !== Object.keys(nextProps).length) return false
+
+    for (let k: string; i--; ) {
+      if (!((k = keys[i]) in nextProps && is(prevProps[k], nextProps[k]))) {
+        return false
       }
     }
   }
 
-  return res
+  return true
 }
 
 /*@__NO_SIDE_EFFECTS__*/

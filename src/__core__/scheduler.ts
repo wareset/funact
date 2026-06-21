@@ -101,9 +101,11 @@ export function addInsertionOrLayoutEffectInQueue(
   for (let n: number; i-- > 0; ) {
     if ((n = sortDeeps(INSERTION_AND_LAYOUT_EFFECTS[i].deep, deep)) < 0) break
     else if (n === 0)
-      return void INSERTION_AND_LAYOUT_EFFECTS[i][isInsertion ? 'i' : 'l'].push(
-        hook
-      )
+      return void (
+        isInsertion
+          ? INSERTION_AND_LAYOUT_EFFECTS[i].i
+          : INSERTION_AND_LAYOUT_EFFECTS[i].l
+      ).push(hook)
   }
 
   INSERTION_AND_LAYOUT_EFFECTS.splice(

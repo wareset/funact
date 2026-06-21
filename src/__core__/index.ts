@@ -80,21 +80,29 @@ function createElement(
 }
 export { createElement }
 
-// function Root(props: { domNode: HTMLElement | SVGElement; children: any }) {
-//   const { 0: res, 1: setRes } = useState<JSXNode>()
-//   res || setRes(new JSXNode(Portal, props, []))
-//   return res
-// }
+import { useState } from './hooks/useState'
+function Root(props: { domNode: HTMLElement | SVGElement; children: any }) {
+  const { 0: res, 1: setRes } = useState<JSXNode>()
+  res || setRes(new JSXNode(Portal, props))
+  return res
+}
 
 let rId = 0
 export function render(jsx: any, domNode: HTMLElement | SVGElement) {
+  // return new VNode(
+  //   null,
+  //   new JSXNode(Portal, { domNode, children: jsx }),
+  //   1,
+  //   ++rId
+  // )
+
+  // без Root эффекты при первом запуске не запустятся
   return new VNode(
     null,
-    new JSXNode(Portal, { domNode, children: jsx }),
+    new JSXNode(Root, { domNode, children: jsx }),
     1,
     ++rId
   )
-  // return new VNode(null, new JSXNode(Root, { domNode, children }, []), 1, ++rId)
 }
 
 export function createRoot(domNode: HTMLElement | SVGElement) {
