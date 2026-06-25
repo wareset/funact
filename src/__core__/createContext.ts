@@ -1,7 +1,7 @@
 import { Context } from './types'
 import { addVNodeInQueue } from './scheduler'
 import { getCurrentVNode } from './VNode.utils'
-import { is } from './utils'
+import { isEqual } from './utils'
 
 // TODO: Нужно добавить Consumer
 
@@ -14,7 +14,7 @@ export function createContext<T>(defaultValue: T): Context<T> {
 
     if (!context) {
       vNode.context = { value, users: [] }
-    } else if (!is(context.value, value)) {
+    } else if (!isEqual(context.value, value)) {
       context.value = value
       for (let users = context.users, i = 0, l = users.length; i < l; ++i) {
         users[i].value = value

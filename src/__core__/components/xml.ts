@@ -107,9 +107,9 @@ export function XMLElement(props: { [key: string]: any }) {
       function (): any {
         if (ref && node) {
           if (typeof ref === 'function') {
-            ref(node)
+            const cleanup = ref(node)
             return function () {
-              ref(null)
+              cleanup ? cleanup() : ref(null)
             }
           } else {
             ref.current = node

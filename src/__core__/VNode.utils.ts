@@ -15,7 +15,7 @@ import {
 import { useInsertionEffect } from './hooks/useInsertionEffect'
 import { useLayoutEffect } from './hooks/useLayoutEffect'
 import { useEffect } from './hooks/useEffect'
-import { is } from './utils'
+import { isEqual } from './utils'
 import { defaultIsEqual } from './memo'
 
 let currentVNode: VNode
@@ -74,8 +74,8 @@ function compareProps(iam: VNode, jsxList: any[]) {
       if (
         cNode &&
         cNode.jsx instanceof JSXNode &&
-        is(cNode.jsx.type, jsx.type) // &&
-        // is(cNode.jsx.key, jsx.key)
+        isEqual(cNode.jsx.type, jsx.type) // &&
+        // isEqual(cNode.jsx.key, jsx.key)
       ) {
         if (
           cNode.fc === XMLElement ||

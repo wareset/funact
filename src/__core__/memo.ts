@@ -1,6 +1,6 @@
 // import { JSXNode } from './JSXNode'
 import { FC, Comparator, Props } from './types'
-import { is } from './utils'
+import { isEqual } from './utils'
 
 // function isEqualProps(a: any[], b: any[]) {
 //   let res = a.length === b.length
@@ -18,7 +18,7 @@ import { is } from './utils'
 //           res = false
 //           break
 //         }
-//       } else if (!is(ai, bi)) {
+//       } else if (!isEqual(ai, bi)) {
 //         res = false
 //         break
 //       }
@@ -34,7 +34,9 @@ export function defaultIsEqual(prevProps: Props, nextProps: Props) {
     if (i !== Object.keys(nextProps).length) return false
 
     for (let k: string; i--; ) {
-      if (!((k = keys[i]) in nextProps && is(prevProps[k], nextProps[k]))) {
+      if (
+        !((k = keys[i]) in nextProps && isEqual(prevProps[k], nextProps[k]))
+      ) {
         return false
       }
     }

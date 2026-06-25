@@ -1,5 +1,5 @@
 import { type VNode } from './VNode'
-import { is } from './utils'
+import { isEqual } from './utils'
 
 // Возможно хуки станут классами?
 export interface IHook {
@@ -33,7 +33,7 @@ export function isEqualDeps(
   if (a !== b) {
     if (a && b && a.length === b.length) {
       for (let i = a.length; i-- > 0; ) {
-        if (!is(a[i], b[i])) {
+        if (!isEqual(a[i], b[i])) {
           return false
         }
       }
