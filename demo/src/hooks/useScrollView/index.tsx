@@ -23,6 +23,33 @@ const WHEEL = {
   y: onWheelY,
 } as const
 
+// для инерционного скролла
+let velocityX = 0
+let velocityY = 0
+let rafId: ReturnType<typeof requestAnimationFrame>
+let globalNodeX: HTMLElement | null
+let globalNodeY: HTMLElement | null
+const friction = 0.95
+function momentumLoop() {
+  if (globalNodeX)
+    if (Math.abs(velocityX) > 1) {
+      globalNodeX.scrollLeft += velocityX *= friction
+    } else {
+      globalNodeX = null
+    }
+
+  if (globalNodeY)
+    if (Math.abs(velocityY) > 1) {
+      globalNodeY.scrollTop += velocityY *= friction
+    } else {
+      globalNodeY = null
+    }
+
+  if (globalNodeX || globalNodeY) {
+    rafId = requestAnimationFrame(momentumLoop)
+  }
+}
+
 let isDown = false
 let posX = 0
 let posY = 0
@@ -34,6 +61,9 @@ const ELEMENTS_FOR_Y: HTMLElement[] = []
 function initDown(e: MouseEvent | TouchEvent) {
   if (!isDown) {
     isDown = true
+    globalNodeX = globalNodeY = null
+    rafId != null && cancelAnimationFrame(rafId)
+
     addEventListener('touchmove', touchMove, true)
     addEventListener('mousemove', touchMove, true)
     addEventListener('touchend', touchUp, true)
@@ -72,28 +102,29 @@ const TOUCH = {
 function touchMove(e: MouseEvent | TouchEvent) {
   if (isValidTouch(e)) {
     const { x, y } = getClientXYFromEvent(e)
-    const offsetX = posX - (posX = x)
-    const offsetY = posY - (posY = y)
+    velocityX = posX - (posX = x)
+    velocityY = posY - (posY = y)
 
-    if (offsetX)
+    if (velocityX)
       for (let a = ELEMENTS_FOR_X, i = a.length; i-- > 0; ) {
         const node = a[i]
         const prev = node.scrollLeft
-        node.scrollLeft += offsetX
+        node.scrollLeft += velocityX
         if (prev !== node.scrollLeft) {
+          globalNodeX = node
           if (allowClick) setCursorGrabbing(), (allowClick = false)
           break
         }
       }
 
-    if (offsetY)
+    if (velocityY)
       for (let a = ELEMENTS_FOR_Y, i = a.length; i-- > 0; ) {
         const node = a[i]
         const prev = node.scrollTop
-        node.scrollTop += offsetY
+        node.scrollTop += velocityY
         if (prev !== node.scrollTop) {
+          globalNodeY = node
           if (allowClick) setCursorGrabbing(), (allowClick = false)
-          allowClick = false
           break
         }
       }
@@ -108,6 +139,7 @@ function touchUp(e: MouseEvent | TouchEvent) {
   removeEventListener('mousemove', touchMove, true)
   removeEventListener('touchend', touchUp, true)
   removeEventListener('mouseup', touchUp, true)
+  momentumLoop()
   if (
     activeElement !== (activeElement = document.activeElement) &&
     activeElement
