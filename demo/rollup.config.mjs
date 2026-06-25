@@ -27,10 +27,25 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 ;(() => {
   const opts = { recursive: true }
   function from(packageJsonDir = '', dir = '') {
-    return path.join(
-      path.dirname(require.resolve(packageJsonDir + '/package.json')),
-      dir
-    )
+    let file, filename
+    try {
+      file = require.resolve(packageJsonDir + '/package.json')
+    } catch {
+      file = require.resolve(packageJsonDir)
+    }
+
+    while (
+      (filename = path.basename((file = path.dirname(file)))) &&
+      filename !== packageJsonDir
+    );
+
+    if (!filename) throw packageJsonDir
+
+    // return path.join(
+    //   path.dirname(require.resolve(packageJsonDir + '/package.json')),
+    //   dir
+    // )
+    return path.join(file, dir)
   }
   /** @param {string[]} dirs */
   function to(...dirs) {
@@ -47,6 +62,8 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
     fs.mkdirSync(buildDir, { recursive: true })
   }
 
+  // copy three to app/js
+  // fs.cpSync(from('three', 'build'), to('app/js', 'three'), opts)
   // copy bootstrap to app/css
   fs.cpSync(from('bootstrap', 'dist/css'), to('app/css', 'bs'), opts)
   // copy bootstrap-icons to app/css
@@ -69,7 +86,7 @@ const production = !process.env.ROLLUP_WATCH
 const livereload = !production && rollupLivereload({ watch: 'app', delay: 999 })
 
 /** @type { import('rollup').RollupOptions } */
-const config = {
+const appConfig = {
   input: { index: 'src/index.tsx' },
   // output: {
   //   sourcemap: false,
@@ -77,11 +94,25 @@ const config = {
   //   name: 'app',
   //   file: `app/js/build.js`,
   // },
+  // external: ['three'],
   output: {
+    // globals: { three: 'THREE' },
+
     sourcemap: false,
     compact: true,
-    format: 'module',
+    format: 'system', // 'module',
     dir: `app/build`,
+    // chunkFileNames: 'chunks/[name]-[hash].js',
+    manualChunks(id) {
+      const match = id.match(/\/node_modules\/(three[^]*)/)
+      if (match) {
+        // console.log(match[1])
+        return production ? path.dirname(match[1]) : match[1]
+      }
+      if (id.includes('/node_modules/three')) {
+        return 'three'
+      }
+    },
   },
   plugins: [
     alias({
@@ -228,8 +259,18 @@ const config = {
         // 'React.Fragment': [heract, 'Fragment'],
 
         R: [heract, '*'],
+
+        'THREE.WebGPU': ['three/webgpu', '*'],
+        'THREE.TSL': ['three/tsl', '*'],
+        THREE: ['three', '*'],
+
+        UI: [path.resolve(__dirname, 'src/ui'), '*'],
+        Three: [path.resolve(__dirname, 'src/ui/Three'), '*'],
       })
     })(),
+    // inject({ THREE: ['three/webgpu', '*'] }),
+    // inject({ THREE: ['three/tsl', '*'] }),
+    // inject({ THREE: ['three', '*'] }),
 
     resolve({
       browser: true,
@@ -257,4 +298,25 @@ const config = {
   watch: { clearScreen: false },
 }
 
-export default config
+/** @type { import('rollup').RollupOptions } */
+const externalConfig = {
+  input: { three: 'src/external/three.ts' },
+  output: {
+    sourcemap: true,
+    // format: 'iife',
+    compact: true,
+    // name: 'extra',
+    format: 'module',
+    dir: `app/build`,
+  },
+  plugins: [
+    resolve({
+      browser: true,
+      preferBuiltins: false,
+      extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', '.json'],
+    }),
+    commonjs(),
+  ],
+}
+// [threeConfig, appConfig]
+export default appConfig
