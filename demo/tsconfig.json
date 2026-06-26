@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "jsxImportSource": "heract",
+    "jsxImportSource": "funact",
     "incremental": true,
     "baseUrl": ".",
     "paths": {

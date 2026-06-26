@@ -1,4 +1,4 @@
-// console.log('heract')
+// console.log('funact')
 
 // export const test = () => import('@/ui/Header')
 // export const test2 = () => import('@/ui/bs/Container')

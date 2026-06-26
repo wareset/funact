@@ -32,7 +32,7 @@
     "bootstrap": "5.3.8",
     "debounce-safe": "file:../../debounce-safe",
     "bootstrap-icons": "1.13.1",
-    "heract": "file:..",
+    "funact": "file:..",
     "@rease/css": "https://gitpkg.vercel.app/wareset/rease/packages/css?main",
     "@rease/listen": "file:../../rease/packages/listen",
     "rease": "file:../../rease/packages/rease"

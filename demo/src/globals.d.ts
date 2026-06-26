@@ -1,4 +1,4 @@
-import 'heract'
+import 'funact'
 import 'three'
 import 'three/webgpu'
 import 'three/tsl'
@@ -7,7 +7,7 @@ import './ui/Three'
 
 declare global {
   declare namespace R {
-    export * from 'heract'
+    export * from 'funact'
   }
   declare namespace THREE {
     export * from 'three'

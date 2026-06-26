@@ -1,18 +1,22 @@
 {
-  "name": "barely-react",
+  "name": "funact",
   "version": "0.0.1",
-  "description": "TODO",
+  "description": "A lightweight, blazing fast React-like UI library based strictly on functional components and hooks.",
   "keywords": [
-    "TODO"
+    "funact",
+    "react-like",
+    "hooks",
+    "fast",
+    "ui"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/wareset/barely-react#readme",
+  "homepage": "https://github.com/wareset/funact#readme",
   "bugs": {
-    "url": "https://github.com/wareset/barely-react/issues"
+    "url": "https://github.com/wareset/funact/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wareset/barely-react.git"
+    "url": "git+https://github.com/wareset/funact.git"
   },
   "author": "rease <cftcview@gmail.com>",
   "main": "dist/index",

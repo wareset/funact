@@ -234,9 +234,9 @@ const appConfig = {
               transforms: ['jsx', 'typescript'],
               production: true,
               jsxRuntime: 'automatic', // "classic" | "automatic" | "preserve"
-              jsxImportSource: 'heract',
-              jsxPragma: 'heract.createElement',
-              jsxFragmentPragma: 'heract.Fragment',
+              jsxImportSource: 'funact',
+              jsxPragma: 'funact.createElement',
+              jsxFragmentPragma: 'funact.Fragment',
             }).code
           } catch (e) {
             console.error('sucrase-custom')
@@ -249,16 +249,14 @@ const appConfig = {
     },
 
     (() => {
-      // const heract = path.resolve('../dist')
-      const heract = 'heract'
       return inject({
-        // 'React.createElement': [heract, 'createElement'],
-        // 'jsxRuntime': [heract, 'jsxRuntime'],
-        // 'jsxRuntime.jsxs': [heract, 'createElement'],
-        // 'jsxRuntime.jsx': [heract, 'createElement'],
-        // 'React.Fragment': [heract, 'Fragment'],
+        // 'React.createElement': [funact, 'createElement'],
+        // 'jsxRuntime': [funact, 'jsxRuntime'],
+        // 'jsxRuntime.jsxs': [funact, 'createElement'],
+        // 'jsxRuntime.jsx': [funact, 'createElement'],
+        // 'React.Fragment': [funact, 'Fragment'],
 
-        R: [heract, '*'],
+        R: ['funact', '*'],
 
         'THREE.WebGPU': ['three/webgpu', '*'],
         'THREE.TSL': ['three/tsl', '*'],
