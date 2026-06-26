@@ -54,17 +54,10 @@
     "@types/jsdom": "^28.0.0",
     "puppeteer": "^24.40.0",
     "svg-element-attributes": "^2.1.0",
-    "html-element-attributes": "^3.5.0"
+    "html-element-attributes": "^3.5.0",
+    "typescript": "*"
   },
   "dependencies": {
     "csstype": "3.x"
-  },
-  "peerDependencies": {
-    "typescript": "*"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
   }
 }
