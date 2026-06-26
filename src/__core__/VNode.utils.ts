@@ -85,7 +85,8 @@ function compareProps(iam: VNode, jsxList: any[]) {
             jsx.props
           )
         ) {
-          if (cNode.jsx.props === jsx.props) throw 'props'
+          // это чтобы пропсы всегда были разные, но как бы необязательно
+          // if (cNode.jsx.props === jsx.props) throw 'props'
           cNode.jsx = jsx
           updateVNode(cNode)
         }
