@@ -1,7 +1,7 @@
 {
   "name": "funact",
   "version": "0.0.1",
-  "description": "A lightweight, blazing fast React-like UI library based strictly on functional components and hooks.",
+  "description": "A lightweight, blazing fast React-like UI library based strictly on functional components and hooks",
   "keywords": [
     "funact",
     "react-like",
@@ -10,7 +10,7 @@
     "ui"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/wareset/funact#readme",
+  "homepage": "https://github.com/wareset/funact",
   "bugs": {
     "url": "https://github.com/wareset/funact/issues"
   },
@@ -60,6 +60,11 @@
     "csstype": "3.x"
   },
   "peerDependencies": {
-    "typescript": "5.x"
+    "typescript": "*"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
   }
 }
